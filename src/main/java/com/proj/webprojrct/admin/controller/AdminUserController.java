@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import com.proj.webprojrct.user.dto.request.UserCreateRequest;
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
@@ -49,11 +51,13 @@ public class AdminUserController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         try {
-            logger.debug("Getting users with filters - page: {}, size: {}, phone: {}, fullname: {}, email: {}, role: {}, active: {}",
+            logger.debug(
+                    "Getting users with filters - page: {}, size: {}, phone: {}, fullname: {}, email: {}, role: {}, active: {}",
                     page, size, phone, fullname, email, role, active);
 
             // Tạo pageable với sắp xếp theo ID
@@ -99,7 +103,8 @@ public class AdminUserController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         try {
@@ -125,7 +130,8 @@ public class AdminUserController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         try {
@@ -144,7 +150,8 @@ public class AdminUserController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
         try {
             userService.handleDeleteUser(authentication, userId);

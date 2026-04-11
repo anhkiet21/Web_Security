@@ -18,6 +18,7 @@ import com.proj.webprojrct.product.repository.ProductRepository;
 import com.proj.webprojrct.product.repository.ProductImageRepository;
 import com.proj.webprojrct.email.emailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import com.proj.webprojrct.payment.vnpay.service.PaymentService;
 
@@ -151,6 +152,22 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
+        return buildOrderResponse(order);
+    }
+
+    @Override
+    public OrderResponse getOrderById(Long orderId, Long userId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (order.getUser() == null || !order.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("Order has no associated user or user is not authorized");
+        }
+
+        return buildOrderResponse(order);
+    }
+
+    private OrderResponse buildOrderResponse(Order order) {
         List<OrderItem> items = orderItemRepository.findByOrder(order);
         List<OrderItemResponse> itemResponses = items.stream().map(item -> {
             OrderItemResponse resp = new OrderItemResponse();
@@ -179,7 +196,6 @@ public class OrderServiceImpl implements OrderService {
         response.setStatus(order.getStatus());
         response.setTotalAmount(order.getTotalAmount());
         response.setShippingAddress(order.getShippingAddress());
-        // **Chuyển LocalDateTime sang String đã format**
         response.setCreatedAt(order.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
         response.setCancelNote(order.getCancelNote());
         response.setItems(itemResponses);
@@ -233,9 +249,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void cancelOrder(Long orderId) {
+    public void cancelOrder(Long orderId,long userId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+
+
+        if (order.getUser() == null || !order.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You do not have permission to cancel this order");
+        }
         System.out.println("Order status: " + order.getStatus());
         if (!order.getStatus().equals("PENDING") && !order.getStatus().equals("PAID")) {
             throw new IllegalArgumentException("Only PENDING or PAID orders can be cancelled.");
@@ -326,12 +347,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void refundOrderRequest(Long orderId) {
+    public void refundOrderRequest(Long orderId, Long userId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
         if (!order.getStatus().equals("DELIVERED")) {
             throw new IllegalArgumentException("Only DELIVERED orders can be refunded.");
+        }
+        if (order.getUser() == null || !order.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You do not have permission to refund this order");
         }
 
         // Update order status to REFUNDED_REQUESTED

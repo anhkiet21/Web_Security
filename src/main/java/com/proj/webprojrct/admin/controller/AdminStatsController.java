@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 import java.util.List;
@@ -29,7 +31,8 @@ public class AdminStatsController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         return statsService.overview();
@@ -45,7 +48,8 @@ public class AdminStatsController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         return statsService.orders(period, week, month, year);
@@ -62,7 +66,8 @@ public class AdminStatsController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         return statsService.revenue(period, week, month, year);
@@ -74,7 +79,8 @@ public class AdminStatsController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         return statsService.topProducts(limit);
@@ -90,7 +96,8 @@ public class AdminStatsController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         return statsService.usersByTime(period, week, month, year);

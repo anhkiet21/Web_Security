@@ -3,6 +3,8 @@ package com.proj.webprojrct.category.controller;
 import com.proj.webprojrct.category.dto.CategoryDto;
 import com.proj.webprojrct.category.service.CategoryService;
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
@@ -31,7 +33,8 @@ public class CategoryController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can create categories.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         return service.create(dto);

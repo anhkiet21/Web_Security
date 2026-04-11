@@ -40,8 +40,13 @@ public class OrderController {
                     .body(new ResponseMessage("Vui lòng đăng nhập để tạo đơn hàng!"));
         }
         System.out.println("Order Request: " + request);
-        OrderResponse order = orderService.createOrder(userDetails.getUser().getId(), request);
-        return ResponseEntity.ok(order);
+            try{
+            OrderResponse order = orderService.createOrder(userDetails.getUser().getId(), request);
+            return ResponseEntity.ok(order);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Lỗi khi tạo đơn hàng: " + e.getMessage()));
+        }
     }
 
     // Lấy chi tiết đơn hàng (chỉ được xem đơn của mình)
@@ -53,9 +58,16 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ResponseMessage("Vui lòng đăng nhập để xem đơn hàng!"));
         }
-        OrderResponse order = orderService.getOrderById(orderId);
-        // TODO: Kiểm tra order.userId == userDetails.getUser().getId() để bảo mật
-        return ResponseEntity.ok(order);
+        Long currentUserId = userDetails.getUser().getId();
+        //thêm userId vào service để kiểm tra quyền truy cập
+        try{
+            OrderResponse order = orderService.getOrderById(orderId, currentUserId);
+            // TODO: Kiểm tra order.userId == userDetails.getUser().getId() để bảo mật
+            return ResponseEntity.ok(order);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Lỗi khi lấy đơn hàng: " + e.getMessage()));
+        }   
     }
 
     // Lấy danh sách đơn hàng của user đang login
@@ -67,8 +79,13 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ResponseMessage("Vui lòng đăng nhập để xem đơn hàng!"));
         }
-        List<OrderResponse> orders = orderService.getOrdersByUserId(userDetails.getUser().getId());
-        return ResponseEntity.ok(orders);
+        try{
+            List<OrderResponse> orders = orderService.getOrdersByUserId(userDetails.getUser().getId());
+            return ResponseEntity.ok(orders);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Lỗi khi lấy danh sách đơn hàng: " + e.getMessage()));
+        }
     }
 
     // Hủy đơn hàng (chỉ được hủy đơn của mình)
@@ -82,6 +99,8 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ResponseMessage("Vui lòng đăng nhập để thực hiện!"));
         }
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        long currentUserId = userDetails.getUser().getId();
 
         try {
             // Kiểm tra phương thức thanh toán và trạng thái
@@ -104,7 +123,7 @@ public class OrderController {
                 // Nếu refund thành công (ResponseCode = 00 và TransactionStatus = 05)
                 if ("00".equals(responseCode) && "05".equals(txnStatus)) {
                     isRefunded = true;
-                    orderService.cancelOrder(orderId);
+                    orderService.cancelOrder(orderId,currentUserId);
                     return ResponseEntity.ok(new ResponseMessage("Đơn hàng đã được hủy và hoàn tiền thành công! Tiền sẽ được hoàn lại vào tài khoản của bạn trong 5-7 ngày làm việc."));
                 } else {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -112,7 +131,7 @@ public class OrderController {
                 }
             } else {
                 // COD hoặc chưa thanh toán - chỉ hủy đơn
-                orderService.cancelOrder(orderId);
+                orderService.cancelOrder(orderId,currentUserId );
                 return ResponseEntity.ok(new ResponseMessage("Đơn hàng đã được hủy thành công!"));
             }
 
@@ -129,9 +148,11 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ResponseMessage("Vui lòng đăng nhập để thực hiện!"));
         }
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        long currentUserId = userDetails.getUser().getId();
 
         try {
-            orderService.refundOrderRequest(orderId);
+            orderService.refundOrderRequest(orderId, currentUserId);
             return ResponseEntity.ok(new ResponseMessage("Yêu cầu hoàn tiền đã được gửi thành công!"));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

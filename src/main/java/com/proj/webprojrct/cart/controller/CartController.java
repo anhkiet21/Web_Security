@@ -31,9 +31,13 @@ public class CartController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Vui lòng đăng nhập!");
         }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-        CartResponse cart = cartService.getCartByUserId(userDetails.getUser().getId());
-        return ResponseEntity.ok(cart);
+        try{
+            CartResponse cart = cartService.getCartByUserId(userDetails.getUser().getId());
+            return ResponseEntity.ok(cart);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Lỗi khi lấy giỏ hàng: " + e.getMessage()));
+        }
     }
 
     // Thêm sản phẩm vào giỏ hàng
@@ -46,8 +50,13 @@ public class CartController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Vui lòng đăng nhập!");
         }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        cartService.addItemToCart(userDetails.getUser().getId(), request);
-        return ResponseEntity.ok(new ResponseMessage("Thêm hàng vào giỏ thành công!"));
+          try{
+            cartService.addItemToCart(userDetails.getUser().getId(), request);
+            return ResponseEntity.ok(new ResponseMessage("Thêm hàng vào giỏ thành công!"));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Lỗi khi thêm hàng vào giỏ: " + e.getMessage()));
+        }
     }
 
     // Cập nhật số lượng sản phẩm trong giỏ hàng
@@ -62,8 +71,13 @@ public class CartController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Vui lòng đăng nhập!");
         }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        cartService.updateItemQuantity(userDetails.getUser().getId(), cartItemId, request.getQuantity());
-        return ResponseEntity.ok(new ResponseMessage("Đã cập nhật số lượng sản phẩm!"));
+        try{
+            cartService.updateItemQuantity(userDetails.getUser().getId(), cartItemId, request.getQuantity());
+            return ResponseEntity.ok(new ResponseMessage("Đã cập nhật số lượng sản phẩm!"));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Lỗi khi cập nhật số lượng sản phẩm: " + e.getMessage()));
+        }
     }
 
     // Xóa sản phẩm khỏi giỏ hàng
@@ -76,8 +90,13 @@ public class CartController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Vui lòng đăng nhập!");
         }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        cartService.removeItemFromCart(userDetails.getUser().getId(), productId);
-        return ResponseEntity.ok(new ResponseMessage("Đã xóa sản phẩm khỏi giỏ hàng!"));
+        try{
+            cartService.removeItemFromCart(userDetails.getUser().getId(), productId);
+            return ResponseEntity.ok(new ResponseMessage("Đã xóa sản phẩm khỏi giỏ hàng!"));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Lỗi khi xóa sản phẩm khỏi giỏ hàng: " + e.getMessage()));
+        }
     }
 
     // Xóa toàn bộ giỏ hàng
@@ -90,7 +109,12 @@ public class CartController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Vui lòng đăng nhập!");
         }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        cartService.clearCart(userDetails.getUser().getId());
-        return ResponseEntity.ok(new ResponseMessage("Đã xóa toàn bộ giỏ hàng!"));
+        try{
+            cartService.clearCart(userDetails.getUser().getId());
+            return ResponseEntity.ok(new ResponseMessage("Đã xóa toàn bộ giỏ hàng!"));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Lỗi khi xóa toàn bộ giỏ hàng: " + e.getMessage()));
+        }
     }
 }

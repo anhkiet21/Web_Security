@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 
 import org.eclipse.tags.shaded.org.apache.regexp.recompile;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.*;
@@ -59,11 +60,17 @@ public class PaymentService {
 
     private final OrderService orderService;
 
-    public PaymentResDto createPaymentUrl(Long orderId, HttpServletRequest request) throws UnsupportedEncodingException {
+    public PaymentResDto createPaymentUrl(Long orderId, Long userId, HttpServletRequest request) throws UnsupportedEncodingException {
 
         String orderType = "other";
 
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng (Order) với ID: " + orderId));
+        
+        Long orderUserId = order.getUser().getId();
+        if (!orderUserId.equals(userId)) {
+            throw new AccessDeniedException("Bạn không có quyền thanh toán cho đơn hàng này.");
+        }
+        
         BigDecimal totalAmountBigDecimal = order.getTotalAmount();
         BigDecimal multiplier = new BigDecimal("100");
         long amount = totalAmountBigDecimal.multiply(multiplier).longValue();
@@ -303,7 +310,14 @@ public class PaymentService {
         return result;
     }
 
-    public String handleQuery(long orderId, HttpServletRequest request) throws Exception {
+    public String handleQuery(long orderId, Long userId, HttpServletRequest request) throws Exception {
+
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng (Order) với ID: " + orderId));
+        
+        Long orderUserId = order.getUser().getId();
+        if (!orderUserId.equals(userId)) {
+            throw new AccessDeniedException("Bạn không có quyền thanh toán cho đơn hàng này.");
+        }
         try {
 
             // Các tham số cơ bản
@@ -504,8 +518,13 @@ public class PaymentService {
         return response.toString();
     }
 
-    public void createPaymentCOD(Long orderId) {
+    public void createPaymentCOD(Long orderId, Long userId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng (Order) với ID: " + orderId));
+        Long orderUserId = order.getUser().getId();
+        if (!orderUserId.equals(userId)) {
+            throw new AccessDeniedException("Bạn không có quyền thanh toán cho đơn hàng này.");
+        }
+        
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String createdAt = formatter.format(cld.getTime());
@@ -575,7 +594,11 @@ public class PaymentService {
     }
 
     public boolean existsByOrderId(Long orderId) {
-        return paymentRepository.existsByOrderId(orderId);
+        Payment payment = paymentRepository.findByOrderId(orderId);
+        if (payment == null) {
+            return false;
+        }
+        return true;
     }
 
     public boolean getPaymentByOrderId(Long orderId) {

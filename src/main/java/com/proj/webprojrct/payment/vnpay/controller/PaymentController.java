@@ -35,8 +35,11 @@ import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.proj.webprojrct.payment.dto.response.PaymentResDto;
 import com.proj.webprojrct.payment.entity.Payment;
 import com.proj.webprojrct.payment.vnpay.service.PaymentService;
+import com.proj.webprojrct.order.dto.response.OrderResponse;
 import com.proj.webprojrct.order.repository.OrderRepository;
 import com.proj.webprojrct.order.service.OrderService;
+import com.proj.webprojrct.common.config.security.CustomUserDetails;
+import com.proj.webprojrct.user.entity.UserRole;
 import com.twilio.http.Response;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,14 +66,19 @@ public class PaymentController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("vui lòng đăng nhập để thực hiện thanh toán.");
         }
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.getUser().getId();
+
+        // Ownership check đầu tiên — 403 ngay nếu orderId không thuộc user này
+        OrderResponse order = orderService.getOrderById(orderId, userId);
+
+        if (order.getStatus().equals("CANCELLED")) {
+            return ResponseEntity.status(HttpStatus.OK).body("Đơn hàng đã bị hủy, không thể thanh toán.");
+        }
         if (paymentService.existsByOrderId(orderId)) {
             if (!("PENDING".equalsIgnoreCase(paymentService.getPaymentStatusByOrderId(orderId)))) {
                 return ResponseEntity.status(HttpStatus.OK).body("Đơn hàng đã được thanh toán thành công hoặc bị hủy.");
             }
-        }
-        System.out.println(orderService.getOrderById(orderId).getStatus());
-        if (orderService.getOrderById(orderId).getStatus().equals("CANCELLED")) {
-            return ResponseEntity.status(HttpStatus.OK).body("Đơn hàng đã bị hủy, không thể thanh toán.");
         }
         if (("COD").equalsIgnoreCase(paymentService.getPaymentMethodByOrderId(orderId))) {
             return ResponseEntity.status(HttpStatus.OK).body("Đơn hàng đã được thanh toán bằng COD.");
@@ -81,7 +89,7 @@ public class PaymentController {
         }
 
         if ("COD".equalsIgnoreCase(method)) {
-            paymentService.createPaymentCOD(orderId);
+            paymentService.createPaymentCOD(orderId, userId);
             PaymentResDto codResponse = new PaymentResDto();
             codResponse.setStatus("OK");
             codResponse.setMessage("Tạo đơn hàng COD thành công!");
@@ -89,7 +97,7 @@ public class PaymentController {
             return ResponseEntity.status(HttpStatus.OK).body(codResponse);
         }
 
-        PaymentResDto paymentResDto = paymentService.createPaymentUrl(orderId, request);
+        PaymentResDto paymentResDto = paymentService.createPaymentUrl(orderId, userId, request);
 
         return ResponseEntity.status(HttpStatus.OK).body(paymentResDto);
     }
@@ -108,12 +116,19 @@ public class PaymentController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("vui lòng đăng nhập để thực hiện.");
         }
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.getUser().getId();
+
+        OrderResponse order = orderService.getOrderById(orderId, userId);
+
+
         Payment payment = paymentService.getPaymentByOrderId(orderId);
-        if (payment.getMethod().equals("COD") || payment == null) {
+        if (payment == null || payment.getMethod().equals("COD")) {
             return ResponseEntity.ok("ok");
         }
+
         try {
-            String result = paymentService.handleQuery(orderId, request);
+            String result = paymentService.handleQuery(orderId,userId, request);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,7 +146,13 @@ public class PaymentController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("vui lòng đăng nhập để thực hiện.");
         }
-        if (("Success").equalsIgnoreCase(paymentService.getPaymentStatusByOrderId(orderId)) == false) {
+        CustomUserDetails refundUser = (CustomUserDetails) authentication.getPrincipal();
+        UserRole role = refundUser.getUser().getRole();
+        if (role != UserRole.SELLER && role != UserRole.ADMIN) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Chỉ SELLER hoặc ADMIN mới có thể thực hiện hoàn tiền.");
+        }
+        
+        if (!("SUCCESS".equalsIgnoreCase(paymentService.getPaymentStatusByOrderId(orderId)))) {
             return ResponseEntity.status(HttpStatus.OK).body("Đơn hàng chưa được thanh toán, không thể hoàn tiền.");
         }
         String result = paymentService.handleRefund(orderId, trantype, percent, request);

@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -42,14 +44,16 @@ public class AdminCategoryController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         // Parse sort parameter
         String[] sortParams = sort.split(",");
         String sortField = sortParams[0];
         Sort.Direction sortDirection = sortParams.length > 1 && sortParams[1].equalsIgnoreCase("desc")
-                ? Sort.Direction.DESC : Sort.Direction.ASC;
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortField));
         Page<CategoryDto> categoryPage = categoryService.getPagedCategories(pageable, name);
@@ -74,7 +78,8 @@ public class AdminCategoryController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can create categories.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
         List<CategoryDto> dtos = categoryService.getAll();
         model.addAttribute("category", dtos);
@@ -90,7 +95,8 @@ public class AdminCategoryController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can edit categories.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
         List<CategoryDto> dtos = categoryService.getAll();
         model.addAttribute("category", dtos);
@@ -104,7 +110,8 @@ public class AdminCategoryController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can edit categories.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
         CategoryDto dto = categoryService.getById(id);
         model.addAttribute("category", dto);
@@ -119,12 +126,13 @@ public class AdminCategoryController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
         try {
             categoryService.delete(id);
             redirectAttributes.addFlashAttribute("success", "Đã xóa danh mục thành công!");
-        } catch (org.springframework.web.server.ResponseStatusException e) {
+        } catch (ResponseStatusException e) {
             // Xử lý lỗi từ service (CONFLICT, NOT_FOUND, etc.)
             redirectAttributes.addFlashAttribute("error", e.getReason());
         } catch (Exception e) {
@@ -139,7 +147,8 @@ public class AdminCategoryController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         CategoryDto category = categoryService.getById(id);

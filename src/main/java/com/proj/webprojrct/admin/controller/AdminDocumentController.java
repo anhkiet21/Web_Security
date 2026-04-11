@@ -29,6 +29,9 @@ import com.proj.webprojrct.product.dto.response.ProductResponse;
 import com.proj.webprojrct.product.service.ProductService;
 import com.proj.webprojrct.user.entity.UserRole;
 import com.proj.webprojrct.document.repository.DocumentRepository;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 
@@ -60,7 +63,8 @@ public class AdminDocumentController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         // Parse sort parameter
@@ -86,7 +90,7 @@ public class AdminDocumentController {
         return "admin/document_list";
     }
 
-    @GetMapping({"/all", "/list"})
+    @GetMapping({ "/all", "/list" })
     public String showAllDocuments(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -96,7 +100,7 @@ public class AdminDocumentController {
         return show(page, size, title, sort, model);
     }
 
-    @GetMapping({"/create", "/new"})
+    @GetMapping({ "/create", "/new" })
     public String showCreateForm(Model model) {
         model.addAttribute("document", null);
         model.addAttribute("formAction", "/admin/document/create");
@@ -118,7 +122,15 @@ public class AdminDocumentController {
     @PostMapping("/create")
     public String handleCreateDocument(@ModelAttribute DocumentCreateRequest dto,
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
-            Model model) {
+            Model model,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        if (userDetails.getUser().getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
+        }
         try {
             documentService.createDocument(dto, images == null ? List.of() : images);
             model.addAttribute("success", "Tạo Document thành công!");
@@ -130,14 +142,30 @@ public class AdminDocumentController {
     }
 
     @GetMapping("/{id}")
-    public String showDocumentDetail(@PathVariable Long id, Model model) {
+    public String showDocumentDetail(@PathVariable Long id, Model model,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        if (userDetails.getUser().getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
+        }
         Document doc = documentService.getDocument(id);
         model.addAttribute("document", doc);
         return "admin/document_detail";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
+    public String showEditForm(@PathVariable Long id, Model model,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        if (userDetails.getUser().getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
+        }
         Document document = documentService.getDocument(id);
         model.addAttribute("document", document);
 
@@ -145,10 +173,11 @@ public class AdminDocumentController {
         List<ProductResponse> allProducts = productService.getAll();
         List<Long> productIdsWithDocuments = documentRepository.findAllProductIdsWithDocuments();
 
-        // Lọc ra những sản phẩm chưa có document, NHƯNG vẫn giữ lại sản phẩm hiện tại của document này
+        // Lọc ra những sản phẩm chưa có document, NHƯNG vẫn giữ lại sản phẩm hiện tại
+        // của document này
         List<ProductResponse> availableProducts = allProducts.stream()
                 .filter(product -> !productIdsWithDocuments.contains(product.getId())
-                || product.getId().equals(document.getProductId()))
+                        || product.getId().equals(document.getProductId()))
                 .collect(Collectors.toList());
 
         model.addAttribute("products", availableProducts);
@@ -160,7 +189,15 @@ public class AdminDocumentController {
     public String updateDocument(@PathVariable Long id,
             @ModelAttribute DocumentCreateRequest dto,
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
-            Model model) {
+            Model model,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        if (userDetails.getUser().getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
+        }
         documentService.updateDocument(id, dto, images == null ? List.of() : images);
         model.addAttribute("success", "Cập nhật document thành công!");
         return "redirect:/admin/document";
@@ -168,7 +205,15 @@ public class AdminDocumentController {
 
     @PostMapping("/upload-image")
     @ResponseBody
-    public ResponseEntity<?> handleEditorImageUpload(@RequestParam("image") MultipartFile image) {
+    public ResponseEntity<?> handleEditorImageUpload(@RequestParam("image") MultipartFile image,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+        }
+        if (userDetails.getUser().getRole() != UserRole.ADMIN) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("error", "Access denied: Only ADMIN users can access category management."));
+        }
         try {
             String imageUrl = documentService.saveImage(image);
             return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
@@ -192,7 +237,15 @@ public class AdminDocumentController {
     // API endpoint to get document by productId (for product detail page)
     @GetMapping("/api/product/{productId}")
     @ResponseBody
-    public ResponseEntity<?> getDocumentByProductId(@PathVariable Long productId) {
+    public ResponseEntity<?> getDocumentByProductId(@PathVariable Long productId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+        }
+        if (userDetails.getUser().getRole() != UserRole.ADMIN) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("error", "Access denied: Only ADMIN users can access category management."));
+        }
         try {
             Document document = documentService.getDocumentByProductId(productId);
             if (document == null) {

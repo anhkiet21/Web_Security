@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import com.proj.webprojrct.common.config.security.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 
@@ -25,8 +28,16 @@ public class StorageMediaController {
      */
     @PostMapping("/upload")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file,
-                                    @RequestParam(value = "ownerId", required = false) String ownerId) throws IOException {
-        StorageMedia saved = recordService.store(file, ownerId);
-        return ResponseEntity.ok(saved);
+            @RequestParam(value = "ownerId", required = false) String ownerId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            StorageMedia saved = recordService.store(file, ownerId);
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

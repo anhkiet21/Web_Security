@@ -96,11 +96,15 @@ public class FavoriteController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ResponseMessage("Vui lòng đăng nhập!"));
         }
-
-        boolean isFavorite = favoriteService.isFavorite(userDetails.getUser().getId(), productId);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("isFavorite", isFavorite);
-        return ResponseEntity.ok(response);
+        try{
+            boolean isFavorite = favoriteService.isFavorite(userDetails.getUser().getId(), productId);
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("isFavorite", isFavorite);
+            return ResponseEntity.ok(response);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Lỗi khi kiểm tra yêu thích: " + e.getMessage()));
+        }
     }
 
     // Xóa tất cả yêu thích
@@ -112,8 +116,12 @@ public class FavoriteController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ResponseMessage("Vui lòng đăng nhập!"));
         }
-
-        favoriteService.clearFavorites(userDetails.getUser().getId());
-        return ResponseEntity.ok(new ResponseMessage("Đã xóa tất cả yêu thích!"));
+        try{
+            favoriteService.clearFavorites(userDetails.getUser().getId());
+            return ResponseEntity.ok(new ResponseMessage("Đã xóa tất cả yêu thích!"));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Lỗi khi xóa tất cả yêu thích: " + e.getMessage()));
+        }
     }
 }

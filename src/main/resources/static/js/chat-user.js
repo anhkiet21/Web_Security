@@ -258,6 +258,10 @@ async function ensureUserItem(nick) {
 }
 
 function normalizeUserRaw(raw) {
+  // API /users/admins now returns plain phone strings
+  if (typeof raw === "string") {
+    return { nickName: raw, fullName: raw, role: "ADMIN", status: "OFFLINE" };
+  }
   if (!raw)
     return { nickName: "", fullName: "", role: "USER", status: "OFFLINE" };
   const nick =

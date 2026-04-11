@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
 import com.proj.webprojrct.reviewandrating.service.ReviewService;
 import com.proj.webprojrct.user.entity.UserRole;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 
@@ -31,7 +33,8 @@ public class AdminReviewController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         try {

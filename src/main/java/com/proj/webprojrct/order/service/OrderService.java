@@ -12,9 +12,11 @@ public interface OrderService {
 
     OrderResponse getOrderById(Long orderId);
 
+    OrderResponse getOrderById(Long orderId, Long userId);
+
     List<OrderResponse> getOrdersByUserId(Long userId);
 
-    void cancelOrder(Long orderId);
+    void cancelOrder(Long orderId, long userId);
 
     Payment updateOrderPayment(Long orderId);
 
@@ -28,5 +30,5 @@ public interface OrderService {
     // cập nhât số lượng
     void updateProductStockAfterPayment(Long orderId);
 
-    void refundOrderRequest(Long orderId);
+    void refundOrderRequest(Long orderId, Long userId);
 }

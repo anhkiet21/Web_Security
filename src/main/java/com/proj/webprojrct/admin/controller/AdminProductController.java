@@ -10,6 +10,9 @@ import com.proj.webprojrct.reviewandrating.repository.ReviewRepository;
 import com.proj.webprojrct.cart.repository.CartItemRepository;
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
 import com.proj.webprojrct.favorite.repository.FavoriteRepository;
+import java.util.Map;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,7 +44,7 @@ public class AdminProductController {
     private final ProductStorageService productStorageService;
     private final ProductService productService;
 
-    //admin
+    // admin
     @GetMapping
     public String products(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -104,13 +107,13 @@ public class AdminProductController {
             @RequestParam(required = false) String resolution,
             @RequestParam(required = false) String displayFeatures,
             @RequestParam(required = false) String cpuSpecs,
-            @RequestParam(value = "image", required = false) MultipartFile image
-    ) throws IOException {
+            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         // Tạo sản phẩm mới
@@ -153,7 +156,8 @@ public class AdminProductController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         productRepository.deleteById(id);
@@ -166,33 +170,36 @@ public class AdminProductController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         productRepository.deleteById(id);
     }
 
-    //admin
+    // admin
     @GetMapping("/edit")
     public String edit() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         return "admin/product_edit";
     }
 
-    //admin
+    // admin
     @GetMapping("/edit/{id}")
     public String editById(@PathVariable Long id, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         ProductResponse p = productService.getById(id);
@@ -200,7 +207,8 @@ public class AdminProductController {
         return "admin/product_edit";
     }
 
-    /////////////////////////////////////// Deal admin/////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////// Deal
+    /////////////////////////////////////// admin/////////////////////////////////////////////////////////////////////////////////////
     @ResponseBody
     @PostMapping("/{id}/deal-toggle")
     public ProductResponse toggleDeal(@PathVariable Long id, @RequestBody java.util.Map<String, Object> body) {
@@ -208,7 +216,8 @@ public class AdminProductController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         Boolean onDeal = false;
@@ -239,7 +248,8 @@ public class AdminProductController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         Product product = productRepository.findById(id)

@@ -11,6 +11,8 @@ import com.proj.webprojrct.common.config.security.CustomUserDetails;
 import com.proj.webprojrct.user.entity.User;
 import com.proj.webprojrct.user.entity.UserRole;
 import com.proj.webprojrct.websocket.chat.ChatMessageRepository;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +37,8 @@ public class AdminChatController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            return ResponseEntity.status(403)
+                    .body(Map.of("error", "Access denied: Only ADMIN users can access category management."));
         }
 
         if (authentication == null || authentication.getName() == null) {
@@ -83,7 +86,8 @@ public class AdminChatController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Access denied: Only ADMIN users can access category management.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
         }
 
         String adminId = authentication.getName();

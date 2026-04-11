@@ -5,12 +5,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.proj.webprojrct.common.config.security.CustomUserDetails;
+import org.springframework.http.HttpStatus;
+import com.proj.webprojrct.user.entity.UserRole;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,63 +30,84 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final ChatMessageRepository chatMessageRepository;
 
-
     @GetMapping("/user/chat")
     public String chatuser() {
-        return "chat_user"; 
+        return "chat_user";
     }
+
     @GetMapping("/admin/chat")
-    public String chatadmin() {
-        return "admin/chat_admin"; 
+    public String chatadmin(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        if (userDetails.getUser().getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Access denied");
+        }
+        return "admin/chat_admin";
     }
-
-
-
 
     @MessageMapping("/chat")
-    public void processMessage(@Payload ChatMessage chatMessage) {
-    
+    public void processMessage(@Payload ChatMessage chatMessage,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return;
+        }
         ChatMessage savedMsg = chatMessageService.save(chatMessage);
 
-    ChatNotification notification = ChatNotification.builder()
-        .id(String.valueOf(savedMsg.getId()))
-        .senderId(savedMsg.getSenderId())
-        .recipientId(savedMsg.getRecipientId())
-        .content(savedMsg.getContent())
-        .mediaPath(savedMsg.getMediaPath())
-        .mediaType(savedMsg.getMediaType())
-        .timestamp(savedMsg.getTimestamp())
-        .build();
+        ChatNotification notification = ChatNotification.builder()
+                .id(String.valueOf(savedMsg.getId()))
+                .senderId(savedMsg.getSenderId())
+                .recipientId(savedMsg.getRecipientId())
+                .content(savedMsg.getContent())
+                .mediaPath(savedMsg.getMediaPath())
+                .mediaType(savedMsg.getMediaType())
+                .timestamp(savedMsg.getTimestamp())
+                .build();
 
         messagingTemplate.convertAndSendToUser(
-            chatMessage.getRecipientId(), 
-            "/queue/messages", 
-            notification
-        );
-  
+                chatMessage.getRecipientId(),
+                "/queue/messages",
+                notification);
+
         messagingTemplate.convertAndSendToUser(
-            chatMessage.getSenderId(), 
-            "/queue/messages", 
-            notification
-        );
-        
-       
+                chatMessage.getSenderId(),
+                "/queue/messages",
+                notification);
+
     }
 
-  
     @GetMapping("/messages/{senderId}/{recipientId}")
     public ResponseEntity<List<ChatMessage>> findChatMessages(
-        @PathVariable String senderId,
-        @PathVariable String recipientId) 
-    {
-       
-        return ResponseEntity
-            .ok(chatMessageService.findChatMessages(senderId, recipientId));
+            @PathVariable String senderId,
+            @PathVariable String recipientId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (!senderId.equals(userDetails.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        try {
+            return ResponseEntity
+                    .ok(chatMessageService.findChatMessages(senderId, recipientId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-    
- 
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/conversations/{recipientId}")
-    public ResponseEntity<List<String>> findConversationsForRecipient(@PathVariable String recipientId) {
+    public ResponseEntity<List<String>> findConversationsForRecipient(
+            @PathVariable String recipientId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (!recipientId.equals(userDetails.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.ok(chatMessageService.findConversationUsersForRecipient(recipientId));
     }
 
@@ -111,9 +138,8 @@ public class ChatController {
     @Transactional
     @GetMapping("/api/chat/mark-read/{senderId}")
     public ResponseEntity<Map<String, Object>> markMessagesAsRead(
-        @PathVariable String senderId,
-        Authentication authentication
-    ) {
+            @PathVariable String senderId,
+            Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {
             System.out.println("[ChatController] Mark-read failed: No authentication");
             return ResponseEntity.ok(Map.of("success", false, "markedCount", 0));
@@ -121,9 +147,9 @@ public class ChatController {
 
         String userId = authentication.getName();
         System.out.println("[ChatController] Marking messages as read - userId: " + userId + ", senderId: " + senderId);
-        
+
         int markedCount = chatMessageRepository.markMessagesAsRead(userId, senderId);
-        
+
         System.out.println("[ChatController] Marked " + markedCount + " messages as read");
 
         Map<String, Object> response = new HashMap<>();
@@ -132,5 +158,4 @@ public class ChatController {
         return ResponseEntity.ok(response);
     }
 
-  
 }

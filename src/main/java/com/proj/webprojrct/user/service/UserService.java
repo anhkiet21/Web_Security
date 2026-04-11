@@ -294,9 +294,10 @@ public class UserService {
 
 ////////////////Service cho phần chat support////////////////////////////////////////////////////////////
 
-    public List<User> findAdmins() {
+    public List<String> findAdmins() {
         return userRepository.findAll().stream()
                 .filter(u -> u.getRole() != null && u.getRole().name().equals("ADMIN"))
+                .map(User::getPhone)
                 .collect(Collectors.toList());
     }
 
