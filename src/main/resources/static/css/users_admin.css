@@ -1,0 +1,296 @@
+/* CSS cho trang quản lý người dùng */
+
+/* Ghi đè và bổ sung style cho phù hợp với giao diện admin */
+.container {
+  padding: 20px;
+}
+
+.page-title {
+  margin-bottom: 24px;
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 16px 20px;
+  background: #f7f9fc;
+  border-bottom: 1px solid #edf2f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 18px;
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+th,
+td {
+  border-bottom: 1px solid #edf2f9;
+  padding: 12px 15px;
+  text-align: left;
+}
+
+th {
+  background-color: #f8fafd;
+  color: #495057;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+tbody tr:hover {
+  background-color: #f8fafd;
+}
+
+/* Nút bấm và form */
+.btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-primary {
+  background-color: #1976d2;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #1565c0;
+}
+
+.btn-success {
+  background-color: #43a047;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #388e3c;
+}
+
+.btn-edit {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
+.btn-view {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn-view:hover {
+  background-color: #138496;
+}
+
+.btn-danger,
+.btn-delete {
+  background-color: #e53935;
+  color: white;
+}
+
+.btn-danger:hover,
+.btn-delete:hover {
+  background-color: #d32f2f;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #555;
+}
+
+.btn-outline:hover {
+  background: #f5f5f5;
+}
+
+/* Bộ lọc và form */
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  background: #f8fafd;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group label {
+  margin-bottom: 5px;
+  font-weight: 500;
+  font-size: 13px;
+  color: #555;
+}
+
+.filter-input,
+select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-width: 120px;
+  font-size: 14px;
+}
+
+.filter-input:focus,
+select:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+/* Form sửa và tạo */
+.form-container {
+  padding: 20px;
+  background: #f8fafd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #edf2f9;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.form-control {
+  flex: 1;
+  min-width: 120px;
+}
+
+.form-control label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-control input,
+.form-control select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* Badge styles */
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge-danger {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Avatar */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+/* Alert messages */
+.alert {
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+
+.alert-danger {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.alert-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Hiển thị form chỉnh sửa */
+.edit-form-row td {
+  padding: 15px;
+  background-color: #f8fafd;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filter-container {
+    flex-direction: column;
+  }
+
+  .form-group {
+    flex-direction: column;
+  }
+
+  .page-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

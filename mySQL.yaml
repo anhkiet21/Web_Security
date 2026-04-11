@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: cps_db
+      MYSQL_USER: cps
+      MYSQL_PASSWORD: cps
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - cps-network
+
+volumes:
+  mysql_data:
+
+networks:
+  cps-network:

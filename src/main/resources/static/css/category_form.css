@@ -1,0 +1,139 @@
+/* CSS cho form thêm/sửa danh mục */
+.form-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.form-select {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.invalid-feedback {
+  display: none;
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.form-control:invalid + .invalid-feedback {
+  display: block;
+}
+
+.btn-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.btn-submit {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-submit:hover {
+  background-color: #1565c0;
+}
+
+.btn-reset {
+  background-color: transparent;
+  color: #1976d2;
+  border: 1px solid #1976d2;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-reset:hover {
+  background-color: rgba(25, 118, 210, 0.04);
+}
+
+/* Xử lý khi form đang trong trạng thái gửi */
+.loading .form-control,
+.loading .form-select,
+.loading .btn {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Spinner */
+.loading-spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading .loading-spinner {
+  display: inline-block;
+}
+
+/* Phần hiển thị thông báo */
+.alert {
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  border-left: 4px solid;
+}
+
+.alert-success {
+  background-color: #e8f5e9;
+  border-left-color: #2e7d32;
+  color: #2e7d32;
+}
+
+.alert-warning {
+  background-color: #fff8e1;
+  border-left-color: #f57f17;
+  color: #f57f17;
+}
+
+.alert-danger {
+  background-color: #ffebee;
+  border-left-color: #c62828;
+  color: #c62828;
+}

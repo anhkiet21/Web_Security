@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sitemesh>
+    <!-- Admin pages use admin decorator -->
+    <mapping path="/admin" decorator="admin.jsp"/>
+    <mapping path="/admin/*" decorator="admin.jsp"/>
+    <mapping path="/profile/*" decorator="web.jsp"/>
+    <mapping path="/profile" decorator="web.jsp"/>
+
+       <!-- Trang không sử dụng header và footer web -->
+    <mapping path="/login" decorator="none.jsp"/>
+    <mapping path="/register" decorator="none.jsp"/>
+    <mapping path="/resetPassword" decorator="none.jsp"/>
+    <!-- <mapping path="/profile" decorator="none.jsp"/>
+    <mapping path="/profile/*" decorator="none.jsp"/> -->
+
+    <!-- exclude phần này vì chưa có template cho login register -->
+    <mapping path="/login" exclude="true"/>
+    <mapping path="/oauth2/complete" exclude="true"/>
+    <mapping path="/register-phone-verify" exclude="true"/>
+    <mapping path="/register" exclude="true"/>
+    <mapping path="/resetPassword" exclude="true"/>
+    <mapping path="/verify-otp" exclude="true"/>
+    <!-- <mapping path="/profile/change-password" exclude="true"/> -->
+    
+    <!-- Tạm exclude product_list page vì chưa có template -->
+    <mapping path="/product_list" exclude="true"/>
+    
+    <!-- All other pages use web decorator -->
+    <mapping path="/*" decorator="web.jsp"/>
+</sitemesh>

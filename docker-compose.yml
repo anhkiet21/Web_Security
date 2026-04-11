@@ -1,0 +1,61 @@
+services:
+  mysql:
+    image: mysql:8.0.33
+    container_name: cps_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: cps_db
+      MYSQL_USER: cps_user
+      MYSQL_PASSWORD: cps_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - cps-network
+
+  web:
+    build: .
+    container_name: cps_spring_app
+    depends_on:
+      - mysql
+      - mailhog
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/cps_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: cps_user
+      SPRING_DATASOURCE_PASSWORD: cps_pass
+
+      # MailHog SMTP configuration
+      SPRING_MAIL_HOST: mailhog
+      SPRING_MAIL_PORT: 1025
+      SPRING_MAIL_USERNAME: ""
+      SPRING_MAIL_PASSWORD: ""
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: false
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
+
+    volumes:
+      - .:/app # Mount project source
+      - ~/.m2:/root/.m2 # Cache Maven dependencies
+    networks:
+      - cps-network
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: cps_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP port
+      - "8025:8025" # Web UI
+    networks:
+      - cps-network
+
+volumes:
+  mysql_data:
+
+
+networks:
+  cps-network:

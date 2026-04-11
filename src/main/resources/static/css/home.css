@@ -1,0 +1,15 @@
+/* Basic home page styles for CellPhone Store */
+body { font-family: 'Montserrat', Arial, sans-serif; background: #f6f6f6; }
+.brand-name { font-weight: 700; color: #222; margin-left: 8px; }
+.home-logo { width: 56px; height: 56px; object-fit: contain; }
+.section { padding-top: 18px; padding-bottom: 18px; }
+.shop img { max-height: 140px; object-fit: contain; }
+.product-card { border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden; }
+.product-card img { object-fit: contain; height: 160px; }
+.title { margin-bottom: 12px; }
+.btn-outline-primary { border-radius: 20px; }
+
+@media (max-width: 576px) {
+  .home-logo { width: 44px; height: 44px; }
+  .product-card img { height: 120px; }
+}

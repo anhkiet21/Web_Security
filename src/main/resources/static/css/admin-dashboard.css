@@ -1,0 +1,341 @@
+:root {
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --muted: #6b7280;
+  /* change primary to match header/footer deep red */
+  --primary: #d10024;
+  --accent: #43a047;
+  --warning: #ffb300;
+  --danger: #d10024;
+  --radius: 10px;
+}
+html,
+body {
+  height: 100%;
+}
+.body,
+body {
+  font-family: Inter, Arial, sans-serif;
+  margin: 0;
+  padding: 0; /* removed global padding so header/nav can be full-width */
+  background: linear-gradient(180deg, var(--bg), #eef2f6);
+  color: #111827;
+}
+
+/* keep page content padding consistent - header and nav should span full width */
+.page-header,
+.top-grid {
+  padding: 0 22px;
+}
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.page-header h1 {
+  font-size: 18px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lead {
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.top-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.card {
+  background: var(--card);
+  border-radius: 0px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+  padding: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+}
+.card.small {
+  /* allow cards to scale within grid */
+  width: 100%;
+}
+.card .card-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* stat widget */
+.stat-widget-two {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.stat-widget-two .stat-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.stat-widget-two .stat-text {
+  color: var(--muted);
+  font-size: 13px;
+}
+.stat-widget-two .stat-digit {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+.progress {
+  height: 8px;
+  background: #eef2f6;
+  border-radius: 0px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  display: block;
+}
+.progress-bar-success {
+  background: #43a047;
+  width: 85%;
+}
+.progress-bar-primary {
+  background: #6c5ce7;
+  width: 75%;
+}
+.progress-bar-warning {
+  background: #ffb300;
+  width: 50%;
+}
+.progress-bar-danger {
+  background: #e53935;
+  width: 65%;
+}
+.card .card-sub {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 12px;
+  background: var(--primary);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 0px;
+  border: none;
+  cursor: pointer;
+}
+.btn.secondary {
+  background: #6b7280;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 18px;
+}
+.charts-row .chart-box {
+  background: var(--card);
+  padding: 12px;
+  border-radius: 0px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.controls select {
+  padding: 6px;
+  border-radius: 0px;
+  border: 1px solid #d1d5db;
+}
+
+.two-col {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.revenue {
+  flex: 1;
+  min-width: 320px;
+}
+.top-products {
+  width: 420px;
+}
+
+@media (max-width: 900px) {
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+  .top-grid {
+    justify-content: flex-start;
+  }
+  .card.small {
+    width: 100%;
+  }
+  .top-products {
+    width: 100%;
+  }
+}
+
+/* Sidebar + layout */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 260px;
+  /* slightly darker, muted gradient for a modern admin look */
+  background: linear-gradient(180deg, #ffffff, #151c23);
+  border-right: 1px solid rgba(0, 0, 0, 0.03);
+  padding: 16px 12px;
+  box-sizing: border-box;
+  transition: width 0.22s ease, transform 0.22s ease;
+}
+/* quixnav / metismenu adjustments */
+.quixnav {
+  width: 260px;
+}
+.quixnav .quixnav-scroll {
+  padding: 8px 6px;
+}
+.metismenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.metismenu > li {
+  margin-bottom: 6px;
+}
+.metismenu .nav-label {
+  color: var(--muted);
+  font-size: 12px;
+  padding: 8px 12px;
+}
+.metismenu .has-arrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 0px;
+}
+.metismenu .has-arrow .nav-text {
+  display: inline-block;
+}
+.metismenu li ul {
+  list-style: none;
+  padding-left: 12px;
+  margin: 6px 0 0 0;
+}
+.metismenu li ul li a {
+  display: block;
+  padding: 8px 12px;
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 0px;
+}
+.metismenu li ul li a:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--primary);
+}
+.sidebar .brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 6px;
+  border-radius: 0px;
+}
+.sidebar .menu {
+  margin-top: 18px;
+}
+.sidebar .menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 0px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar .menu a:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--primary);
+}
+.sidebar.collapsed {
+  width: 72px;
+}
+.sidebar.collapsed .menu a {
+  justify-content: center;
+  padding-left: 0;
+}
+.sidebar.collapsed .brand strong {
+  display: none;
+}
+.sidebar.collapsed .menu .label {
+  display: none;
+}
+.sidebar.collapsed .metismenu .nav-text {
+  display: none;
+}
+.sidebar.collapsed .metismenu li ul {
+  display: none !important;
+}
+.sidebar .nav-toggle-btn {
+  display: block;
+  margin: 6px 0 10px 0;
+}
+.page-header h1 .nav-toggle-btn {
+  display: none;
+}
+/* logo image removed; brand shows text only */
+.sidebar .brand img {
+  display: none;
+}
+.main-content {
+  flex: 1;
+  padding: 18px 22px;
+  transition: margin-left 0.22s ease;
+}
+.nav-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 0px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+@media (max-width: 800px) {
+  .sidebar {
+    position: fixed;
+    z-index: 40;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .main-content {
+    padding: 12px;
+  }
+}

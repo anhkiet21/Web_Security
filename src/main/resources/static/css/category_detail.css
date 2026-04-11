@@ -1,0 +1,220 @@
+/* CSS for category detail view */
+.category-details {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 15px;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.detail-label {
+  flex: 0 0 150px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.detail-value {
+  flex: 1;
+}
+
+.action-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.products-list {
+  margin-top: 20px;
+}
+
+.products-list .list-header {
+  font-size: 18px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #edf2f9;
+  padding-bottom: 10px;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.product-item:last-child {
+  border-bottom: none;
+}
+
+.product-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  margin-right: 15px;
+  border-radius: 4px;
+}
+
+.product-info {
+  flex: 1;
+}
+
+.product-name {
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.product-meta {
+  font-size: 12px;
+  color: #6c757d;
+  display: flex;
+  gap: 10px;
+}
+
+.product-price {
+  font-weight: 500;
+  color: #1976d2;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 30px 0;
+  color: #6c757d;
+}
+
+.empty-state i {
+  font-size: 48px;
+  margin-bottom: 15px;
+  color: #dee2e6;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Tabs */
+.tab-container {
+  margin-top: 20px;
+}
+
+.tab-nav {
+  display: flex;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 15px;
+}
+
+.tab-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: 5px;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-item.active {
+  border-bottom-color: #1976d2;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.tab-content {
+  padding: 15px 0;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+/* Badges and status indicators */
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-active {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-inactive {
+  background-color: #f5f5f5;
+  color: #757575;
+}
+
+/* Stats cards */
+.stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 200px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.stat-icon.products {
+  background-color: rgba(25, 118, 210, 0.1);
+  color: #1976d2;
+}
+
+.stat-icon.views {
+  background-color: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+}
+
+.stat-icon.sales {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.stat-info h4 {
+  font-size: 20px;
+  margin: 0 0 5px 0;
+  font-weight: 600;
+}
+
+.stat-info p {
+  font-size: 12px;
+  color: #6c757d;
+  margin: 0;
+}
