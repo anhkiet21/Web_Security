@@ -57,29 +57,32 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // ✅ CSRF: Bật lại với CookieCsrfTokenRepository
-        // Spring sẽ set cookie XSRF-TOKEN (HttpOnly=false) để JS đọc được
-        // JS phải đọc cookie đó rồi gắn vào header X-XSRF-TOKEN hoặc field _csrf
-        http.csrf(csrf -> csrf
-                .csrfTokenRepository(
-                        org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers(
-                        // ✅ Chỉ exempt các endpoint thuần stateless / OAuth2 flow
-                        "/refresh",
-                        "/api/send-otp", "/api/verify-otp",
-                        "/register-phone/**", "/oauth2/**",
+        // ✅ Cấu hình CORS để bảo vệ chống truy cập trái phép từ domain lạ,
+        // đồng thời cho phép lấy Token, API nếu có frontend riêng.
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // ✅ CSRF: Bật lại với CookieCsrfTokenRepository
+                // Spring sẽ set cookie XSRF-TOKEN (HttpOnly=false) để JS đọc được
+                // JS phải đọc cookie đó rồi gắn vào header X-XSRF-TOKEN hoặc field _csrf
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(
+                                org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers(
+                                // ✅ Chỉ exempt các endpoint thuần stateless / OAuth2 flow
+                                "/refresh",
+                                "/api/send-otp", "/api/verify-otp",
+                                "/register-phone/**", "/oauth2/**",
 
-                        // ✅ REST API stateless (JWT-based) — CORS đóng vai trò bảo vệ thay thế
-                        "/api/cart/**", "/api/favorite/**",
-                        "/api/vnpay/**", "/api/chat/**",
-                        "/api/order/**", "/api/reviews/**",
-                        "/api/media/**", "/api/documents/**",
-                        "/api/products/**", "/api/categories/**"
+                                // ✅ REST API stateless (JWT-based) — CORS đóng vai trò bảo vệ thay thế
+                                "/api/cart/**", "/api/favorite/**",
+                                "/api/vnpay/**", "/api/chat/**",
+                                "/api/order/**", "/api/reviews/**",
+                                "/api/media/**", "/api/documents/**",
+                                "/api/products/**", "/api/categories/**"
 
                         // ✅ /dologin, /doregister, /doResetPassword, /dologout:
-                        //    KHÔNG exempt — form JSP đã có ${_csrf.token}
-                        //    → Tấn công Login CSRF từ trang khác origin bị chặn 403
-                ))
+                        // KHÔNG exempt — form JSP đã có ${_csrf.token}
+                        // → Tấn công Login CSRF từ trang khác origin bị chặn 403
+                        ))
                 // ⚠️ CSRF yêu cầu session để lưu token — đổi từ STATELESS sang IF_REQUIRED
                 // JWT vẫn hoạt động bình thường vì JwtAuthenticationFilter chạy trước session
                 // check
@@ -100,7 +103,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/about", "/faq", "/warranty", "/return", "/payment", "/shipping", "/contact")
                         .permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**", "/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
                         .requestMatchers("/seller/**").hasAnyRole("SELLER", "ADMIN")
                         // /api/csrf-token: chỉ user đã đăng nhập mới gọi được
                         .requestMatchers("/api/csrf-token").authenticated()
@@ -138,5 +141,41 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+
+        // Chỉ định cụ thể domain được phép truy cập (VD: frontend React, Vue, App
+        // mobile)
+        configuration.setAllowedOrigins(java.util.Arrays.asList(
+                "http://localhost:8080",
+                "http://localhost:3000",
+                "http://127.0.0.1:8080"));
+
+        // Các method được phép
+        configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+
+        // Các header được phép gửi lên
+        configuration.setAllowedHeaders(java.util.Arrays.asList(
+                "Authorization",
+                "Content-Type",
+                "X-XSRF-TOKEN",
+                "Accept",
+                "Origin",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"));
+
+        // Cho phép đính kèm Cookie / thông tin auth
+        configuration.setAllowCredentials(true);
+
+        // ấu hình CORS trong 1 giờ (giảm tải OPTIONS request)
+        configuration.setMaxAge(3600L);
+
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        // Áp dụng cấu hình này cho toàn bộ API
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
