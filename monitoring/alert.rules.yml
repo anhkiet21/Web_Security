@@ -1,0 +1,61 @@
+# alert.rules.yml
+# Prometheus Alert Rules - OWASP A09: Security Logging & Monitoring
+#
+# Cách hoạt động:
+#   1. Prometheus đánh giá các expr (PromQL) theo evaluation_interval
+#   2. Nếu điều kiện đúng liên tục trong khoảng "for" => alert FIRING
+#   3. Alert được gửi tới Alertmanager => Alertmanager gửi email/webhook
+#
+# Metric nguồn từ LoginMetrics.java trong Spring Boot app
+
+groups:
+  - name: security_login_alerts
+    rules:
+
+      # ----------------------------------------------------------------
+      # CRITICAL: Quá nhiều login thất bại trong 5 phút => brute-force
+      # Ngưỡng: > 10 lần trong 5 phút, kéo dài ít nhất 1 phút
+      # ----------------------------------------------------------------
+      - alert: BruteForceDetected
+        expr: increase(security_login_failure_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "CRITICAL: Phát hiện tấn công brute-force"
+          description: >
+            Có {{ $value }} lần đăng nhập thất bại trong 5 phút qua trên instance {{ $labels.instance }}.
+            Có thể đang bị tấn công brute-force. Kiểm tra logs/security.log để xem chi tiết.
+
+      # ----------------------------------------------------------------
+      # WARNING: Login thất bại tăng cao - cảnh báo sớm
+      # Ngưỡng: > 5 lần trong 5 phút, kéo dài ít nhất 2 phút
+      # ----------------------------------------------------------------
+      - alert: LoginFailureHighRate
+        expr: increase(security_login_failure_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "WARNING: Số lần login thất bại tăng cao"
+          description: >
+            Có {{ $value }} lần đăng nhập thất bại trong 5 phút qua trên instance {{ $labels.instance }}.
+            Cần theo dõi thêm.
+
+      # ----------------------------------------------------------------
+      # WARNING: App không còn ghi được login success (có thể app down)
+      # Ngưỡng: Không có login success nào trong 30 phút (trong giờ cao điểm)
+      # ----------------------------------------------------------------
+      - alert: AppMayBeDown
+        expr: absent(security_login_success_total) == 1
+        for: 5m
+        labels:
+          severity: warning
+          team: ops
+        annotations:
+          summary: "WARNING: Metric login_success không tồn tại"
+          description: >
+            Metric security_login_success_total biến mất. Có thể app đã down hoặc
+            endpoint /actuator/prometheus không accessible.

@@ -1,0 +1,42 @@
+# prometheus.yml
+# Cấu hình Prometheus scrape Spring Boot app và load alert rules.
+#
+# Hướng dẫn:
+#   - Prometheus scrape /actuator/prometheus mỗi 15s
+#   - Alert rules được load từ alert.rules.yml
+#   - Khi rule vi phạm => gửi tới Alertmanager (cấu hình trong alertmanager.yml)
+
+global:
+  scrape_interval: 15s       # Tần suất thu thập metrics
+  evaluation_interval: 15s   # Tần suất đánh giá alert rules
+
+# Load file alert rules
+rule_files:
+  - "alert.rules.yml"
+
+# Gửi cảnh báo tới Alertmanager
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093  # Tên service trong docker-compose
+
+# Cấu hình scrape targets
+scrape_configs:
+  # Scrape chính Spring Boot app
+  - job_name: 'spring-boot-app'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - web:8080            # Tên service trong docker-compose
+    # Thêm label để phân biệt trong Grafana/Alertmanager
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+
+  # (Tuỳ chọn) Monitor chính Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - localhost:9090
