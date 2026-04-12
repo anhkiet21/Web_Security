@@ -1,5 +1,6 @@
 package com.proj.webprojrct.auth.controller;
 
+import com.proj.webprojrct.auth.service.LoginAttemptService;
 import com.proj.webprojrct.auth.service.AuthService;
 import com.proj.webprojrct.user.entity.UserRole;
 import com.proj.webprojrct.common.config.security.JwtUtil;
@@ -48,6 +49,7 @@ public class AuthController {
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
+    private final LoginAttemptService loginAttemptService; // FIX V-09
 
     @GetMapping("/login")
     public String loginPage() {
@@ -65,14 +67,26 @@ public class AuthController {
             HttpServletResponse response,
             HttpSession session,
             Model model,
-            RedirectAttributes redirectAttributes) { //login
+            RedirectAttributes redirectAttributes) { // login
+        String phone = loginRequest.getPhone();
+
+        // FIX V-09: Kiểm tra khóa brute force
+        if (loginAttemptService.isBlocked(phone)) {
+            long minutes = loginAttemptService.getRemainingLockMinutes(phone);
+            redirectAttributes.addFlashAttribute("error",
+                    "Tài khoản bị khóa do quá nhiều lần đăng nhập sai. Thử lại sau " + minutes + " phút.");
+            return "redirect:/login";
+        }
+
         try {
             LoginResponse loginResponse = authService.handleLogin(
-                    loginRequest.getPhone(),
+                    phone,
                     loginRequest.getPassword(),
                     session,
-                    model
-            );
+                    model);
+
+            // FIX V-09: Đăng nhập thành công → xóa bộ đếm
+            loginAttemptService.loginSucceeded(phone);
 
             User user = loginResponse.getUser();
             String accessToken = loginResponse.getAccessToken();
@@ -91,10 +105,10 @@ public class AuthController {
             return "redirect:/home";
 
         } catch (Exception e) {
-            //model.addAttribute("error", e.getMessage());
-            //return "login";
+            // FIX V-09: Đăng nhập thất bại → tăng bộ đếm
+            loginAttemptService.loginFailed(phone);
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/login"; //giá»¯ láº¡i model login
+            return "redirect:/login";
         }
     }
 
@@ -151,7 +165,8 @@ public class AuthController {
                 if (user != null) {
                     user.setRefreshToken(null);
                     userRepo.save(user);
-                    if ("anonymous".equals(loggedUsername)) loggedUsername = phone;
+                    if ("anonymous".equals(loggedUsername))
+                        loggedUsername = phone;
                 }
             } catch (Exception e) {
                 // token khÃ´ng há»£p lá»‡ thÃ¬ bá» qua
@@ -162,9 +177,9 @@ public class AuthController {
 
         Cookie accessCookie = new Cookie("access_token", null);
         accessCookie.setHttpOnly(true);
-        accessCookie.setPath("/");          // path giá»‘ng lÃºc táº¡o
+        accessCookie.setPath("/"); // path giá»‘ng lÃºc táº¡o
         accessCookie.setDomain("localhost"); // domain giá»‘ng lÃºc táº¡o
-        accessCookie.setMaxAge(0);          // xÃ³a cookie
+        accessCookie.setMaxAge(0); // xÃ³a cookie
         response.addCookie(accessCookie);
 
         // XÃ³a refresh_token
@@ -222,15 +237,16 @@ public class AuthController {
             response.addCookie(refreshCookie);
 
             // Authenticate user trong SecurityContext
-            UsernamePasswordAuthenticationToken authentication
-                    = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
+                    null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // LÆ°u userId vÃ o session Ä‘á»ƒ trang verify biáº¿t
+            // Lưu userId vào session để trang verify biết
             session.setAttribute("newUserId", newUser.getId());
 
-            // Chuyá»ƒn Ä‘áº¿n trang xÃ¡c thá»±c phone vá»›i tÃ¹y chá»n "Äá»ƒ sau"
-            redirectAttributes.addFlashAttribute("message", "ÄÄƒng kÃ½ thÃ nh cÃ´ng! Vui lÃ²ng xÃ¡c thá»±c sá»‘ Ä‘iá»‡n thoáº¡i.");
+            // Chuyển đến trang xác thực phone với tùy chọn "Để sau"
+            redirectAttributes.addFlashAttribute("message",
+                    "Đăng ký thành công! Vui lòng xác thực số điện thoại.");
             redirectAttributes.addFlashAttribute("phone", request.getPhone());
             return "redirect:/register-phone-verify";
         } catch (RuntimeException e) {
@@ -247,7 +263,7 @@ public class AuthController {
     public String resetPasswordPage() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
-            return "redirect:/home"; // ÄÃ£ Ä‘Äƒng nháº­p, chuyá»ƒn hÆ°á»›ng
+            return "redirect:/home"; // Đã đăng nhập, chuyển hướng
         }
         return "auth/resetPassword";
     }
@@ -257,12 +273,12 @@ public class AuthController {
     public String resetPassword(@RequestParam String input, Model model, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
-            return "redirect:/home"; // ngÆ°á»i dÃ¹ng Ä‘Ã£ Ä‘Äƒng nháº­p
+            return "redirect:/home"; // người dùng đã đăng nhập
         }
 
         if (input == null || input.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Vui lÃ²ng nháº­p email hoáº·c sá»‘ Ä‘iá»‡n thoáº¡i.");
-            //return "resetPassword";
+            redirectAttributes.addFlashAttribute("error", "Vui lòng nhập email hoặc số điện thoại.");
+            // return "resetPassword";
             redirectAttributes.addFlashAttribute("input", input);
             return "redirect:/resetPassword";
         }
@@ -270,7 +286,7 @@ public class AuthController {
         if (input.contains("@")) {
             boolean result = authService.EmailResetPasswordHandle(input, model);
             if (!result) {
-                //return "resetPassword";
+                // return "resetPassword";
 
                 // giáº£i quyáº¿t email cÃ i model.error
                 if (model.containsAttribute("error")) {
@@ -279,7 +295,8 @@ public class AuthController {
                 redirectAttributes.addFlashAttribute("input", input);
                 return "redirect:/resetPassword";
             }
-            redirectAttributes.addFlashAttribute("message", "Máº­t kháº©u má»›i Ä‘Ã£ Ä‘Æ°á»£c gá»­i qua email. Vui lÃ²ng kiá»ƒm tra email cá»§a báº¡n.");
+            redirectAttributes.addFlashAttribute("message",
+                    "Mật khẩu mới đã được gửi qua email. Vui lòng kiểm tra email của bạn.");
         } else {
             boolean result = authService.PhoneResetPasswordHandle(input, model);
             if (!result) {
@@ -289,18 +306,20 @@ public class AuthController {
                 redirectAttributes.addFlashAttribute("input", input);
                 return "redirect:/resetPassword";
             }
-            redirectAttributes.addFlashAttribute("message", "Máº­t kháº©u má»›i Ä‘Ã£ Ä‘Æ°á»£c gá»­i qua SMS. Vui lÃ²ng kiá»ƒm tra Ä‘iá»‡n thoáº¡i cá»§a báº¡n.");
+            redirectAttributes.addFlashAttribute("message",
+                    "Mật khẩu mới đã được gửi qua SMS. Vui lòng kiểm tra điện thoại của bạn.");
         }
 
         return "redirect:/resetPassword";
-        //return "resetPassword";
+        // return "resetPassword";
     }
 
     @PostMapping("/change-password")
     public String changePassword(@ModelAttribute ChangePassRequest request, RedirectAttributes redirectAttributes) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            redirectAttributes.addFlashAttribute("passwordChangeMessage", "Báº¡n cáº§n Ä‘Äƒng nháº­p Ä‘á»ƒ Ä‘á»•i máº­t kháº©u.");
+            redirectAttributes.addFlashAttribute("passwordChangeMessage",
+                    "Bạn cần đăng nhập để đổi mật khẩu.");
             redirectAttributes.addFlashAttribute("passwordChangeSuccess", false);
             return "redirect:/login";
         }
@@ -338,14 +357,14 @@ public class AuthController {
         }
         Long userId = (Long) session.getAttribute("newUserId");
         if (userId == null) {
-            model.addAttribute("error", "PhiÃªn Ä‘Ã£ háº¿t háº¡n. Vui lÃ²ng Ä‘Äƒng kÃ½ láº¡i.");
+            model.addAttribute("error", "Phiên đăng ký đã hết hạn. Vui lòng đăng ký lại.");
             return "redirect:/register";
         }
 
-        // Láº¥y thÃ´ng tin user Ä‘á»ƒ hiá»ƒn thá»‹ phone
+        // Lấy thông tin user để hiển thị phone
         User user = userRepo.findById(userId).orElse(null);
         if (user == null) {
-            model.addAttribute("error", "KhÃ´ng tÃ¬m tháº¥y thÃ´ng tin tÃ i khoáº£n.");
+            model.addAttribute("error", "Không tìm thấy thông tin tài khoản.");
             return "redirect:/register";
         }
 
@@ -356,64 +375,69 @@ public class AuthController {
 
     @PostMapping("/register-phone-skip")
     public String skipPhoneVerification(HttpSession session, RedirectAttributes redirectAttributes) {
-        // XÃ³a session vÃ  chuyá»ƒn vá» login
+        // Xóa session và chuyển về login
         session.removeAttribute("newUserId");
-        redirectAttributes.addFlashAttribute("message", "Báº¡n cÃ³ thá»ƒ xÃ¡c thá»±c sá»‘ Ä‘iá»‡n thoáº¡i sau trong pháº§n cÃ i Ä‘áº·t tÃ i khoáº£n.");
+        redirectAttributes.addFlashAttribute("message",
+                "Bạn có thể xác thực số điện thoại sau trong phần cài đặt tài khoản.");
         return "redirect:/login";
     }
 
     // ========== END REGISTER PHONE VERIFICATION ==========
     // @GetMapping("/verify-otp")
     // public String showOtpForm(Model model) {
-    //     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    //     if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
-    //         return "verify-otp";
-    //     }
-    //     return "redirect:/home";
+    // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    // if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof
+    // CustomUserDetails) {
+    // return "verify-otp";
+    // }
+    // return "redirect:/home";
     // }
     // @PostMapping("/send-otp-email")
     // public String sendOtpEmail(Model model) {
-    //     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    //     if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof CustomUserDetails)) {
-    //         return "redirect:/home";
-    //     }
-    //     try {
-    //         String msg = authService.sendOtpEmail();
-    //         model.addAttribute("success", msg);
-    //     } catch (Exception e) {
-    //         model.addAttribute("error", e.getMessage());
-    //     }
-    //     return "auth/verify-otp";
+    // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    // if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal()
+    // instanceof CustomUserDetails)) {
+    // return "redirect:/home";
+    // }
+    // try {
+    // String msg = authService.sendOtpEmail();
+    // model.addAttribute("success", msg);
+    // } catch (Exception e) {
+    // model.addAttribute("error", e.getMessage());
+    // }
+    // return "auth/verify-otp";
     // }
     // // Gá»­i OTP phone
     // @PostMapping("/send-otp-phone")
     // public String sendOtpPhone(Model model) {
-    //     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    //     if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof CustomUserDetails)) {
-    //         return "redirect:/home";
-    //     }
-    //     try {
-    //         String msg = authService.sendOtpPhone();
-    //         model.addAttribute("success", msg);
-    //     } catch (Exception e) {
-    //         model.addAttribute("error", e.getMessage());
-    //     }
-    //     return "auth/verify-otp";
+    // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    // if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal()
+    // instanceof CustomUserDetails)) {
+    // return "redirect:/home";
+    // }
+    // try {
+    // String msg = authService.sendOtpPhone();
+    // model.addAttribute("success", msg);
+    // } catch (Exception e) {
+    // model.addAttribute("error", e.getMessage());
+    // }
+    // return "auth/verify-otp";
     // }
     // // XÃ¡c thá»±c OTP
     // @PostMapping("/verify-otp")
     // public String verifyOtp(@RequestParam("otp") String otpInput, Model model) {
-    //     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    //     if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof CustomUserDetails)) {
-    //         return "redirect:/home";
-    //     }
-    //     try {
-    //         String msg = authService.verifyOtp(otpInput);
-    //         model.addAttribute("success", msg);
-    //     } catch (Exception e) {
-    //         model.addAttribute("error", e.getMessage());
-    //     }
-    //     return "auth/verify-otp";
+    // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    // if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal()
+    // instanceof CustomUserDetails)) {
+    // return "redirect:/home";
+    // }
+    // try {
+    // String msg = authService.verifyOtp(otpInput);
+    // model.addAttribute("success", msg);
+    // } catch (Exception e) {
+    // model.addAttribute("error", e.getMessage());
+    // }
+    // return "auth/verify-otp";
     // }
     // API endpoints for AJAX calls
     @PostMapping("/api/send-otp")
@@ -424,7 +448,7 @@ public class AuthController {
                 || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
-            errorResponse.put("message", "NgÆ°á»i dÃ¹ng chÆ°a Ä‘Äƒng nháº­p");
+            errorResponse.put("message", "Người dùng chưa đăng nhập");
             return errorResponse;
         }
         Map<String, Object> response = new HashMap<>();
@@ -437,7 +461,7 @@ public class AuthController {
                 msg = authService.sendOtpPhone();
             } else {
                 response.put("success", false);
-                response.put("message", "Loáº¡i xÃ¡c thá»±c khÃ´ng há»£p lá»‡");
+                response.put("message", "Loại xác thực không hợp lệ");
                 return response;
             }
             response.put("success", true);
@@ -457,7 +481,7 @@ public class AuthController {
                 || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
-            errorResponse.put("message", "NgÆ°á»i dÃ¹ng chÆ°a Ä‘Äƒng nháº­p");
+            errorResponse.put("message", "Người dùng chưa đăng nhập");
             return errorResponse;
         }
         Map<String, Object> response = new HashMap<>();

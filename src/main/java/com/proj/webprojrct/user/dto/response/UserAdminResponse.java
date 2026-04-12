@@ -18,6 +18,7 @@ public class UserAdminResponse {
     private String avatarUrl;
     private UserRole role;
     private boolean isActive;
+    private String tempPassword; // FIX V-13: mật khẩu tạm do admin tạo (chỉ trả về 1 lần)
     
     // Thêm getter thủ công vì JSP EL cần getIsActive() không phải isActive()
     public boolean getIsActive() {

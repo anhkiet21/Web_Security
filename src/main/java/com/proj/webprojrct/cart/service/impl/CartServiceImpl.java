@@ -80,6 +80,13 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void addItemToCart(Long userId, CartRequest request) {
+        // FIX V-21: Validate số lượng, không cho phép số âm hoặc bằng 0
+        if (request.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Số lượng sản phẩm phải lớn hơn 0");
+        }
+        if (request.getQuantity() > 100) {
+            throw new IllegalArgumentException("Số lượng không được vượt quá 100");
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Cart cart = cartRepository.findByUser(user)

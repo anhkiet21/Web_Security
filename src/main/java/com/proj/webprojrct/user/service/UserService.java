@@ -2,6 +2,7 @@ package com.proj.webprojrct.user.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
- 
 
 import lombok.*;
 
@@ -81,18 +81,18 @@ public class UserService {
         List<User> users = userRepository.findAll();
         return userMapper.toDto(users);
     }
-    
 
-    /////////////////////////////////////// thêm vào service cho phân trang/////////////////////////////////////////////////////
+    /////////////////////////////////////// thêm vào service cho phân
+    /////////////////////////////////////// trang/////////////////////////////////////////////////////
     public Page<UserAdminResponse> getPagedUsers(
-            Authentication authentication, 
+            Authentication authentication,
             Pageable pageable,
             String phone,
             String fullname,
             String email,
             String role,
             Boolean active) {
-        
+
         // Kiểm tra quyền truy cập
         if (authentication == null || !authentication.isAuthenticated()
                 || authentication instanceof AnonymousAuthenticationToken) {
@@ -103,66 +103,71 @@ public class UserService {
         if (!isAdmin) {
             throw new RuntimeException("Bạn không đủ quyền truy cập.");
         }
-        
-        logger.debug("Filtering users with criteria - phone: {}, fullname: {}, email: {}, role: {}, active: {}", 
-            phone, fullname, email, role, active);
-            
-        // Lấy tất cả users (trong thực tế nên tích hợp JPA Specification để query hiệu quả hơn)
+
+        logger.debug("Filtering users with criteria - phone: {}, fullname: {}, email: {}, role: {}, active: {}",
+                phone, fullname, email, role, active);
+
+        // Lấy tất cả users (trong thực tế nên tích hợp JPA Specification để query hiệu
+        // quả hơn)
         List<User> allUsers = userRepository.findAll();
-        
+
         logger.debug("Total users before filtering: {}", allUsers.size());
-        
+
         // Lọc theo các tiêu chí
         List<User> filteredUsers = allUsers.stream()
-            .filter(user -> {
-                boolean matches = true;
-                
-                if (StringUtils.hasText(phone)) {
-                    matches &= user.getPhone() != null && user.getPhone().toLowerCase().contains(phone.toLowerCase());
-                }
-                
-                if (StringUtils.hasText(fullname)) {
-                    matches &= user.getFullName() != null && user.getFullName().toLowerCase().contains(fullname.toLowerCase());
-                }
-                
-                if (StringUtils.hasText(email)) {
-                    matches &= user.getEmail() != null && user.getEmail().toLowerCase().contains(email.toLowerCase());
-                }
-                
-                if (StringUtils.hasText(role)) {
-                    matches &= user.getRole() != null && user.getRole().name().equalsIgnoreCase(role);
-                }
-                
-                if (active != null) {
-                    matches &= user.getIsActive().equals(active);
-                }
-                
-                return matches;
-            })
-            .collect(Collectors.toList());
-        
+                .filter(user -> {
+                    boolean matches = true;
+
+                    if (StringUtils.hasText(phone)) {
+                        matches &= user.getPhone() != null
+                                && user.getPhone().toLowerCase().contains(phone.toLowerCase());
+                    }
+
+                    if (StringUtils.hasText(fullname)) {
+                        matches &= user.getFullName() != null
+                                && user.getFullName().toLowerCase().contains(fullname.toLowerCase());
+                    }
+
+                    if (StringUtils.hasText(email)) {
+                        matches &= user.getEmail() != null
+                                && user.getEmail().toLowerCase().contains(email.toLowerCase());
+                    }
+
+                    if (StringUtils.hasText(role)) {
+                        matches &= user.getRole() != null && user.getRole().name().equalsIgnoreCase(role);
+                    }
+
+                    if (active != null) {
+                        matches &= user.getIsActive().equals(active);
+                    }
+
+                    return matches;
+                })
+                .collect(Collectors.toList());
+
         // Phân trang kết quả
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), filteredUsers.size());
-        
+
         if (start > filteredUsers.size()) {
             return new PageImpl<>(new ArrayList<>(), pageable, filteredUsers.size());
         }
-        
+
         List<User> pageContent = filteredUsers.subList(start, end);
-        
+
         // Chuyển đổi sang DTO
         List<UserAdminResponse> dtoList = userMapper.toDto(pageContent);
-        
+
         // Log thông tin phân trang
-        logger.debug("Pagination info - total: {}, page size: {}, current page: {}, content size: {}", 
-            filteredUsers.size(), pageable.getPageSize(), pageable.getPageNumber(), dtoList.size());
-            
+        logger.debug("Pagination info - total: {}, page size: {}, current page: {}, content size: {}",
+                filteredUsers.size(), pageable.getPageSize(), pageable.getPageNumber(), dtoList.size());
+
         // Trả về Page
         return new PageImpl<>(dtoList, pageable, filteredUsers.size());
     }
 
-        /////////////////////////////////////// thêm vào service cho phân trang/////////////////////////////////////////////////////
+    /////////////////////////////////////// thêm vào service cho phân
+    /////////////////////////////////////// trang/////////////////////////////////////////////////////
 
     public UserAdminResponse handleCreateUser(Authentication authentication, UserCreateRequest userCreateRequest) {
         if (authentication == null || !authentication.isAuthenticated()
@@ -184,12 +189,17 @@ public class UserService {
             throw new RuntimeException("Email đã tồn tại trong hệ thống.");
         }
         User newUser = userMapper.toEntity(userCreateRequest);
-        newUser.setPasswordHash(passwordEncoder.encode("123"));
+        // FIX V-13: Sinh mật khẩu ngẫu nhiên an toàn thay vì hardcode "123"
+        String tempPassword = generateTempPassword();
+        newUser.setPasswordHash(passwordEncoder.encode(tempPassword));
         userRepository.save(newUser);
-        return userMapper.toAdminResponse(newUser);
+        UserAdminResponse response = userMapper.toAdminResponse(newUser);
+        response.setTempPassword(tempPassword); // trả lại 1 lần duy nhất cho admin
+        return response;
     }
 
-    public UserAdminResponse handleUpdateUser(Authentication authentication, UserAdminUpdateRequest updateRequest, long id) {
+    public UserAdminResponse handleUpdateUser(Authentication authentication, UserAdminUpdateRequest updateRequest,
+            long id) {
 
         if (authentication == null || !authentication.isAuthenticated()
                 || authentication instanceof AnonymousAuthenticationToken) {
@@ -214,7 +224,7 @@ public class UserService {
         userToUpdate.setEmail(updateRequest.getEmail());
         userToUpdate.setAddress(updateRequest.getAddress());
         userToUpdate.setRole(updateRequest.getRole());
-        
+
         // Cập nhật trạng thái active nếu có
         if (updateRequest.getIsActive() != null) {
             userToUpdate.setIsActive(updateRequest.getIsActive());
@@ -271,8 +281,8 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-       
-    public UserResponse updateCurrentUserProfile(Authentication authentication, UserUpdateRequest userReq, MultipartFile avt) {
+    public UserResponse updateCurrentUserProfile(Authentication authentication, UserUpdateRequest userReq,
+            MultipartFile avt) {
         if (authentication == null || !authentication.isAuthenticated()
                 || authentication instanceof AnonymousAuthenticationToken) {
             throw new RuntimeException("Bạn chưa đăng nhập.");
@@ -320,9 +330,8 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-
-
-////////////////Service cho phần chat support////////////////////////////////////////////////////////////
+    //////////////// Service cho phần chat
+    //////////////// support////////////////////////////////////////////////////////////
 
     public List<String> findAdmins() {
         return userRepository.findAll().stream()
@@ -331,29 +340,29 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-     
     public UserResponse handleGetUserByPhone(Authentication authentication, String phone) {
-            if (authentication == null || !authentication.isAuthenticated()
-                    || authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {
-                throw new RuntimeException("Bạn chưa đăng nhập.");
-            }
-
-            User currUser = extractUser(authentication);
-            if (currUser.getRole() != UserRole.ADMIN) {
-                throw new RuntimeException("Bạn không đủ quyền truy cập.");
-            }
-
-            User user = userRepository.findByPhone(phone)
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
-
-            return userMapper.toDto(user);
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {
+            throw new RuntimeException("Bạn chưa đăng nhập.");
         }
+
+        User currUser = extractUser(authentication);
+        if (currUser.getRole() != UserRole.ADMIN) {
+            throw new RuntimeException("Bạn không đủ quyền truy cập.");
+        }
+
+        User user = userRepository.findByPhone(phone)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
+
+        return userMapper.toDto(user);
+    }
 
     // [LOGGING] Lấy IP thực của client - OWASP A09
     private String getClientIp() {
         try {
             ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attrs == null) return "unknown";
+            if (attrs == null)
+                return "unknown";
             HttpServletRequest req = attrs.getRequest();
             String ip = req.getHeader("X-Forwarded-For");
             if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
@@ -364,5 +373,36 @@ public class UserService {
             return "unknown";
         }
     }
-}
 
+    /**
+     * FIX V-13: Sinh mật khẩu tạm ngẫu nhiên — ít nhất 12 ký tự,
+     * bao gồm chữ hoa, chữ thường, số, ký tự đặc biệt.
+     */
+    private String generateTempPassword() {
+        SecureRandom random = new SecureRandom();
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String special = "!@#$%";
+        String all = upper + lower + digits + special;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(upper.charAt(random.nextInt(upper.length())));
+        sb.append(lower.charAt(random.nextInt(lower.length())));
+        sb.append(digits.charAt(random.nextInt(digits.length())));
+        sb.append(special.charAt(random.nextInt(special.length())));
+        for (int i = 4; i < 12; i++) {
+            sb.append(all.charAt(random.nextInt(all.length())));
+        }
+        // Xào trộn để tránh các ký tự bắt buộc luôn ở đầu
+        char[] chars = sb.toString().toCharArray();
+        for (int i = chars.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            char tmp = chars[i];
+            chars[i] = chars[j];
+            chars[j] = tmp;
+        }
+        return new String(chars);
+    }
+
+}
