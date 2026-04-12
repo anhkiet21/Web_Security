@@ -26,7 +26,7 @@ public class AdminChatController {
     private ChatMessageRepository chatMessageRepository;
 
     /**
-     * API lấy thống kê tin nhắn chưa đọc GET /admin/api/chat/unread-stats
+     * API láº¥y thá»‘ng kÃª tin nháº¯n chÆ°a Ä‘á»c GET /admin/api/chat/unread-stats
      * Response: {totalUnread: 5, userCounts: {userId1: 3, userId2: 2}}
      */
     @GetMapping("/unread-stats")
@@ -42,21 +42,18 @@ public class AdminChatController {
         }
 
         if (authentication == null || authentication.getName() == null) {
-            System.out.println("[AdminChatController] No authentication found");
             Map<String, Object> emptyResponse = new HashMap<>();
             emptyResponse.put("totalUnread", 0L);
             emptyResponse.put("userCounts", new HashMap<>());
             return ResponseEntity.ok(emptyResponse);
         }
 
-        String adminId = authentication.getName(); // Username của admin
-        System.out.println("[AdminChatController] Getting unread stats for admin: " + adminId);
+        String adminId = authentication.getName(); // Username cá»§a admin
 
-        // Đếm tổng số tin nhắn chưa đọc
+        // Äáº¿m tá»•ng sá»‘ tin nháº¯n chÆ°a Ä‘á»c
         Long totalUnread = chatMessageRepository.countUnreadMessagesByRecipientId(adminId);
-        System.out.println("[AdminChatController] Total unread: " + totalUnread);
 
-        // Đếm theo từng user
+        // Äáº¿m theo tá»«ng user
         List<Object[]> unreadBySender = chatMessageRepository.countUnreadMessagesBySender(adminId);
         Map<String, Long> userCounts = new HashMap<>();
         for (Object[] row : unreadBySender) {
@@ -64,7 +61,6 @@ public class AdminChatController {
             Long count = (Long) row[1];
             userCounts.put(senderId, count);
         }
-        System.out.println("[AdminChatController] User counts: " + userCounts);
 
         Map<String, Object> response = new HashMap<>();
         response.put("totalUnread", totalUnread != null ? totalUnread : 0L);
@@ -74,7 +70,7 @@ public class AdminChatController {
     }
 
     /**
-     * API đánh dấu tất cả tin nhắn từ một user là đã đọc POST
+     * API Ä‘Ã¡nh dáº¥u táº¥t cáº£ tin nháº¯n tá»« má»™t user lÃ  Ä‘Ã£ Ä‘á»c POST
      * /admin/api/chat/mark-all-read/{userId}
      */
     @PostMapping("/mark-all-read/{userId}")

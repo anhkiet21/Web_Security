@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.Arrays;
 import com.proj.webprojrct.storage.entity.FileStorageServiceI;
 
 import lombok.*;
@@ -24,7 +25,23 @@ public class DocumentStorageService implements FileStorageServiceI {
         Files.createDirectories(root);
     }
 
+    private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".webp");
+
     public String save(String filename, InputStream data) throws IOException {
+        if (filename == null || filename.isEmpty()) {
+            throw new IllegalArgumentException("Filename cannot be empty");
+        }
+        
+        String lowerCaseName = filename.toLowerCase();
+        if (ALLOWED_EXTENSIONS.stream().noneMatch(lowerCaseName::endsWith)) {
+            throw new IllegalArgumentException("Invalid file type for document image. Allowed: " + ALLOWED_EXTENSIONS);
+        }
+
+        // Deep content filter (Document here actually stores DocumentImage)
+        data = FileSignatureValidator.ensureMarkSupported(data);
+        if (!FileSignatureValidator.isValidImage(data)) {
+            throw new IllegalArgumentException("Invalid file content signature for document image.");
+        }
 
         //Get unique file name
         String uniqueFileName = UUID.randomUUID() + "_" + filename;

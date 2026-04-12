@@ -25,7 +25,6 @@ public class smsService {
                 new com.twilio.type.PhoneNumber(fromPhone),
                 body
         ).create();
-        System.out.println("SMS sent: " + message.getSid());
     }
 
     public void sendOtp(String to, String otp) {

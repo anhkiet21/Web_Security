@@ -92,7 +92,7 @@ public class AuthController {
             //model.addAttribute("error", e.getMessage());
             //return "login";
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/login"; //giữ lại model login
+            return "redirect:/login"; //giá»¯ láº¡i model login
         }
     }
 
@@ -135,7 +135,7 @@ public class AuthController {
         if (authentication != null && authentication.isAuthenticated()) {
             SecurityContextHolder.clearContext();
         }
-        // Xóa token trong DB
+        // XÃ³a token trong DB
         if (refreshToken != null) {
             try {
                 String phone = jwtUtil.extractUsername(refreshToken);
@@ -145,18 +145,18 @@ public class AuthController {
                     userRepo.save(user);
                 }
             } catch (Exception e) {
-                // token không hợp lệ thì bỏ qua
+                // token khÃ´ng há»£p lá»‡ thÃ¬ bá» qua
             }
         }
 
         Cookie accessCookie = new Cookie("access_token", null);
         accessCookie.setHttpOnly(true);
-        accessCookie.setPath("/");          // path giống lúc tạo
-        accessCookie.setDomain("localhost"); // domain giống lúc tạo
-        accessCookie.setMaxAge(0);          // xóa cookie
+        accessCookie.setPath("/");          // path giá»‘ng lÃºc táº¡o
+        accessCookie.setDomain("localhost"); // domain giá»‘ng lÃºc táº¡o
+        accessCookie.setMaxAge(0);          // xÃ³a cookie
         response.addCookie(accessCookie);
 
-        // Xóa refresh_token
+        // XÃ³a refresh_token
         Cookie refreshCookie = new Cookie("refresh_token", null);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setPath("/");
@@ -188,18 +188,18 @@ public class AuthController {
         }
 
         try {
-            // Tạo user nhưng chưa xác thực phone
+            // Táº¡o user nhÆ°ng chÆ°a xÃ¡c thá»±c phone
             User newUser = authService.registerUser(request);
 
-            // Tự động đăng nhập user bằng cách tạo token
+            // Tá»± Ä‘á»™ng Ä‘Äƒng nháº­p user báº±ng cÃ¡ch táº¡o token
             UserDetails userDetails = new CustomUserDetails(newUser);
             String accessToken = authService.generateAccessToken(newUser);
             String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
-            // Lưu refresh token vào database
+            // LÆ°u refresh token vÃ o database
             authService.saveRefreshToken(newUser.getPhone(), refreshToken);
 
-            // Lưu token vào cookie
+            // LÆ°u token vÃ o cookie
             Cookie accessCookie = new Cookie("access_token", accessToken);
             accessCookie.setHttpOnly(true);
             accessCookie.setPath("/");
@@ -215,14 +215,12 @@ public class AuthController {
                     = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Lưu userId vào session để trang verify biết
+            // LÆ°u userId vÃ o session Ä‘á»ƒ trang verify biáº¿t
             session.setAttribute("newUserId", newUser.getId());
 
-            // Chuyển đến trang xác thực phone với tùy chọn "Để sau"
-            redirectAttributes.addFlashAttribute("message", "Đăng ký thành công! Vui lòng xác thực số điện thoại.");
+            // Chuyá»ƒn Ä‘áº¿n trang xÃ¡c thá»±c phone vá»›i tÃ¹y chá»n "Äá»ƒ sau"
+            redirectAttributes.addFlashAttribute("message", "ÄÄƒng kÃ½ thÃ nh cÃ´ng! Vui lÃ²ng xÃ¡c thá»±c sá»‘ Ä‘iá»‡n thoáº¡i.");
             redirectAttributes.addFlashAttribute("phone", request.getPhone());
-            System.out.println("Debug: Stored newUserId in session = " + newUser.getId());
-            System.out.println("Debug: User auto-logged in with token");
             return "redirect:/register-phone-verify";
         } catch (RuntimeException e) {
             // preserve entered values except passwords
@@ -238,7 +236,7 @@ public class AuthController {
     public String resetPasswordPage() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
-            return "redirect:/home"; // Đã đăng nhập, chuyển hướng
+            return "redirect:/home"; // ÄÃ£ Ä‘Äƒng nháº­p, chuyá»ƒn hÆ°á»›ng
         }
         return "auth/resetPassword";
     }
@@ -248,11 +246,11 @@ public class AuthController {
     public String resetPassword(@RequestParam String input, Model model, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
-            return "redirect:/home"; // người dùng đã đăng nhập
+            return "redirect:/home"; // ngÆ°á»i dÃ¹ng Ä‘Ã£ Ä‘Äƒng nháº­p
         }
 
         if (input == null || input.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Vui lòng nhập email hoặc số điện thoại.");
+            redirectAttributes.addFlashAttribute("error", "Vui lÃ²ng nháº­p email hoáº·c sá»‘ Ä‘iá»‡n thoáº¡i.");
             //return "resetPassword";
             redirectAttributes.addFlashAttribute("input", input);
             return "redirect:/resetPassword";
@@ -263,14 +261,14 @@ public class AuthController {
             if (!result) {
                 //return "resetPassword";
 
-                // giải quyết email cài model.error
+                // giáº£i quyáº¿t email cÃ i model.error
                 if (model.containsAttribute("error")) {
                     redirectAttributes.addFlashAttribute("error", model.asMap().get("error"));
                 }
                 redirectAttributes.addFlashAttribute("input", input);
                 return "redirect:/resetPassword";
             }
-            redirectAttributes.addFlashAttribute("message", "Mật khẩu mới đã được gửi qua email. Vui lòng kiểm tra email của bạn.");
+            redirectAttributes.addFlashAttribute("message", "Máº­t kháº©u má»›i Ä‘Ã£ Ä‘Æ°á»£c gá»­i qua email. Vui lÃ²ng kiá»ƒm tra email cá»§a báº¡n.");
         } else {
             boolean result = authService.PhoneResetPasswordHandle(input, model);
             if (!result) {
@@ -280,7 +278,7 @@ public class AuthController {
                 redirectAttributes.addFlashAttribute("input", input);
                 return "redirect:/resetPassword";
             }
-            redirectAttributes.addFlashAttribute("message", "Mật khẩu mới đã được gửi qua SMS. Vui lòng kiểm tra điện thoại của bạn.");
+            redirectAttributes.addFlashAttribute("message", "Máº­t kháº©u má»›i Ä‘Ã£ Ä‘Æ°á»£c gá»­i qua SMS. Vui lÃ²ng kiá»ƒm tra Ä‘iá»‡n thoáº¡i cá»§a báº¡n.");
         }
 
         return "redirect:/resetPassword";
@@ -291,7 +289,7 @@ public class AuthController {
     public String changePassword(@ModelAttribute ChangePassRequest request, RedirectAttributes redirectAttributes) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            redirectAttributes.addFlashAttribute("passwordChangeMessage", "Bạn cần đăng nhập để đổi mật khẩu.");
+            redirectAttributes.addFlashAttribute("passwordChangeMessage", "Báº¡n cáº§n Ä‘Äƒng nháº­p Ä‘á»ƒ Ä‘á»•i máº­t kháº©u.");
             redirectAttributes.addFlashAttribute("passwordChangeSuccess", false);
             return "redirect:/login";
         }
@@ -328,16 +326,15 @@ public class AuthController {
             return "redirect:/login";
         }
         Long userId = (Long) session.getAttribute("newUserId");
-        System.out.println("Debug: newUserId in session = " + userId);
         if (userId == null) {
-            model.addAttribute("error", "Phiên đã hết hạn. Vui lòng đăng ký lại.");
+            model.addAttribute("error", "PhiÃªn Ä‘Ã£ háº¿t háº¡n. Vui lÃ²ng Ä‘Äƒng kÃ½ láº¡i.");
             return "redirect:/register";
         }
 
-        // Lấy thông tin user để hiển thị phone
+        // Láº¥y thÃ´ng tin user Ä‘á»ƒ hiá»ƒn thá»‹ phone
         User user = userRepo.findById(userId).orElse(null);
         if (user == null) {
-            model.addAttribute("error", "Không tìm thấy thông tin tài khoản.");
+            model.addAttribute("error", "KhÃ´ng tÃ¬m tháº¥y thÃ´ng tin tÃ i khoáº£n.");
             return "redirect:/register";
         }
 
@@ -348,9 +345,9 @@ public class AuthController {
 
     @PostMapping("/register-phone-skip")
     public String skipPhoneVerification(HttpSession session, RedirectAttributes redirectAttributes) {
-        // Xóa session và chuyển về login
+        // XÃ³a session vÃ  chuyá»ƒn vá» login
         session.removeAttribute("newUserId");
-        redirectAttributes.addFlashAttribute("message", "Bạn có thể xác thực số điện thoại sau trong phần cài đặt tài khoản.");
+        redirectAttributes.addFlashAttribute("message", "Báº¡n cÃ³ thá»ƒ xÃ¡c thá»±c sá»‘ Ä‘iá»‡n thoáº¡i sau trong pháº§n cÃ i Ä‘áº·t tÃ i khoáº£n.");
         return "redirect:/login";
     }
 
@@ -377,7 +374,7 @@ public class AuthController {
     //     }
     //     return "auth/verify-otp";
     // }
-    // // Gửi OTP phone
+    // // Gá»­i OTP phone
     // @PostMapping("/send-otp-phone")
     // public String sendOtpPhone(Model model) {
     //     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -392,7 +389,7 @@ public class AuthController {
     //     }
     //     return "auth/verify-otp";
     // }
-    // // Xác thực OTP
+    // // XÃ¡c thá»±c OTP
     // @PostMapping("/verify-otp")
     // public String verifyOtp(@RequestParam("otp") String otpInput, Model model) {
     //     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -416,7 +413,7 @@ public class AuthController {
                 || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
-            errorResponse.put("message", "Người dùng chưa đăng nhập");
+            errorResponse.put("message", "NgÆ°á»i dÃ¹ng chÆ°a Ä‘Äƒng nháº­p");
             return errorResponse;
         }
         Map<String, Object> response = new HashMap<>();
@@ -429,7 +426,7 @@ public class AuthController {
                 msg = authService.sendOtpPhone();
             } else {
                 response.put("success", false);
-                response.put("message", "Loại xác thực không hợp lệ");
+                response.put("message", "Loáº¡i xÃ¡c thá»±c khÃ´ng há»£p lá»‡");
                 return response;
             }
             response.put("success", true);
@@ -449,7 +446,7 @@ public class AuthController {
                 || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
-            errorResponse.put("message", "Người dùng chưa đăng nhập");
+            errorResponse.put("message", "NgÆ°á»i dÃ¹ng chÆ°a Ä‘Äƒng nháº­p");
             return errorResponse;
         }
         Map<String, Object> response = new HashMap<>();

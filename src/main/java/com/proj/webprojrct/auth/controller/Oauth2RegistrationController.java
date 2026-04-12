@@ -29,7 +29,7 @@ public class Oauth2RegistrationController {
     private final AuthService authService;
 
     /**
-     * Hiển thị form nhập thông tin bổ sung khi OAuth2 user chưa tồn tại
+     * Hiá»ƒn thá»‹ form nháº­p thÃ´ng tin bá»• sung khi OAuth2 user chÆ°a tá»“n táº¡i
      */
     @GetMapping("/complete")
     public String showCompleteForm(HttpServletResponse response,
@@ -42,15 +42,13 @@ public class Oauth2RegistrationController {
         if (email == null) {
             return "redirect:/login";
         }
-        System.out.println("OAuth2 email: " + email);
-        // Kiểm tra user đã tồn tại chưa
+        // Kiá»ƒm tra user Ä‘Ã£ tá»“n táº¡i chÆ°a
         User user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {
-            System.out.println("User with email " + email + " already exists. Logging in...");
             String accessToken = jwtUtil.generateAccessToken(user);
             String refreshToken = jwtUtil.generateRefreshToken(user);
 
-            // Lưu refresh token vào database
+            // LÆ°u refresh token vÃ o database
             authService.saveRefreshToken(user.getPhone(), refreshToken);
 
             Cookie accessCookie = new Cookie("access_token", accessToken);
@@ -99,14 +97,14 @@ public class Oauth2RegistrationController {
         request.setAddress(address);
 
         try {
-            // Service sẽ tạo random password và lưu user
+            // Service sáº½ táº¡o random password vÃ  lÆ°u user
             User user = registrationService.registerNewUser(request);
 
-            // Generate JWT ngay sau khi tạo user
+            // Generate JWT ngay sau khi táº¡o user
             String accessToken = jwtUtil.generateAccessToken(user);
             String refreshToken = jwtUtil.generateRefreshToken(user);
 
-            // Lưu refresh token vào database
+            // LÆ°u refresh token vÃ o database
             authService.saveRefreshToken(user.getPhone(), refreshToken);
 
             Cookie accessCookie = new Cookie("access_token", accessToken);
@@ -119,24 +117,24 @@ public class Oauth2RegistrationController {
             refreshCookie.setPath("/");
             response.addCookie(refreshCookie);
 
-            // Xóa session OAuth2 tạm
+            // XÃ³a session OAuth2 táº¡m
             session.removeAttribute("oauth2_email");
             session.removeAttribute("oauth2_name");
             session.removeAttribute("oauth2_picture");
 
-            // Lưu userId vào session để trang verify biết
+            // LÆ°u userId vÃ o session Ä‘á»ƒ trang verify biáº¿t
             session.setAttribute("newUserId", user.getId());
 
-            // Chuyển đến trang xác thực phone (giống như đăng ký thường)
+            // Chuyá»ƒn Ä‘áº¿n trang xÃ¡c thá»±c phone (giá»‘ng nhÆ° Ä‘Äƒng kÃ½ thÆ°á»ng)
             return "redirect:/register-phone-verify";
         } catch (RuntimeException e) {
-            // Xử lý lỗi (email hoặc phone đã tồn tại)
+            // Xá»­ lÃ½ lá»—i (email hoáº·c phone Ä‘Ã£ tá»“n táº¡i)
             model.addAttribute("error", e.getMessage());
             model.addAttribute("email", email);
             model.addAttribute("name", name);
             model.addAttribute("picture", picture);
 
-            // Giữ lại dữ liệu người dùng đã nhập
+            // Giá»¯ láº¡i dá»¯ liá»‡u ngÆ°á»i dÃ¹ng Ä‘Ã£ nháº­p
             model.addAttribute("fullName", fullName);
             model.addAttribute("phone", phone);
             model.addAttribute("address", address);

@@ -84,7 +84,6 @@ public class AdminCategoryController {
         List<CategoryDto> dtos = categoryService.getAll();
         model.addAttribute("category", dtos);
 
-        System.out.println("Debug: Loaded categories for creation form: " + dtos);
 
         return "admin/category_form";
     }
@@ -131,12 +130,12 @@ public class AdminCategoryController {
         }
         try {
             categoryService.delete(id);
-            redirectAttributes.addFlashAttribute("success", "Đã xóa danh mục thành công!");
+            redirectAttributes.addFlashAttribute("success", "ÄÃ£ xÃ³a danh má»¥c thÃ nh cÃ´ng!");
         } catch (ResponseStatusException e) {
-            // Xử lý lỗi từ service (CONFLICT, NOT_FOUND, etc.)
+            // Xá»­ lÃ½ lá»—i tá»« service (CONFLICT, NOT_FOUND, etc.)
             redirectAttributes.addFlashAttribute("error", e.getReason());
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Không thể xóa danh mục: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "KhÃ´ng thá»ƒ xÃ³a danh má»¥c: " + e.getMessage());
         }
         return "redirect:/admin/categories";
     }

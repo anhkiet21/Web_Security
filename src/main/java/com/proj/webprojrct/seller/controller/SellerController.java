@@ -199,7 +199,7 @@ public class SellerController {
         try {
             // Validate cancel note
             if (cancelNote == null || cancelNote.trim().length() < 10) {
-                model.addAttribute("error", "Lý do hủy đơn phải có ít nhất 10 ký tự.");
+                model.addAttribute("error", "LÃ½ do há»§y Ä‘Æ¡n pháº£i cÃ³ Ã­t nháº¥t 10 kÃ½ tá»±.");
                 return "redirect:/seller/orders";
             }
 
@@ -207,14 +207,14 @@ public class SellerController {
             boolean isRefunded = sellerService.cancelOrder(orderId, cancelNote.trim(), authentication, request);
 
             if (isRefunded) {
-                model.addAttribute("success", "Đơn hàng đã được hủy và hoàn tiền thành công. Tiền sẽ được hoàn lại vào tài khoản khách hàng trong 5-7 ngày làm việc.");
+                model.addAttribute("success", "ÄÆ¡n hÃ ng Ä‘Ã£ Ä‘Æ°á»£c há»§y vÃ  hoÃ n tiá»n thÃ nh cÃ´ng. Tiá»n sáº½ Ä‘Æ°á»£c hoÃ n láº¡i vÃ o tÃ i khoáº£n khÃ¡ch hÃ ng trong 5-7 ngÃ y lÃ m viá»‡c.");
             } else {
-                model.addAttribute("success", "Đơn hàng đã được hủy thành công. Thông báo đã được gửi đến khách hàng.");
+                model.addAttribute("success", "ÄÆ¡n hÃ ng Ä‘Ã£ Ä‘Æ°á»£c há»§y thÃ nh cÃ´ng. ThÃ´ng bÃ¡o Ä‘Ã£ Ä‘Æ°á»£c gá»­i Ä‘áº¿n khÃ¡ch hÃ ng.");
             }
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
         } catch (Exception e) {
-            model.addAttribute("error", "Lỗi khi hủy đơn hàng: " + e.getMessage());
+            model.addAttribute("error", "Lá»—i khi há»§y Ä‘Æ¡n hÃ ng: " + e.getMessage());
         }
         return "redirect:/seller/orders";
     }
@@ -473,16 +473,16 @@ public class SellerController {
 
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Vui lòng đăng nhập để thực hiện.");
+                    .body("Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ thá»±c hiá»‡n.");
         }
         String paymentMethod = sellerService.getPaymentMethodByOrderId(orderId);
         if (paymentMethod.equals("COD")) {
             try {
                 sellerService.acceptOrderRefund(orderId, authentication);
-                return ResponseEntity.ok("Hoàn tiền thành công cho đơn COD!");
+                return ResponseEntity.ok("HoÃ n tiá»n thÃ nh cÃ´ng cho Ä‘Æ¡n COD!");
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Lỗi khi xử lý hoàn tiền: " + e.getMessage());
+                        .body("Lá»—i khi xá»­ lÃ½ hoÃ n tiá»n: " + e.getMessage());
             }
         }
 
@@ -494,18 +494,16 @@ public class SellerController {
             JsonNode root = mapper.readTree(refundResult);
             String responseCode = root.path("vnp_ResponseCode").asText();
             String txnStatus = root.path("vnp_TransactionStatus").asText();
-            System.out.println("Refund Response Code: " + responseCode);
-            System.out.println("Refund Transaction Status: " + txnStatus);
             if ("00".equals(responseCode) && "05".equals(txnStatus)) {
                 sellerService.acceptOrderRefund(orderId, authentication);
-                return ResponseEntity.ok("Hoàn tiền thành công! API trả về: " + refundResult);
+                return ResponseEntity.ok("HoÃ n tiá»n thÃ nh cÃ´ng! API tráº£ vá»: " + refundResult);
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Hoàn tiền thất bại hoặc chưa xác nhận. API trả về: " + refundResult);
+                        .body("HoÃ n tiá»n tháº¥t báº¡i hoáº·c chÆ°a xÃ¡c nháº­n. API tráº£ vá»: " + refundResult);
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Lỗi khi xử lý hoàn tiền: " + e.getMessage());
+                    .body("Lá»—i khi xá»­ lÃ½ hoÃ n tiá»n: " + e.getMessage());
         }
     }
 

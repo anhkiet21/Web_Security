@@ -217,9 +217,12 @@ public class AdminDocumentController {
         try {
             String imageUrl = documentService.saveImage(image);
             return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
+        } catch (IllegalArgumentException e) {
+            // Lỗi validate: sai định dạng / nội dung file
+            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of("error", "Could not upload the image"));
+            return ResponseEntity.status(500).body(Map.of("error", "Lỗi hệ thống khi upload ảnh."));
         }
     }
 

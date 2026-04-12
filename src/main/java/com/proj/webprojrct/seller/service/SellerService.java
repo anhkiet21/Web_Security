@@ -112,7 +112,7 @@ public class SellerService {
             String paymentStatus = getPaymentStatusByOrderId(order.getId());
             String paymentMethod = getPaymentMethodByOrderId(order.getId());
 
-            // Chỉ lấy đơn đã thanh toán thành công hoặc COD
+            // Chá»‰ láº¥y Ä‘Æ¡n Ä‘Ã£ thanh toÃ¡n thÃ nh cÃ´ng hoáº·c COD
             if (!"SUCCESS".equalsIgnoreCase(paymentStatus) && !"COD".equalsIgnoreCase(paymentMethod)) {
                 continue;
             }
@@ -187,48 +187,48 @@ public class SellerService {
             throw new IllegalArgumentException("Order not found with id: " + orderId);
         }
 
-        // Chỉ cho phép hủy đơn hàng có trạng thái PAID hoặc ACCEPTED
+        // Chá»‰ cho phÃ©p há»§y Ä‘Æ¡n hÃ ng cÃ³ tráº¡ng thÃ¡i PAID hoáº·c ACCEPTED
         if (!"PAID".equals(order.getStatus()) && !"ACCEPTED".equals(order.getStatus())) {
-            throw new IllegalArgumentException("Không thể hủy đơn hàng với trạng thái: " + order.getStatus());
+            throw new IllegalArgumentException("KhÃ´ng thá»ƒ há»§y Ä‘Æ¡n hÃ ng vá»›i tráº¡ng thÃ¡i: " + order.getStatus());
         }
 
-        // Kiểm tra phương thức thanh toán
+        // Kiá»ƒm tra phÆ°Æ¡ng thá»©c thanh toÃ¡n
         String paymentMethod = getPaymentMethodByOrderId(orderId);
         String paymentStatus = getPaymentStatusByOrderId(orderId);
 
         boolean isRefunded = false;
 
-        // Nếu là VNPay và đã thanh toán thành công, thực hiện hoàn tiền
+        // Náº¿u lÃ  VNPay vÃ  Ä‘Ã£ thanh toÃ¡n thÃ nh cÃ´ng, thá»±c hiá»‡n hoÃ n tiá»n
         if ("VNPAY".equalsIgnoreCase(paymentMethod) && "SUCCESS".equalsIgnoreCase(paymentStatus)) {
             String refundResult = paymentService.handleRefund(orderId, "02", 100, request);
 
-            // Kiểm tra kết quả hoàn tiền
-            // VNPay trả về JSON response với:
-            // - vnp_ResponseCode = "00": Giao dịch thành công
-            // - vnp_TransactionStatus = "05": Đang hoàn tiền
+            // Kiá»ƒm tra káº¿t quáº£ hoÃ n tiá»n
+            // VNPay tráº£ vá» JSON response vá»›i:
+            // - vnp_ResponseCode = "00": Giao dá»‹ch thÃ nh cÃ´ng
+            // - vnp_TransactionStatus = "05": Äang hoÃ n tiá»n
             if (refundResult == null
                     || !refundResult.contains("\"vnp_ResponseCode\":\"00\"")
                     || !refundResult.contains("\"vnp_TransactionStatus\":\"05\"")) {
-                throw new Exception("Hoàn tiền VNPay thất bại. Vui lòng thử lại sau.");
+                throw new Exception("HoÃ n tiá»n VNPay tháº¥t báº¡i. Vui lÃ²ng thá»­ láº¡i sau.");
             }
             isRefunded = true;
         }
 
-        // Cập nhật trạng thái đơn hàng thành CANCELLED
+        // Cáº­p nháº­t tráº¡ng thÃ¡i Ä‘Æ¡n hÃ ng thÃ nh CANCELLED
         order.setStatus("CANCELLED");
         order.setCancelNote(cancelNote);
         orderRepository.save(order);
 
-        // Hoàn lại số lượng sản phẩm khi hủy đơn
+        // HoÃ n láº¡i sá»‘ lÆ°á»£ng sáº£n pháº©m khi há»§y Ä‘Æ¡n
         restoreProductStock(order, "Order Cancelled");
 
-        // Lưu thông tin có hoàn tiền hay không vào cancelNote để hiển thị sau
+        // LÆ°u thÃ´ng tin cÃ³ hoÃ n tiá»n hay khÃ´ng vÃ o cancelNote Ä‘á»ƒ hiá»ƒn thá»‹ sau
         if (isRefunded) {
-            order.setCancelNote("[ĐÃ HOÀN TIỀN] " + cancelNote);
+            order.setCancelNote("[ÄÃƒ HOÃ€N TIá»€N] " + cancelNote);
             orderRepository.save(order);
         }
 
-        // TODO: Gửi thông báo cho user về việc hủy đơn
+        // TODO: Gá»­i thÃ´ng bÃ¡o cho user vá» viá»‡c há»§y Ä‘Æ¡n
         return isRefunded;
     }
 
@@ -306,7 +306,7 @@ public class SellerService {
             throw new IllegalArgumentException("Order not found with id: " + orderId);
         }
 
-        // Hoàn lại số lượng sản phẩm khi chấp nhận hoàn tiền
+        // HoÃ n láº¡i sá»‘ lÆ°á»£ng sáº£n pháº©m khi cháº¥p nháº­n hoÃ n tiá»n
         restoreProductStock(order, "Refund Accepted");
 
         // Logic to process refund based on transType and percent
@@ -589,15 +589,14 @@ public class SellerService {
     }
 
     /**
-     * Hoàn lại số lượng sản phẩm vào kho khi hủy đơn hoặc hoàn tiền
+     * HoÃ n láº¡i sá»‘ lÆ°á»£ng sáº£n pháº©m vÃ o kho khi há»§y Ä‘Æ¡n hoáº·c hoÃ n tiá»n
      *
-     * @param order Đơn hàng cần hoàn lại stock
-     * @param reason Lý do hoàn (để log)
+     * @param order ÄÆ¡n hÃ ng cáº§n hoÃ n láº¡i stock
+     * @param reason LÃ½ do hoÃ n (Ä‘á»ƒ log)
      */
     private void restoreProductStock(Order order, String reason) {
         List<OrderItem> orderItems = order.getOrderItems();
         if (orderItems == null || orderItems.isEmpty()) {
-            System.out.println("No order items to restore stock for order #" + order.getId());
             return;
         }
 
@@ -607,9 +606,6 @@ public class SellerService {
                 int restoredStock = product.getStock() + item.getQuantity();
                 product.setStock(restoredStock);
                 productRepository.save(product);
-
-                System.out.println("Restored stock for product " + product.getName()
-                        + " (" + reason + "): " + (restoredStock - item.getQuantity()) + " -> " + restoredStock);
             } else {
                 System.err.println("Product not found with ID: " + item.getProductId() + " for order #" + order.getId());
             }

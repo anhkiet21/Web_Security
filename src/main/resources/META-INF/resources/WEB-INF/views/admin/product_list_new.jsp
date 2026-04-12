@@ -530,6 +530,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          '${_csrf.headerName}': '${_csrf.token}'
         },
         body: JSON.stringify({
           onDeal: percentage > 0,
@@ -561,6 +562,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          '${_csrf.headerName}': '${_csrf.token}'
         }
       })
       .then(response => {

@@ -64,11 +64,11 @@ public class PaymentService {
 
         String orderType = "other";
 
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng (Order) với ID: " + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
         
         Long orderUserId = order.getUser().getId();
         if (!orderUserId.equals(userId)) {
-            throw new AccessDeniedException("Bạn không có quyền thanh toán cho đơn hàng này.");
+            throw new AccessDeniedException("Báº¡n khÃ´ng cÃ³ quyá»n thanh toÃ¡n cho Ä‘Æ¡n hÃ ng nÃ y.");
         }
         
         BigDecimal totalAmountBigDecimal = order.getTotalAmount();
@@ -90,10 +90,10 @@ public class PaymentService {
         //vnp_Params.put("vnp_BankCode", "NCB");
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
-        vnp_Params.put("vnp_OrderType", orderType);  // 🔹 bắt buộc
+        vnp_Params.put("vnp_OrderType", orderType);  // ðŸ”¹ báº¯t buá»™c
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", Config.vnp_ReturnUrl); // 🔹 bắt buộc
-        vnp_Params.put("vnp_IpAddr", vnp_IpAddr); // 🔹 bắt buộc
+        vnp_Params.put("vnp_ReturnUrl", Config.vnp_ReturnUrl); // ðŸ”¹ báº¯t buá»™c
+        vnp_Params.put("vnp_IpAddr", vnp_IpAddr); // ðŸ”¹ báº¯t buá»™c
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -133,7 +133,6 @@ public class PaymentService {
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = Config.vnp_PayUrl + "?" + queryUrl;
 
-        System.out.println("URL: " + paymentUrl);
         if (!paymentRepository.existsByOrderId(orderId)) {
             Payment payment = Payment.builder()
                     .method("VNPAY")
@@ -182,7 +181,7 @@ public class PaymentService {
             String fieldValue = request.getParameter(fieldName);
 
             if (fieldValue != null && fieldValue.length() > 0) {
-                // Chỉ encode value theo chuẩn US-ASCII
+                // Chá»‰ encode value theo chuáº©n US-ASCII
                 String encodedValue = URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString());
                 fields.put(fieldName, encodedValue);
             }
@@ -193,97 +192,81 @@ public class PaymentService {
         fields.remove("vnp_SecureHashType");
         fields.remove("vnp_SecureHash");
 
-        System.out.println("=== DEBUG CHECK HASH ===");
-        System.out.println("Raw fields for hash: " + fields);
 
         String signValue = Config.hashAllFields(fields);
 
-        System.out.println("VNPAY vnp_SecureHash : " + vnp_SecureHash);
-        System.out.println("Our signValue        : " + signValue);
 
         Map<String, Object> result = new HashMap<>();
         if (signValue.equals(vnp_SecureHash)) {
-            // Chữ ký hợp lệ
+            // Chá»¯ kÃ½ há»£p lá»‡
             String responseCode = request.getParameter("vnp_ResponseCode");
             String transactionStatus = request.getParameter("vnp_TransactionStatus");
 
-            // Thông báo vnp_ResponseCode - Bảng mã lỗi truy vấn giao dịch querydr
+            // ThÃ´ng bÃ¡o vnp_ResponseCode - Báº£ng mÃ£ lá»—i truy váº¥n giao dá»‹ch querydr
             Map<String, String> queryResponseMessages = new HashMap<>();
-            queryResponseMessages.put("00", "Yêu cầu thành công");
-            queryResponseMessages.put("02", "Mã định danh kết nối không hợp lệ (kiểm tra lại TmnCode)");
-            queryResponseMessages.put("03", "Dữ liệu gửi sang không đúng định dạng");
-            queryResponseMessages.put("91", "Không tìm thấy giao dịch yêu cầu");
-            queryResponseMessages.put("94", "Yêu cầu trùng lặp, duplicate request trong thời gian giới hạn của API");
-            queryResponseMessages.put("97", "Checksum không hợp lệ");
-            queryResponseMessages.put("99", "Các lỗi khác (lỗi còn lại, không có trong danh sách mã lỗi đã liệt kê)");
+            queryResponseMessages.put("00", "YÃªu cáº§u thÃ nh cÃ´ng");
+            queryResponseMessages.put("02", "MÃ£ Ä‘á»‹nh danh káº¿t ná»‘i khÃ´ng há»£p lá»‡ (kiá»ƒm tra láº¡i TmnCode)");
+            queryResponseMessages.put("03", "Dá»¯ liá»‡u gá»­i sang khÃ´ng Ä‘Ãºng Ä‘á»‹nh dáº¡ng");
+            queryResponseMessages.put("91", "KhÃ´ng tÃ¬m tháº¥y giao dá»‹ch yÃªu cáº§u");
+            queryResponseMessages.put("94", "YÃªu cáº§u trÃ¹ng láº·p, duplicate request trong thá»i gian giá»›i háº¡n cá»§a API");
+            queryResponseMessages.put("97", "Checksum khÃ´ng há»£p lá»‡");
+            queryResponseMessages.put("99", "CÃ¡c lá»—i khÃ¡c (lá»—i cÃ²n láº¡i, khÃ´ng cÃ³ trong danh sÃ¡ch mÃ£ lá»—i Ä‘Ã£ liá»‡t kÃª)");
 
-            // Thông báo vnp_ResponseCode - Bảng mã lỗi yêu cầu hoàn trả (refund)
+            // ThÃ´ng bÃ¡o vnp_ResponseCode - Báº£ng mÃ£ lá»—i yÃªu cáº§u hoÃ n tráº£ (refund)
             Map<String, String> refundResponseMessages = new HashMap<>();
-            refundResponseMessages.put("00", "Yêu cầu thành công");
-            refundResponseMessages.put("02", "Mã định danh kết nối không hợp lệ (kiểm tra lại TmnCode)");
-            refundResponseMessages.put("03", "Dữ liệu gửi sang không đúng định dạng");
-            refundResponseMessages.put("91", "Không tìm thấy giao dịch yêu cầu hoàn trả");
-            refundResponseMessages.put("94", "Giao dịch đã được gửi yêu cầu hoàn tiền trước đó. Yêu cầu này VNPAY đang xử lý");
-            refundResponseMessages.put("95", "Giao dịch này không thành công bên VNPAY. VNPAY từ chối xử lý yêu cầu");
-            refundResponseMessages.put("97", "Checksum không hợp lệ");
-            refundResponseMessages.put("99", "Các lỗi khác (lỗi còn lại, không có trong danh sách mã lỗi đã liệt kê)");
+            refundResponseMessages.put("00", "YÃªu cáº§u thÃ nh cÃ´ng");
+            refundResponseMessages.put("02", "MÃ£ Ä‘á»‹nh danh káº¿t ná»‘i khÃ´ng há»£p lá»‡ (kiá»ƒm tra láº¡i TmnCode)");
+            refundResponseMessages.put("03", "Dá»¯ liá»‡u gá»­i sang khÃ´ng Ä‘Ãºng Ä‘á»‹nh dáº¡ng");
+            refundResponseMessages.put("91", "KhÃ´ng tÃ¬m tháº¥y giao dá»‹ch yÃªu cáº§u hoÃ n tráº£");
+            refundResponseMessages.put("94", "Giao dá»‹ch Ä‘Ã£ Ä‘Æ°á»£c gá»­i yÃªu cáº§u hoÃ n tiá»n trÆ°á»›c Ä‘Ã³. YÃªu cáº§u nÃ y VNPAY Ä‘ang xá»­ lÃ½");
+            refundResponseMessages.put("95", "Giao dá»‹ch nÃ y khÃ´ng thÃ nh cÃ´ng bÃªn VNPAY. VNPAY tá»« chá»‘i xá»­ lÃ½ yÃªu cáº§u");
+            refundResponseMessages.put("97", "Checksum khÃ´ng há»£p lá»‡");
+            refundResponseMessages.put("99", "CÃ¡c lá»—i khÃ¡c (lá»—i cÃ²n láº¡i, khÃ´ng cÃ³ trong danh sÃ¡ch mÃ£ lá»—i Ä‘Ã£ liá»‡t kÃª)");
 
-            // Thông báo vnp_ResponseCode - Mã lỗi thanh toán
+            // ThÃ´ng bÃ¡o vnp_ResponseCode - MÃ£ lá»—i thanh toÃ¡n
             Map<String, String> responseMessages = new HashMap<>();
-            responseMessages.put("00", "Giao dịch thành công");
-            responseMessages.put("07", "Trừ tiền thành công. Giao dịch bị nghi ngờ (liên quan tới lừa đảo, giao dịch bất thường)");
-            responseMessages.put("09", "Giao dịch không thành công do: Thẻ/Tài khoản của khách hàng chưa đăng ký dịch vụ InternetBanking tại ngân hàng");
-            responseMessages.put("10", "Giao dịch không thành công do: Khách hàng xác thực thông tin thẻ/tài khoản không đúng quá 3 lần");
-            responseMessages.put("11", "Giao dịch không thành công do: Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch");
-            responseMessages.put("12", "Giao dịch không thành công do: Thẻ/Tài khoản của khách hàng bị khóa");
-            responseMessages.put("13", "Giao dịch không thành công do Quý khách nhập sai mật khẩu xác thực giao dịch (OTP). Xin quý khách vui lòng thực hiện lại giao dịch");
-            responseMessages.put("24", "Giao dịch không thành công do: Khách hàng hủy giao dịch");
-            responseMessages.put("51", "Giao dịch không thành công do: Tài khoản của quý khách không đủ số dư để thực hiện giao dịch");
-            responseMessages.put("65", "Giao dịch không thành công do: Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày");
-            responseMessages.put("75", "Ngân hàng thanh toán đang bảo trì");
-            responseMessages.put("79", "Giao dịch không thành công do: KH nhập sai mật khẩu thanh toán quá số lần quy định. Xin quý khách vui lòng thực hiện lại giao dịch");
-            responseMessages.put("99", "Các lỗi khác (lỗi còn lại, không có trong danh sách mã lỗi đã liệt kê)");
+            responseMessages.put("00", "Giao dá»‹ch thÃ nh cÃ´ng");
+            responseMessages.put("07", "Trá»« tiá»n thÃ nh cÃ´ng. Giao dá»‹ch bá»‹ nghi ngá» (liÃªn quan tá»›i lá»«a Ä‘áº£o, giao dá»‹ch báº¥t thÆ°á»ng)");
+            responseMessages.put("09", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: Tháº»/TÃ i khoáº£n cá»§a khÃ¡ch hÃ ng chÆ°a Ä‘Äƒng kÃ½ dá»‹ch vá»¥ InternetBanking táº¡i ngÃ¢n hÃ ng");
+            responseMessages.put("10", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: KhÃ¡ch hÃ ng xÃ¡c thá»±c thÃ´ng tin tháº»/tÃ i khoáº£n khÃ´ng Ä‘Ãºng quÃ¡ 3 láº§n");
+            responseMessages.put("11", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: ÄÃ£ háº¿t háº¡n chá» thanh toÃ¡n. Xin quÃ½ khÃ¡ch vui lÃ²ng thá»±c hiá»‡n láº¡i giao dá»‹ch");
+            responseMessages.put("12", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: Tháº»/TÃ i khoáº£n cá»§a khÃ¡ch hÃ ng bá»‹ khÃ³a");
+            responseMessages.put("13", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do QuÃ½ khÃ¡ch nháº­p sai máº­t kháº©u xÃ¡c thá»±c giao dá»‹ch (OTP). Xin quÃ½ khÃ¡ch vui lÃ²ng thá»±c hiá»‡n láº¡i giao dá»‹ch");
+            responseMessages.put("24", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: KhÃ¡ch hÃ ng há»§y giao dá»‹ch");
+            responseMessages.put("51", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: TÃ i khoáº£n cá»§a quÃ½ khÃ¡ch khÃ´ng Ä‘á»§ sá»‘ dÆ° Ä‘á»ƒ thá»±c hiá»‡n giao dá»‹ch");
+            responseMessages.put("65", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: TÃ i khoáº£n cá»§a QuÃ½ khÃ¡ch Ä‘Ã£ vÆ°á»£t quÃ¡ háº¡n má»©c giao dá»‹ch trong ngÃ y");
+            responseMessages.put("75", "NgÃ¢n hÃ ng thanh toÃ¡n Ä‘ang báº£o trÃ¬");
+            responseMessages.put("79", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: KH nháº­p sai máº­t kháº©u thanh toÃ¡n quÃ¡ sá»‘ láº§n quy Ä‘á»‹nh. Xin quÃ½ khÃ¡ch vui lÃ²ng thá»±c hiá»‡n láº¡i giao dá»‹ch");
+            responseMessages.put("99", "CÃ¡c lá»—i khÃ¡c (lá»—i cÃ²n láº¡i, khÃ´ng cÃ³ trong danh sÃ¡ch mÃ£ lá»—i Ä‘Ã£ liá»‡t kÃª)");
 
-            // Thông báo vnp_TransactionStatus - Bảng mã lỗi tình trạng thanh toán
+            // ThÃ´ng bÃ¡o vnp_TransactionStatus - Báº£ng mÃ£ lá»—i tÃ¬nh tráº¡ng thanh toÃ¡n
             Map<String, String> statusMessages = new HashMap<>();
-            statusMessages.put("00", "Giao dịch thanh toán thành công");
-            statusMessages.put("01", "Giao dịch chưa hoàn tất");
-            statusMessages.put("02", "Giao dịch bị lỗi");
-            statusMessages.put("04", "Giao dịch đảo (Khách hàng đã bị trừ tiền tại Ngân hàng nhưng GD chưa thành công ở VNPAY)");
-            statusMessages.put("05", "VNPAY đang xử lý giao dịch này (GD hoàn tiền)");
-            statusMessages.put("06", "VNPAY đã gửi yêu cầu hoàn tiền sang Ngân hàng (GD hoàn tiền)");
-            statusMessages.put("07", "Giao dịch bị nghi ngờ gian lận");
-            statusMessages.put("09", "GD Hoàn trả bị từ chối");
+            statusMessages.put("00", "Giao dá»‹ch thanh toÃ¡n thÃ nh cÃ´ng");
+            statusMessages.put("01", "Giao dá»‹ch chÆ°a hoÃ n táº¥t");
+            statusMessages.put("02", "Giao dá»‹ch bá»‹ lá»—i");
+            statusMessages.put("04", "Giao dá»‹ch Ä‘áº£o (KhÃ¡ch hÃ ng Ä‘Ã£ bá»‹ trá»« tiá»n táº¡i NgÃ¢n hÃ ng nhÆ°ng GD chÆ°a thÃ nh cÃ´ng á»Ÿ VNPAY)");
+            statusMessages.put("05", "VNPAY Ä‘ang xá»­ lÃ½ giao dá»‹ch nÃ y (GD hoÃ n tiá»n)");
+            statusMessages.put("06", "VNPAY Ä‘Ã£ gá»­i yÃªu cáº§u hoÃ n tiá»n sang NgÃ¢n hÃ ng (GD hoÃ n tiá»n)");
+            statusMessages.put("07", "Giao dá»‹ch bá»‹ nghi ngá» gian láº­n");
+            statusMessages.put("09", "GD HoÃ n tráº£ bá»‹ tá»« chá»‘i");
 
-            // Log thông tin chi tiết ra console
-            System.out.println("\n========================================");
-            System.out.println("=== VNPAY PAYMENT RETURN CALLBACK ===");
-            System.out.println("========================================");
-            System.out.println("Mã phản hồi (vnp_ResponseCode): " + responseCode);
-            System.out.println("Chi tiết: " + responseMessages.getOrDefault(responseCode, "Mã lỗi không xác định"));
-            System.out.println("----------------------------------------");
-            System.out.println("Trạng thái giao dịch (vnp_TransactionStatus): " + transactionStatus);
-            System.out.println("Chi tiết: " + statusMessages.getOrDefault(transactionStatus, "Trạng thái không xác định"));
-            System.out.println("========================================");
+            // Log thÃ´ng tin chi tiáº¿t ra console
 
-            // Log tất cả parameters từ VNPAY
-            System.out.println("\n=== ALL VNPAY PARAMETERS ===");
+            // Log táº¥t cáº£ parameters tá»« VNPAY
             request.getParameterMap().forEach((key, value) -> {
-                System.out.println(key + " = " + (value.length > 0 ? value[0] : ""));
             });
-            System.out.println("========================================\n");
 
             result.put("responseCode", responseCode);
-            result.put("responseMessage", responseMessages.getOrDefault(responseCode, "Không xác định"));
+            result.put("responseMessage", responseMessages.getOrDefault(responseCode, "KhÃ´ng xÃ¡c Ä‘á»‹nh"));
             result.put("transactionStatus", transactionStatus);
-            result.put("transactionMessage", statusMessages.getOrDefault(transactionStatus, "Không xác định"));
+            result.put("transactionMessage", statusMessages.getOrDefault(transactionStatus, "KhÃ´ng xÃ¡c Ä‘á»‹nh"));
 
             //xoa paymentUrlVnpay sau khi thanh toan thanh cong
             long orderId = Long.parseLong(request.getParameter("vnp_TxnRef"));
             PaymentUrlVnpay paymentUrl = paymentUrlVnpayRepository.findByOrderId(orderId);
             paymentUrlVnpayRepository.delete(paymentUrl);
             if (transactionStatus.equals("00")) {
-                //cập nhật trạng thái payment
+                //cáº­p nháº­t tráº¡ng thÃ¡i payment
                 Payment payment = paymentRepository.findByOrderId(orderId);
                 payment.setStatus("SUCCESS");
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -295,16 +278,15 @@ public class PaymentService {
             if ("00".equals(responseCode)) {
                 try {
                     orderService.updateProductStockAfterPayment(orderId);
-                    System.out.println("✅ Successfully updated product stock for order: " + orderId);
                 } catch (Exception e) {
-                    System.err.println("❌ Failed to update product stock for order " + orderId + ": " + e.getMessage());
+                    System.err.println("âŒ Failed to update product stock for order " + orderId + ": " + e.getMessage());
                     e.printStackTrace();
                     // Don't throw exception here to avoid breaking the payment flow
                 }
             }
         } else {
-            // Chữ ký không hợp lệ
-            result.put("error", "Chữ ký không hợp lệ");
+            // Chá»¯ kÃ½ khÃ´ng há»£p lá»‡
+            result.put("error", "Chá»¯ kÃ½ khÃ´ng há»£p lá»‡");
         }
 
         return result;
@@ -312,15 +294,15 @@ public class PaymentService {
 
     public String handleQuery(long orderId, Long userId, HttpServletRequest request) throws Exception {
 
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng (Order) với ID: " + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
         
         Long orderUserId = order.getUser().getId();
         if (!orderUserId.equals(userId)) {
-            throw new AccessDeniedException("Bạn không có quyền thanh toán cho đơn hàng này.");
+            throw new AccessDeniedException("Báº¡n khÃ´ng cÃ³ quyá»n thanh toÃ¡n cho Ä‘Æ¡n hÃ ng nÃ y.");
         }
         try {
 
-            // Các tham số cơ bản
+            // CÃ¡c tham sá»‘ cÆ¡ báº£n
             String vnp_RequestId = Config.getRandomNumber(8);
             String vnp_Version = "2.1.0";
             String vnp_Command = "querydr";
@@ -349,7 +331,7 @@ public class PaymentService {
                     vnp_TxnRef, vnp_TransDate, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
             String vnp_SecureHash = Config.hmacSHA512(Config.secretKey, hash_Data);
             vnp_Params.addProperty("vnp_SecureHash", vnp_SecureHash);
-            // Gửi request POST
+            // Gá»­i request POST
             URL url = new URL(Config.vnp_ApiUrl);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
@@ -360,9 +342,6 @@ public class PaymentService {
                 wr.flush();
             }
             int responseCode = con.getResponseCode();
-            System.out.println("POST request to URL : " + url);
-            System.out.println("Post Data : " + vnp_Params);
-            System.out.println("Response Code : " + responseCode);
             StringBuilder response = new StringBuilder();
             try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
                 String output;
@@ -370,21 +349,21 @@ public class PaymentService {
                     response.append(output);
                 }
             }
-            String res = response.toString(); // Dòng code của bạn
+            String res = response.toString(); // DÃ²ng code cá»§a báº¡n
 
-            // 1. Parse chuỗi JSON response
+            // 1. Parse chuá»—i JSON response
             JsonObject responseJson = JsonParser.parseString(res).getAsJsonObject();
 
-            // 2. Lấy mã trạng thái giao dịch
-            String transactionStatus = "UNDEFINED"; // Đặt mã mặc định
+            // 2. Láº¥y mÃ£ tráº¡ng thÃ¡i giao dá»‹ch
+            String transactionStatus = "UNDEFINED"; // Äáº·t mÃ£ máº·c Ä‘á»‹nh
             if (responseJson.has("vnp_TransactionStatus")) {
                 transactionStatus = responseJson.get("vnp_TransactionStatus").getAsString();
             }
 
-            // 3. Lấy đối tượng Payment
+            // 3. Láº¥y Ä‘á»‘i tÆ°á»£ng Payment
             Payment payment = paymentRepository.findByOrderId(orderId);
 
-            // 4. Ánh xạ mã VNPAY sang trạng thái của bạn
+            // 4. Ãnh xáº¡ mÃ£ VNPAY sang tráº¡ng thÃ¡i cá»§a báº¡n
             String appStatus;
             switch (transactionStatus) {
                 case "00":
@@ -429,7 +408,7 @@ public class PaymentService {
         if ("02".equals(trantype)) {
             percent = 100;
         }
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng (Order) với ID: " + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
         BigDecimal totalAmountBigDecimal = order.getTotalAmount();
         BigDecimal multiplier = new BigDecimal("100");
         long originalAmountVND = totalAmountBigDecimal.multiply(multiplier).longValue();
@@ -494,9 +473,6 @@ public class PaymentService {
         wr.flush();
         wr.close();
         int responseCode = con.getResponseCode();
-        System.out.println("nSending 'POST' request to URL : " + url);
-        System.out.println("Post Data : " + vnp_Params);
-        System.out.println("Response Code : " + responseCode);
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
         String output;
@@ -505,12 +481,9 @@ public class PaymentService {
             response.append(output);
         }
         in.close();
-        System.out.println(response.toString());
 
         if (response.toString().contains("\"vnp_TransactionStatus\":\"05\"")) {
             Payment payment = paymentRepository.findByOrderId(orderId);
-            System.out
-                    .println("Updating payment status to REFUNDING for orderId: " + orderId);
             payment.setStatus("REFUNDING");
             paymentRepository.save(payment);
         }
@@ -519,10 +492,10 @@ public class PaymentService {
     }
 
     public void createPaymentCOD(Long orderId, Long userId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng (Order) với ID: " + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
         Long orderUserId = order.getUser().getId();
         if (!orderUserId.equals(userId)) {
-            throw new AccessDeniedException("Bạn không có quyền thanh toán cho đơn hàng này.");
+            throw new AccessDeniedException("Báº¡n khÃ´ng cÃ³ quyá»n thanh toÃ¡n cho Ä‘Æ¡n hÃ ng nÃ y.");
         }
         
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -537,14 +510,13 @@ public class PaymentService {
                 .build();
         paymentRepository.save(payment);
 
-        // cập nhật số lượng 
+        // cáº­p nháº­t sá»‘ lÆ°á»£ng 
         try {
             orderService.updateProductStockAfterPayment(orderId);
-            System.out.println("Đã cập nhật thành công số lượng sản phẩm cho COD: " + orderId);
         } catch (Exception e) {
-            System.err.println("Cập nhật thất bại " + orderId + ": " + e.getMessage());
+            System.err.println("Cáº­p nháº­t tháº¥t báº¡i " + orderId + ": " + e.getMessage());
             e.printStackTrace();
-            throw new RuntimeException("Không thể cập nhật số lượng sản phẩm: " + e.getMessage());
+            throw new RuntimeException("KhÃ´ng thá»ƒ cáº­p nháº­t sá»‘ lÆ°á»£ng sáº£n pháº©m: " + e.getMessage());
         }
     }
 
@@ -552,7 +524,7 @@ public class PaymentService {
         PaymentUrlVnpay paymentUrl = paymentUrlVnpayRepository.findByOrderId(orderId);
         PaymentResDto paymentResDto = new PaymentResDto();
         paymentResDto.setStatus("OK");
-        paymentResDto.setMessage("Tiếp tục thanh toán.");
+        paymentResDto.setMessage("Tiáº¿p tá»¥c thanh toÃ¡n.");
         paymentResDto.setURL(paymentUrl.getPaymentUrl());
         return paymentResDto;
     }
@@ -602,12 +574,12 @@ public class PaymentService {
     }
 
     public boolean getPaymentByOrderId(Long orderId) {
-        // Kiểm tra có order không
+        // Kiá»ƒm tra cÃ³ order khÃ´ng
         if (!paymentRepository.existsByOrderId(orderId)) {
             return false;
         }
 
-        // Lấy paymentUrl tương ứng
+        // Láº¥y paymentUrl tÆ°Æ¡ng á»©ng
         PaymentUrlVnpay paymentUrl = paymentUrlVnpayRepository.findByOrderId(orderId);
         if (paymentUrl == null) {
             return false;
@@ -619,7 +591,7 @@ public class PaymentService {
 
             return expiresAt.isAfter(LocalDateTime.now());
         } catch (Exception e) {
-            // log lỗi parse format
+            // log lá»—i parse format
             e.printStackTrace();
             return false;
         }

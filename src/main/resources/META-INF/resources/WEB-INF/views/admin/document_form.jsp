@@ -455,6 +455,20 @@
                 function uploadImage(input) {
                     if (input.files && input.files[0]) {
                         const file = input.files[0];
+
+                        // Validate phía client trước khi gửi lên server
+                        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                        if (!allowedTypes.includes(file.type)) {
+                            showUploadError('Chỉ cho phép tải lên ảnh JPG, PNG, GIF, WEBP!');
+                            input.value = null;
+                            return;
+                        }
+                        if (file.size > 10 * 1024 * 1024) { // 10MB
+                            showUploadError('Kích thước ảnh không được vượt quá 10MB!');
+                            input.value = null;
+                            return;
+                        }
+
                         const formData = new FormData();
                         formData.append('image', file);
 
@@ -462,13 +476,18 @@
 
                         fetch(uploadUrl, {
                             method: 'POST',
+                            headers: {
+                                '${_csrf.headerName}': '${_csrf.token}'
+                            },
                             body: formData
                         })
-                            .then(response => {
-                                if (!response.ok) throw new Error('Network error');
-                                return response.json();
-                            })
-                            .then(data => {
+                            .then(response => response.json().then(data => ({ ok: response.ok, data })))
+                            .then(({ ok, data }) => {
+                                if (!ok) {
+                                    // Hiển thị lỗi rõ ràng từ server (sai định dạng, v.v.)
+                                    showUploadError(data.error || 'Lỗi upload ảnh. Vui lòng thử lại.');
+                                    return;
+                                }
                                 if (data && data.imageUrl) {
                                     const imageUrl = "${pageContext.request.contextPath}" + data.imageUrl;
                                     const img = document.createElement('img');
@@ -497,15 +516,24 @@
                                     }, 100);
                                     editor.focus();
                                 } else {
-                                    throw new Error('No imageUrl in response');
+                                    showUploadError('Lỗi: Server không trả về URL ảnh.');
                                 }
                             })
                             .catch(error => {
                                 console.error('Upload error:', error);
-                                alert('Lỗi upload ảnh. Vui lòng thử lại.');
+                                showUploadError('Lỗi kết nối khi upload ảnh. Vui lòng thử lại.');
                             });
                         input.value = null;
                     }
+                }
+
+                function showUploadError(message) {
+                    // Tạo thông báo nổi (toast) thay vì alert() khó chịu
+                    const toast = document.createElement('div');
+                    toast.style.cssText = 'position:fixed;top:20px;right:20px;background:#e53935;color:white;padding:14px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:99999;font-size:14px;max-width:400px;animation:slideIn 0.3s ease';
+                    toast.innerHTML = '⚠️ ' + message;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 5000);
                 }
 
                 function triggerImageUpload() { document.getElementById('editorImageInput').click(); }

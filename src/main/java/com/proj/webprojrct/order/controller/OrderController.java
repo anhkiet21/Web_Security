@@ -30,65 +30,64 @@ public class OrderController {
     @Autowired
     private PaymentService paymentService;
 
-    // Tạo đơn hàng mới
+    // Táº¡o Ä‘Æ¡n hÃ ng má»›i
     @PostMapping("/create")
     public ResponseEntity<?> createOrder(@RequestBody OrderRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ResponseMessage("Vui lòng đăng nhập để tạo đơn hàng!"));
+                    .body(new ResponseMessage("Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ táº¡o Ä‘Æ¡n hÃ ng!"));
         }
-        System.out.println("Order Request: " + request);
             try{
             OrderResponse order = orderService.createOrder(userDetails.getUser().getId(), request);
             return ResponseEntity.ok(order);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi tạo đơn hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lá»—i khi táº¡o Ä‘Æ¡n hÃ ng: " + e.getMessage()));
         }
     }
 
-    // Lấy chi tiết đơn hàng (chỉ được xem đơn của mình)
+    // Láº¥y chi tiáº¿t Ä‘Æ¡n hÃ ng (chá»‰ Ä‘Æ°á»£c xem Ä‘Æ¡n cá»§a mÃ¬nh)
     @GetMapping("/{orderId}")
     public ResponseEntity<?> getOrder(@PathVariable Long orderId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ResponseMessage("Vui lòng đăng nhập để xem đơn hàng!"));
+                    .body(new ResponseMessage("Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ xem Ä‘Æ¡n hÃ ng!"));
         }
         Long currentUserId = userDetails.getUser().getId();
-        //thêm userId vào service để kiểm tra quyền truy cập
+        //thÃªm userId vÃ o service Ä‘á»ƒ kiá»ƒm tra quyá»n truy cáº­p
         try{
             OrderResponse order = orderService.getOrderById(orderId, currentUserId);
-            // TODO: Kiểm tra order.userId == userDetails.getUser().getId() để bảo mật
+            // TODO: Kiá»ƒm tra order.userId == userDetails.getUser().getId() Ä‘á»ƒ báº£o máº­t
             return ResponseEntity.ok(order);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi lấy đơn hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lá»—i khi láº¥y Ä‘Æ¡n hÃ ng: " + e.getMessage()));
         }   
     }
 
-    // Lấy danh sách đơn hàng của user đang login
+    // Láº¥y danh sÃ¡ch Ä‘Æ¡n hÃ ng cá»§a user Ä‘ang login
     @GetMapping
     public ResponseEntity<?> getOrdersByUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ResponseMessage("Vui lòng đăng nhập để xem đơn hàng!"));
+                    .body(new ResponseMessage("Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ xem Ä‘Æ¡n hÃ ng!"));
         }
         try{
             List<OrderResponse> orders = orderService.getOrdersByUserId(userDetails.getUser().getId());
             return ResponseEntity.ok(orders);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi lấy danh sách đơn hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lá»—i khi láº¥y danh sÃ¡ch Ä‘Æ¡n hÃ ng: " + e.getMessage()));
         }
     }
 
-    // Hủy đơn hàng (chỉ được hủy đơn của mình)
+    // Há»§y Ä‘Æ¡n hÃ ng (chá»‰ Ä‘Æ°á»£c há»§y Ä‘Æ¡n cá»§a mÃ¬nh)
     @PutMapping("/{orderId}/cancel")
     public ResponseEntity<ResponseMessage> cancelOrder(
             @PathVariable Long orderId,
@@ -97,47 +96,47 @@ public class OrderController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ResponseMessage("Vui lòng đăng nhập để thực hiện!"));
+                    .body(new ResponseMessage("Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ thá»±c hiá»‡n!"));
         }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         long currentUserId = userDetails.getUser().getId();
 
         try {
-            // Kiểm tra phương thức thanh toán và trạng thái
+            // Kiá»ƒm tra phÆ°Æ¡ng thá»©c thanh toÃ¡n vÃ  tráº¡ng thÃ¡i
             String paymentStatus = paymentService.getPaymentStatusByOrderId(orderId);
             String paymentMethod = paymentService.getPaymentMethodByOrderId(orderId);
 
             boolean isRefunded = false;
 
-            // Nếu là VNPay và đã thanh toán thành công, gọi API hoàn tiền
+            // Náº¿u lÃ  VNPay vÃ  Ä‘Ã£ thanh toÃ¡n thÃ nh cÃ´ng, gá»i API hoÃ n tiá»n
             if ("SUCCESS".equals(paymentStatus) && "VNPAY".equals(paymentMethod)) {
-                // Gọi VNPay refund (100% khi user hủy)
+                // Gá»i VNPay refund (100% khi user há»§y)
                 String refundResult = paymentService.handleRefund(orderId, "02", 100, request);
 
-                // Parse JSON kết quả từ VNPay
+                // Parse JSON káº¿t quáº£ tá»« VNPay
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode root = mapper.readTree(refundResult);
                 String responseCode = root.path("vnp_ResponseCode").asText();
                 String txnStatus = root.path("vnp_TransactionStatus").asText();
 
-                // Nếu refund thành công (ResponseCode = 00 và TransactionStatus = 05)
+                // Náº¿u refund thÃ nh cÃ´ng (ResponseCode = 00 vÃ  TransactionStatus = 05)
                 if ("00".equals(responseCode) && "05".equals(txnStatus)) {
                     isRefunded = true;
                     orderService.cancelOrder(orderId,currentUserId);
-                    return ResponseEntity.ok(new ResponseMessage("Đơn hàng đã được hủy và hoàn tiền thành công! Tiền sẽ được hoàn lại vào tài khoản của bạn trong 5-7 ngày làm việc."));
+                    return ResponseEntity.ok(new ResponseMessage("ÄÆ¡n hÃ ng Ä‘Ã£ Ä‘Æ°á»£c há»§y vÃ  hoÃ n tiá»n thÃ nh cÃ´ng! Tiá»n sáº½ Ä‘Æ°á»£c hoÃ n láº¡i vÃ o tÃ i khoáº£n cá»§a báº¡n trong 5-7 ngÃ y lÃ m viá»‡c."));
                 } else {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(new ResponseMessage("Hoàn tiền thất bại. Vui lòng liên hệ hỗ trợ. Chi tiết: " + refundResult));
+                            .body(new ResponseMessage("HoÃ n tiá»n tháº¥t báº¡i. Vui lÃ²ng liÃªn há»‡ há»— trá»£. Chi tiáº¿t: " + refundResult));
                 }
             } else {
-                // COD hoặc chưa thanh toán - chỉ hủy đơn
+                // COD hoáº·c chÆ°a thanh toÃ¡n - chá»‰ há»§y Ä‘Æ¡n
                 orderService.cancelOrder(orderId,currentUserId );
-                return ResponseEntity.ok(new ResponseMessage("Đơn hàng đã được hủy thành công!"));
+                return ResponseEntity.ok(new ResponseMessage("ÄÆ¡n hÃ ng Ä‘Ã£ Ä‘Æ°á»£c há»§y thÃ nh cÃ´ng!"));
             }
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi xử lý hủy đơn hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lá»—i khi xá»­ lÃ½ há»§y Ä‘Æ¡n hÃ ng: " + e.getMessage()));
         }
     }
 
@@ -146,20 +145,20 @@ public class OrderController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ResponseMessage("Vui lòng đăng nhập để thực hiện!"));
+                    .body(new ResponseMessage("Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ thá»±c hiá»‡n!"));
         }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         long currentUserId = userDetails.getUser().getId();
 
         try {
             orderService.refundOrderRequest(orderId, currentUserId);
-            return ResponseEntity.ok(new ResponseMessage("Yêu cầu hoàn tiền đã được gửi thành công!"));
+            return ResponseEntity.ok(new ResponseMessage("YÃªu cáº§u hoÃ n tiá»n Ä‘Ã£ Ä‘Æ°á»£c gá»­i thÃ nh cÃ´ng!"));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi gửi yêu cầu hoàn tiền: " + e.getMessage()));
+                    .body(new ResponseMessage("Lá»—i khi gá»­i yÃªu cáº§u hoÃ n tiá»n: " + e.getMessage()));
         }
     }
 

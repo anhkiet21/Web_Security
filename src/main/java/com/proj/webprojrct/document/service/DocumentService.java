@@ -6,6 +6,8 @@ import com.proj.webprojrct.document.entity.DocumentImage;
 import com.proj.webprojrct.document.repository.DocumentRepository;
 import com.proj.webprojrct.storage.service.DocumentStorageService;
 
+import com.proj.webprojrct.storage.service.FileSignatureValidator;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,32 +94,43 @@ public class DocumentService {
 
     private final String uploadDir = "uploads/document/";
 
-    public String saveImage(MultipartFile file) {
-        try {
-            if (file.isEmpty()) {
-                throw new RuntimeException("File is empty");
-            }
-
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            String originalFileName = file.getOriginalFilename();
-            String fileExtension = "";
-            if (originalFileName != null && originalFileName.contains(".")) {
-                fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            }
-
-            String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
-            Path filePath = uploadPath.resolve(uniqueFileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            return "/" + uploadDir + uniqueFileName;
-
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi lưu ảnh: " + e.getMessage(), e);
+    public String saveImage(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File không được để trống.");
         }
+
+        String originalFileName = file.getOriginalFilename();
+        String fileExtension = "";
+        if (originalFileName != null && originalFileName.contains(".")) {
+            fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".")).toLowerCase();
+        }
+
+        // Bước 1: Kiểm tra đuôi file
+        java.util.List<String> allowedExtensions = java.util.Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".webp");
+        if (allowedExtensions.stream().noneMatch(fileExtension::equals)) {
+            throw new IllegalArgumentException(
+                "Định dạng file không được phép. Chỉ chấp nhận: JPG, JPEG, PNG, GIF, WEBP.");
+        }
+
+        // Bước 2: Kiểm tra nội dung thực (magic bytes qua Tika)
+        InputStream input = FileSignatureValidator.ensureMarkSupported(file.getInputStream());
+        if (!FileSignatureValidator.isValidImage(input)) {
+            String detected = FileSignatureValidator.detectMimeType(
+                FileSignatureValidator.ensureMarkSupported(file.getInputStream()));
+            throw new IllegalArgumentException(
+                "Nội dung file không hợp lệ (phát hiện: " + detected + "). Vui lòng chỉ tải lên file ảnh thực sự.");
+        }
+
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
+        Path filePath = uploadPath.resolve(uniqueFileName);
+        Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        return "/" + uploadDir + uniqueFileName;
     }
 
     // Nếu cần, có thể thêm hàm xóa ảnh

@@ -69,87 +69,87 @@ public class AuthService {
             User user = userDetails.getUser();
 
             if (user == null || !user.getIsActive()) {
-                throw new RuntimeException("Tài khoản không tồn tại hoặc đã bị khóa.");
+                throw new RuntimeException("TÃ i khoáº£n khÃ´ng tá»“n táº¡i hoáº·c Ä‘Ã£ bá»‹ khÃ³a.");
             }
 
             String accessToken = jwtUtil.generateAccessToken(user);
             String refreshToken = jwtUtil.generateRefreshToken(user);
 
-            // Lưu refresh token vào DB
+            // LÆ°u refresh token vÃ o DB
             user.setRefreshToken(refreshToken);
             userRepository.save(user);
 
             return new LoginResponse(user, accessToken, refreshToken);
         } catch (org.springframework.security.authentication.DisabledException e) {
-            model.addAttribute("error", "Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
-            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
+            model.addAttribute("error", "TÃ i khoáº£n Ä‘Ã£ bá»‹ vÃ´ hiá»‡u hÃ³a. Vui lÃ²ng liÃªn há»‡ quáº£n trá»‹ viÃªn.");
+            throw new RuntimeException("TÃ i khoáº£n Ä‘Ã£ bá»‹ vÃ´ hiá»‡u hÃ³a. Vui lÃ²ng liÃªn há»‡ quáº£n trá»‹ viÃªn.");
         } catch (BadCredentialsException e) {
-            model.addAttribute("error", "Sai số điện thoại hoặc mật khẩu!");
-            throw new RuntimeException("Sai số điện thoại hoặc mật khẩu!");
+            model.addAttribute("error", "Sai sá»‘ Ä‘iá»‡n thoáº¡i hoáº·c máº­t kháº©u!");
+            throw new RuntimeException("Sai sá»‘ Ä‘iá»‡n thoáº¡i hoáº·c máº­t kháº©u!");
         }
     }
 
     public void validateRegisterRequest(RegisterRequest request) {
         // Validate password
         if (!isValidPassword(request.getPassword())) {
-            throw new RuntimeException("Mật khẩu phải có ít nhất 6 ký tự, bao gồm cả chữ cái và số!");
+            throw new RuntimeException("Máº­t kháº©u pháº£i cÃ³ Ã­t nháº¥t 6 kÃ½ tá»±, bao gá»“m cáº£ chá»¯ cÃ¡i vÃ  sá»‘!");
         }
 
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new RuntimeException("Mật khẩu và xác nhận mật khẩu không khớp!");
+            throw new RuntimeException("Máº­t kháº©u vÃ  xÃ¡c nháº­n máº­t kháº©u khÃ´ng khá»›p!");
         }
 
         // Validate phone (10 digits)
         if (!isValidPhone(request.getPhone())) {
-            throw new RuntimeException("Số điện thoại phải có đúng 10 chữ số!");
+            throw new RuntimeException("Sá»‘ Ä‘iá»‡n thoáº¡i pháº£i cÃ³ Ä‘Ãºng 10 chá»¯ sá»‘!");
         }
 
         if (userRepository.existsByPhone(request.getPhone())) {
-            throw new RuntimeException("Số điện thoại đã được đăng ký!");
+            throw new RuntimeException("Sá»‘ Ä‘iá»‡n thoáº¡i Ä‘Ã£ Ä‘Æ°á»£c Ä‘Äƒng kÃ½!");
         }
 
         // Validate email
         if (!isValidEmail(request.getEmail())) {
-            throw new RuntimeException("Email không hợp lệ!");
+            throw new RuntimeException("Email khÃ´ng há»£p lá»‡!");
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email đã được đăng ký!");
+            throw new RuntimeException("Email Ä‘Ã£ Ä‘Æ°á»£c Ä‘Äƒng kÃ½!");
         }
     }
 
     /**
-     * Tạo user sau khi OTP đã được xác thực
+     * Táº¡o user sau khi OTP Ä‘Ã£ Ä‘Æ°á»£c xÃ¡c thá»±c
      */
     public User createUserFromRegistration(RegisterRequest request) {
         User user = authMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(UserRole.USER);
-        user.setVerifyPhone(true); // Đã xác thực OTP
+        user.setVerifyPhone(true); // ÄÃ£ xÃ¡c thá»±c OTP
         return userRepository.save(user);
     }
 
     public User registerUser(RegisterRequest request) {
         // Validate password
         if (!isValidPassword(request.getPassword())) {
-            throw new RuntimeException("Mật khẩu phải có ít nhất 6 ký tự, bao gồm cả chữ cái và số!");
+            throw new RuntimeException("Máº­t kháº©u pháº£i cÃ³ Ã­t nháº¥t 6 kÃ½ tá»±, bao gá»“m cáº£ chá»¯ cÃ¡i vÃ  sá»‘!");
         }
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new RuntimeException("Mật khẩu và xác nhận mật khẩu không khớp!");
+            throw new RuntimeException("Máº­t kháº©u vÃ  xÃ¡c nháº­n máº­t kháº©u khÃ´ng khá»›p!");
         }
         // Validate phone (10 digits)
         if (!isValidPhone(request.getPhone())) {
-            throw new RuntimeException("Số điện thoại phải có đúng 10 chữ số!");
+            throw new RuntimeException("Sá»‘ Ä‘iá»‡n thoáº¡i pháº£i cÃ³ Ä‘Ãºng 10 chá»¯ sá»‘!");
         }
         if (userRepository.existsByPhone(request.getPhone())) {
-            throw new RuntimeException("Số điện thoại đã được đăng ký!");
+            throw new RuntimeException("Sá»‘ Ä‘iá»‡n thoáº¡i Ä‘Ã£ Ä‘Æ°á»£c Ä‘Äƒng kÃ½!");
         }
         // Validate email
         if (!isValidEmail(request.getEmail())) {
-            throw new RuntimeException("Email không hợp lệ!");
+            throw new RuntimeException("Email khÃ´ng há»£p lá»‡!");
         }
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email đã được đăng ký!");
+            throw new RuntimeException("Email Ä‘Ã£ Ä‘Æ°á»£c Ä‘Äƒng kÃ½!");
         }
         User user = authMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
@@ -158,13 +158,13 @@ public class AuthService {
     }
 
     public User handleRefreshToken(String refreshToken) {
-        // Lấy username từ refresh token
+        // Láº¥y username tá»« refresh token
         String username = jwtUtil.extractUsername(refreshToken);
 
         User user = userRepository.findByPhone(username)
-                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("User khÃ´ng tá»“n táº¡i"));
 
-        // So sánh với refresh token trong DB
+        // So sÃ¡nh vá»›i refresh token trong DB
         if (!refreshToken.equals(user.getRefreshToken())) {
             throw new RuntimeException("Invalid refresh token");
         }
@@ -186,16 +186,16 @@ public class AuthService {
     public boolean PhoneResetPasswordHandle(String phone, Model model) {
         User user = userRepository.findByPhone(phone).orElse(null);
         if (user == null) {
-            model.addAttribute("error", "Số điện thoại không tồn tại.");
+            model.addAttribute("error", "Sá»‘ Ä‘iá»‡n thoáº¡i khÃ´ng tá»“n táº¡i.");
             return false;
         }
         if (!user.getVerifyPhone()) {
-            model.addAttribute("error", "Số điện thoại chưa được xác thực.");
+            model.addAttribute("error", "Sá»‘ Ä‘iá»‡n thoáº¡i chÆ°a Ä‘Æ°á»£c xÃ¡c thá»±c.");
             return false;
         }
 
         String newPassword = PasswordConfig.generateRandomPassword();
-        String smsBody = "Mật khẩu mới sau khi reset của bạn là: " + newPassword;
+        String smsBody = "Máº­t kháº©u má»›i sau khi reset cá»§a báº¡n lÃ : " + newPassword;
         String formattedPhone = formatPhone(phone);
         boolean smsSentSuccessfully;
 
@@ -203,12 +203,12 @@ public class AuthService {
             smsSentSuccessfully = sSms.sendSMS(formattedPhone, smsBody);
         } catch (IOException e) {
             e.printStackTrace();
-            model.addAttribute("error", "Lỗi hệ thống gửi SMS, vui lòng thử lại sau.");
+            model.addAttribute("error", "Lá»—i há»‡ thá»‘ng gá»­i SMS, vui lÃ²ng thá»­ láº¡i sau.");
             return false;
         }
 
         if (!smsSentSuccessfully) {
-            model.addAttribute("error", "Gửi SMS thất bại. Vui lòng kiểm tra lại SĐT hoặc liên hệ admin.");
+            model.addAttribute("error", "Gá»­i SMS tháº¥t báº¡i. Vui lÃ²ng kiá»ƒm tra láº¡i SÄT hoáº·c liÃªn há»‡ admin.");
             return false;
         }
 
@@ -221,18 +221,18 @@ public class AuthService {
     public boolean EmailResetPasswordHandle(String email, Model model) {
         User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) {
-            model.addAttribute("error", "Email không tồn tại.");
+            model.addAttribute("error", "Email khÃ´ng tá»“n táº¡i.");
             return false;
         }
         if (!user.getVerifyEmail()) {
-            model.addAttribute("error", "Email chưa được xác thực.");
+            model.addAttribute("error", "Email chÆ°a Ä‘Æ°á»£c xÃ¡c thá»±c.");
             return false;
         }
 
         String newPassword = PasswordConfig.generateRandomPassword();
-        // Gửi email chứa mật khẩu mới
-        String emailBody = "Mật khẩu mới sau khi reset của bạn là: " + newPassword;
-        emailService.sendEmail(email, "Reset Mật Khẩu", emailBody);
+        // Gá»­i email chá»©a máº­t kháº©u má»›i
+        String emailBody = "Máº­t kháº©u má»›i sau khi reset cá»§a báº¡n lÃ : " + newPassword;
+        emailService.sendEmail(email, "Reset Máº­t Kháº©u", emailBody);
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         return true;
@@ -243,32 +243,32 @@ public class AuthService {
         String phone = auth.getName();
 
         User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
+                .orElseThrow(() -> new RuntimeException("TÃ i khoáº£n khÃ´ng tá»“n táº¡i!"));
 
         if (!user.getIsActive()) {
-            throw new RuntimeException("Tài khoản đã bị khóa.");
-            //return "Tài khoản đã bị khóa.";
+            throw new RuntimeException("TÃ i khoáº£n Ä‘Ã£ bá»‹ khÃ³a.");
+            //return "TÃ i khoáº£n Ä‘Ã£ bá»‹ khÃ³a.";
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("Mật khẩu cũ không đúng!");
-            //return "Mật khẩu cũ không đúng!";
+            throw new RuntimeException("Máº­t kháº©u cÅ© khÃ´ng Ä‘Ãºng!");
+            //return "Máº­t kháº©u cÅ© khÃ´ng Ä‘Ãºng!";
         }
 
-        // Validate mật khẩu mới (tối thiểu 6 ký tự, có chữ và số)
+        // Validate máº­t kháº©u má»›i (tá»‘i thiá»ƒu 6 kÃ½ tá»±, cÃ³ chá»¯ vÃ  sá»‘)
         if (!isValidPassword(request.getNewPassword())) {
-            throw new RuntimeException("Mật khẩu mới phải có ít nhất 6 ký tự, bao gồm cả chữ cái và số!");
+            throw new RuntimeException("Máº­t kháº©u má»›i pháº£i cÃ³ Ã­t nháº¥t 6 kÃ½ tá»±, bao gá»“m cáº£ chá»¯ cÃ¡i vÃ  sá»‘!");
         }
 
         if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
-            throw new RuntimeException("Mật khẩu mới và xác nhận mật khẩu không khớp!");
-            //return "Mật khẩu mới và xác nhận mật khẩu không khớp!";
+            throw new RuntimeException("Máº­t kháº©u má»›i vÃ  xÃ¡c nháº­n máº­t kháº©u khÃ´ng khá»›p!");
+            //return "Máº­t kháº©u má»›i vÃ  xÃ¡c nháº­n máº­t kháº©u khÃ´ng khá»›p!";
         }
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
-        return "Đổi mật khẩu thành công!";
+        return "Äá»•i máº­t kháº©u thÃ nh cÃ´ng!";
     }
 
     public String sendOtpEmail() {
@@ -276,7 +276,7 @@ public class AuthService {
         String phone = auth.getName();
 
         User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new RuntimeException("phone không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("phone khÃ´ng tá»“n táº¡i"));
         String email = user.getEmail();
 
         String otp = generateOtp();
@@ -290,12 +290,12 @@ public class AuthService {
 
         otpCodeRepository.save(otpEntity);
 
-        // Gửi OTP qua Email
+        // Gá»­i OTP qua Email
         String subject = "Your OTP Code";
         String body = "Your OTP code is: " + otp;
         emailService.sendEmail(email, subject, body);
 
-        return "OTP đã được gửi đến email của bạn.";
+        return "OTP Ä‘Ã£ Ä‘Æ°á»£c gá»­i Ä‘áº¿n email cá»§a báº¡n.";
     }
 
     public String sendOtpPhone() {
@@ -303,10 +303,10 @@ public class AuthService {
         String phone = auth.getName();
 
         User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new RuntimeException("Số điện thoại không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("Sá»‘ Ä‘iá»‡n thoáº¡i khÃ´ng tá»“n táº¡i"));
         String formattedPhone = formatPhone(phone);
         //formattedPhone = "+18777804236";
-        // Sinh OTP 6 số
+        // Sinh OTP 6 sá»‘
         String otp = generateOtp();
 
         OtpCode otpEntity = OtpCode.builder()
@@ -319,10 +319,10 @@ public class AuthService {
 
         otpCodeRepository.save(otpEntity);
 
-        // Gửi OTP qua SMS
+        // Gá»­i OTP qua SMS
         sSms.sendOtp(formattedPhone, otp);
 
-        return "OTP đã được gửi đến số điện thoại của bạn.";
+        return "OTP Ä‘Ã£ Ä‘Æ°á»£c gá»­i Ä‘áº¿n sá»‘ Ä‘iá»‡n thoáº¡i cá»§a báº¡n.";
     }
 
     // Verify OTP
@@ -331,27 +331,27 @@ public class AuthService {
         String phone = auth.getName();
 
         User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new RuntimeException("Số điện thoại không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("Sá»‘ Ä‘iá»‡n thoáº¡i khÃ´ng tá»“n táº¡i"));
 
         Optional<OtpCode> otpEntityOpt = otpCodeRepository.findByUserAndOtpCodeAndUsedFalse(user, otpInput);
 
         if (otpEntityOpt.isEmpty()) {
-            throw new RuntimeException("Mã OTP không đúng hoặc đã được sử dụng.");
-            //return "Mã OTP không đúng hoặc đã được sử dụng.";
+            throw new RuntimeException("MÃ£ OTP khÃ´ng Ä‘Ãºng hoáº·c Ä‘Ã£ Ä‘Æ°á»£c sá»­ dá»¥ng.");
+            //return "MÃ£ OTP khÃ´ng Ä‘Ãºng hoáº·c Ä‘Ã£ Ä‘Æ°á»£c sá»­ dá»¥ng.";
         }
 
         OtpCode otpEntity = otpEntityOpt.get();
 
         if (otpEntity.getExpiryTime().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Mã OTP đã hết hạn.");
-            //return "Mã OTP đã hết hạn.";
+            throw new RuntimeException("MÃ£ OTP Ä‘Ã£ háº¿t háº¡n.");
+            //return "MÃ£ OTP Ä‘Ã£ háº¿t háº¡n.";
         }
         if (otpEntity.getType() == OtpType.EMAIL) {
             user.setVerifyEmail(true);
         } else if (otpEntity.getType() == OtpType.PHONE) {
             user.setVerifyPhone(true);
         }
-        // Đánh dấu OTP đã dùng
+        // ÄÃ¡nh dáº¥u OTP Ä‘Ã£ dÃ¹ng
         otpEntity.setUsed(true);
         userRepository.save(user);
         //otpCodeRepository.save(otpEntity);
@@ -359,7 +359,7 @@ public class AuthService {
         otpCodeRepository.delete(otpEntity);
         ///
 
-        return "Xác thực OTP thành công.";
+        return "XÃ¡c thá»±c OTP thÃ nh cÃ´ng.";
     }
 
     public boolean isPhoneExist(String phone) {
@@ -368,12 +368,11 @@ public class AuthService {
 
     private String formatPhone(String phone) {
         if (phone.startsWith("0")) {
-            System.out.println("Formatted phone: " + "84" + phone.substring(1));
             return "84" + phone.substring(1);
         } else if (phone.startsWith("84")) {
             return phone;
         } else {
-            throw new IllegalArgumentException("Số điện thoại không đúng định dạng VN: " + phone);
+            throw new IllegalArgumentException("Sá»‘ Ä‘iá»‡n thoáº¡i khÃ´ng Ä‘Ãºng Ä‘á»‹nh dáº¡ng VN: " + phone);
         }
     }
 
@@ -381,7 +380,7 @@ public class AuthService {
         if (email.contains("@")) {
             return email;
         } else {
-            throw new IllegalArgumentException("Email không đúng định dạng: " + email);
+            throw new IllegalArgumentException("Email khÃ´ng Ä‘Ãºng Ä‘á»‹nh dáº¡ng: " + email);
         }
     }
 
@@ -394,7 +393,7 @@ public class AuthService {
         if (phone == null || phone.isEmpty()) {
             return false;
         }
-        // Chỉ chấp nhận 10 chữ số
+        // Chá»‰ cháº¥p nháº­n 10 chá»¯ sá»‘
         return phone.matches("^[0-9]{10}$");
     }
 
@@ -402,7 +401,7 @@ public class AuthService {
         if (email == null || email.isEmpty()) {
             return false;
         }
-        // Regex cho email hợp lệ
+        // Regex cho email há»£p lá»‡
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return email.matches(emailRegex);
     }
@@ -411,7 +410,7 @@ public class AuthService {
         if (password == null || password.length() < 6) {
             return false;
         }
-        // Phải có ít nhất 1 chữ cái và 1 số
+        // Pháº£i cÃ³ Ã­t nháº¥t 1 chá»¯ cÃ¡i vÃ  1 sá»‘
         boolean hasLetter = password.matches(".*[A-Za-z].*");
         boolean hasDigit = password.matches(".*\\d.*");
         return hasLetter && hasDigit;

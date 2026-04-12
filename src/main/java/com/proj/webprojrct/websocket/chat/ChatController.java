@@ -49,8 +49,10 @@ public class ChatController {
 
     @MessageMapping("/chat")
     public void processMessage(@Payload ChatMessage chatMessage,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (userDetails == null) {
+            java.security.Principal principal) {
+        // Trong WebSocket STOMP, dÃ¹ng Principal thay vÃ¬ @AuthenticationPrincipal
+        // Ä‘á»ƒ trÃ¡nh lá»—i MessageConversionException khi deserialize CustomUserDetails
+        if (principal == null) {
             return;
         }
         ChatMessage savedMsg = chatMessageService.save(chatMessage);
@@ -112,7 +114,7 @@ public class ChatController {
     }
 
     /**
-     * API lấy số lượng tin nhắn chưa đọc cho user
+     * API láº¥y sá»‘ lÆ°á»£ng tin nháº¯n chÆ°a Ä‘á»c cho user
      * GET /api/chat/unread-count
      */
     @GetMapping("/api/chat/unread-count")
@@ -132,7 +134,7 @@ public class ChatController {
     }
 
     /**
-     * API đánh dấu tin nhắn từ admin là đã đọc
+     * API Ä‘Ã¡nh dáº¥u tin nháº¯n tá»« admin lÃ  Ä‘Ã£ Ä‘á»c
      * POST /api/chat/mark-read/{senderId}
      */
     @Transactional
@@ -141,16 +143,13 @@ public class ChatController {
             @PathVariable String senderId,
             Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {
-            System.out.println("[ChatController] Mark-read failed: No authentication");
             return ResponseEntity.ok(Map.of("success", false, "markedCount", 0));
         }
 
         String userId = authentication.getName();
-        System.out.println("[ChatController] Marking messages as read - userId: " + userId + ", senderId: " + senderId);
 
         int markedCount = chatMessageRepository.markMessagesAsRead(userId, senderId);
 
-        System.out.println("[ChatController] Marked " + markedCount + " messages as read");
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);

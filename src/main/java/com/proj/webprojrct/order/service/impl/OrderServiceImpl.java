@@ -60,17 +60,17 @@ public class OrderServiceImpl implements OrderService {
 
         // TODO: UNCOMMENT THIS LINE WHEN PHONE VERIFICATION IS READY
         // if (!user.getVerifyPhone()) {
-        //     throw new RuntimeException("Chưa xác thực số điện thoại.");
+        //     throw new RuntimeException("ChÆ°a xÃ¡c thá»±c sá»‘ Ä‘iá»‡n thoáº¡i.");
         // }
-        // lấy số lượng trước khi order
+        // láº¥y sá»‘ lÆ°á»£ng trÆ°á»›c khi order
         if (request.getOrderItems() != null) {
             for (OrderRequest.OrderItemRequest itemReq : request.getOrderItems()) {
                 Product product = productRepository.findById(itemReq.getProductId())
                         .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductId()));
 
                 if (product.getStock() < itemReq.getQuantity()) {
-                    throw new RuntimeException("Không đủ số lượng sản phẩm " + product.getName()
-                            + ". Còn lại: " + product.getStock() + ", yêu cầu: " + itemReq.getQuantity());
+                    throw new RuntimeException("KhÃ´ng Ä‘á»§ sá»‘ lÆ°á»£ng sáº£n pháº©m " + product.getName()
+                            + ". CÃ²n láº¡i: " + product.getStock() + ", yÃªu cáº§u: " + itemReq.getQuantity());
                 }
             }
         }
@@ -108,10 +108,10 @@ public class OrderServiceImpl implements OrderService {
 
     private void sendOrderConfirmationEmail(User user, Order order, List<OrderRequest.OrderItemRequest> items) {
         StringBuilder emailBody = new StringBuilder();
-        emailBody.append("Xin chào ").append(user.getFullName()).append(",\n\n");
-        emailBody.append("Cảm ơn bạn đã đặt hàng tại CellPhoneStore!\n\n");
-        emailBody.append("Chi tiết đơn hàng #").append(order.getId()).append(":\n");
-        emailBody.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
+        emailBody.append("Xin chÃ o ").append(user.getFullName()).append(",\n\n");
+        emailBody.append("Cáº£m Æ¡n báº¡n Ä‘Ã£ Ä‘áº·t hÃ ng táº¡i CellPhoneStore!\n\n");
+        emailBody.append("Chi tiáº¿t Ä‘Æ¡n hÃ ng #").append(order.getId()).append(":\n");
+        emailBody.append("â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n\n");
 
         // Add order items
         for (OrderRequest.OrderItemRequest item : items) {
@@ -119,31 +119,31 @@ public class OrderServiceImpl implements OrderService {
             if (product != null) {
                 double itemPrice = item.getPrice().doubleValue();
                 double itemTotal = itemPrice * item.getQuantity();
-                emailBody.append(String.format("• %s\n", product.getName()));
-                emailBody.append(String.format("  Số lượng: %d x %,.0fđ = %,.0fđ\n\n",
+                emailBody.append(String.format("â€¢ %s\n", product.getName()));
+                emailBody.append(String.format("  Sá»‘ lÆ°á»£ng: %d x %,.0fÄ‘ = %,.0fÄ‘\n\n",
                         item.getQuantity(), itemPrice, itemTotal));
             }
         }
 
-        emailBody.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-        emailBody.append(String.format("Tổng tiền: %,.0fđ\n\n", order.getTotalAmount().doubleValue()));
+        emailBody.append("â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n");
+        emailBody.append(String.format("Tá»•ng tiá»n: %,.0fÄ‘\n\n", order.getTotalAmount().doubleValue()));
 
         // Add shipping info
-        emailBody.append("Thông tin giao hàng:\n");
-        emailBody.append("Người nhận: ").append(user.getFullName()).append("\n");
-        emailBody.append("Số điện thoại: ").append(user.getPhone()).append("\n");
-        emailBody.append("Địa chỉ: ").append(order.getShippingAddress()).append("\n\n");
+        emailBody.append("ThÃ´ng tin giao hÃ ng:\n");
+        emailBody.append("NgÆ°á»i nháº­n: ").append(user.getFullName()).append("\n");
+        emailBody.append("Sá»‘ Ä‘iá»‡n thoáº¡i: ").append(user.getPhone()).append("\n");
+        emailBody.append("Äá»‹a chá»‰: ").append(order.getShippingAddress()).append("\n\n");
 
-        emailBody.append("Đơn hàng sẽ được giao trong 2-3 ngày làm việc.\n");
-        emailBody.append("Chúng tôi sẽ liên hệ với bạn để xác nhận đơn hàng.\n\n");
-        emailBody.append("Cảm ơn bạn đã tin tưởng CellPhoneStore!\n\n");
+        emailBody.append("ÄÆ¡n hÃ ng sáº½ Ä‘Æ°á»£c giao trong 2-3 ngÃ y lÃ m viá»‡c.\n");
+        emailBody.append("ChÃºng tÃ´i sáº½ liÃªn há»‡ vá»›i báº¡n Ä‘á»ƒ xÃ¡c nháº­n Ä‘Æ¡n hÃ ng.\n\n");
+        emailBody.append("Cáº£m Æ¡n báº¡n Ä‘Ã£ tin tÆ°á»Ÿng CellPhoneStore!\n\n");
         emailBody.append("---\n");
         emailBody.append("CellPhoneStore\n");
         emailBody.append("Email: kietccc21@gmail.com\n");
         emailBody.append("Hotline: +84 889-251-007");
 
         emailService.sendEmail(user.getEmail(),
-                "Xác nhận đơn hàng #" + order.getId() + " - CellPhoneStore",
+                "XÃ¡c nháº­n Ä‘Æ¡n hÃ ng #" + order.getId() + " - CellPhoneStore",
                 emailBody.toString());
     }
 
@@ -209,7 +209,7 @@ public class OrderServiceImpl implements OrderService {
 
         List<Order> orders = orderRepository.findByUser(user);
 
-        // Sắp xếp đơn hàng theo thời gian tạo giảm dần (mới nhất trước)
+        // Sáº¯p xáº¿p Ä‘Æ¡n hÃ ng theo thá»i gian táº¡o giáº£m dáº§n (má»›i nháº¥t trÆ°á»›c)
         orders.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
 
         return orders.stream().map(order -> {
@@ -257,7 +257,6 @@ public class OrderServiceImpl implements OrderService {
         if (order.getUser() == null || !order.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("You do not have permission to cancel this order");
         }
-        System.out.println("Order status: " + order.getStatus());
         if (!order.getStatus().equals("PENDING") && !order.getStatus().equals("PAID")) {
             throw new IllegalArgumentException("Only PENDING or PAID orders can be cancelled.");
         }
@@ -271,9 +270,6 @@ public class OrderServiceImpl implements OrderService {
             int restoredStock = product.getStock() + item.getQuantity();
             product.setStock(restoredStock);
             productRepository.save(product);
-
-            System.out.println("Restored stock for product " + product.getName()
-                    + ": " + (restoredStock - item.getQuantity()) + " -> " + restoredStock);
         }
 
         order.setStatus("CANCELLED");
@@ -323,7 +319,7 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
 
-        // cập nhật số lượng
+        // cáº­p nháº­t sá»‘ lÆ°á»£ng
         for (OrderItem item : orderItems) {
             Product product = productRepository.findById(item.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProductId()));
@@ -336,9 +332,6 @@ public class OrderServiceImpl implements OrderService {
 
             product.setStock(newStock);
             productRepository.save(product);
-
-            System.out.println("Updated stock for product " + product.getName()
-                    + ": " + (product.getStock() + item.getQuantity()) + " -> " + newStock);
         }
 
         // Update order status to PAID
@@ -359,8 +352,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // Update order status to REFUNDED_REQUESTED
-        // Chỉ đổi status, chưa hoàn stock
-        // Stock sẽ được hoàn khi seller chấp nhận hoàn tiền
+        // Chá»‰ Ä‘á»•i status, chÆ°a hoÃ n stock
+        // Stock sáº½ Ä‘Æ°á»£c hoÃ n khi seller cháº¥p nháº­n hoÃ n tiá»n
         order.setStatus("REFUNDED_REQUESTED");
         orderRepository.save(order);
     }

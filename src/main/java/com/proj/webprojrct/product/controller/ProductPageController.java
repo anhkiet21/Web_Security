@@ -28,7 +28,7 @@ public class ProductPageController {
     @GetMapping("/shop")
     public String shop(@RequestParam(required = false) List<Long> category,
             @RequestParam(required = false) List<String> brand,
-            @RequestParam(required = false) List<String> series, // Thêm param series
+            @RequestParam(required = false) List<String> series, // ThÃªm param series
             @RequestParam(required = false) String name,
             @RequestParam(required = false, defaultValue = "popular") String sort,
             @RequestParam(required = false, defaultValue = "12") int limit,
@@ -38,7 +38,7 @@ public class ProductPageController {
             List<ProductResponse> allProducts = productService.getAll();
             List<ProductResponse> products = allProducts;
 
-            // Lọc theo tên sản phẩm (search) với fuzzy matching
+            // Lá»c theo tÃªn sáº£n pháº©m (search) vá»›i fuzzy matching
             if (name != null && !name.trim().isEmpty()) {
                 String searchTerm = name.trim().toLowerCase();
                 String[] searchWords = searchTerm.split("\\s+");
@@ -68,26 +68,26 @@ public class ProductPageController {
                         .collect(java.util.stream.Collectors.toList());
             }
 
-            // Lọc theo categories (có thể chọn nhiều)
+            // Lá»c theo categories (cÃ³ thá»ƒ chá»n nhiá»u)
             if (category != null && !category.isEmpty()) {
                 products = products.stream()
                         .filter(p -> p.getCategory() != null && category.contains(p.getCategory().getId()))
                         .collect(java.util.stream.Collectors.toList());
             }
 
-            // Lọc theo brands (có thể chọn nhiều)
+            // Lá»c theo brands (cÃ³ thá»ƒ chá»n nhiá»u)
             if (brand != null && !brand.isEmpty()) {
                 products = products.stream()
                         .filter(p -> p.getBrand() != null && brand.contains(p.getBrand()))
                         .collect(java.util.stream.Collectors.toList());
             }
 
-            // Lọc theo series (có thể chọn nhiều) - lọc theo category con từ DB
+            // Lá»c theo series (cÃ³ thá»ƒ chá»n nhiá»u) - lá»c theo category con tá»« DB
             if (series != null && !series.isEmpty()) {
-                // Lấy tất cả categories từ database
+                // Láº¥y táº¥t cáº£ categories tá»« database
                 List<com.proj.webprojrct.category.dto.CategoryDto> allCategories = categoryService.getAll();
 
-                // Tạo set chứa tên các category con (series) được chọn
+                // Táº¡o set chá»©a tÃªn cÃ¡c category con (series) Ä‘Æ°á»£c chá»n
                 java.util.Set<Long> seriesCategoryIds = new java.util.HashSet<>();
                 for (String seriesName : series) {
                     for (com.proj.webprojrct.category.dto.CategoryDto cat : allCategories) {
@@ -97,14 +97,14 @@ public class ProductPageController {
                     }
                 }
 
-                // Lọc products theo category IDs
+                // Lá»c products theo category IDs
                 products = products.stream()
                         .filter(p -> p.getCategory() != null
                         && seriesCategoryIds.contains(p.getCategory().getId()))
                         .collect(java.util.stream.Collectors.toList());
             }
 
-            // Sắp xếp
+            // Sáº¯p xáº¿p
             java.util.Comparator<ProductResponse> comparator = null;
             switch (sort) {
                 case "price-asc":
@@ -115,7 +115,7 @@ public class ProductPageController {
                     break;
                 case "popular":
                 default:
-                    // Sắp xếp theo ID giảm dần (sản phẩm mới nhất)
+                    // Sáº¯p xáº¿p theo ID giáº£m dáº§n (sáº£n pháº©m má»›i nháº¥t)
                     comparator = java.util.Comparator.comparing(ProductResponse::getId).reversed();
                     break;
             }
@@ -126,11 +126,11 @@ public class ProductPageController {
                         .collect(java.util.stream.Collectors.toList());
             }
 
-            // Tính toán phân trang
+            // TÃ­nh toÃ¡n phÃ¢n trang
             int totalProducts = products.size();
             int totalPages = (int) Math.ceil((double) totalProducts / limit);
 
-            // Đảm bảo page không vượt quá số trang
+            // Äáº£m báº£o page khÃ´ng vÆ°á»£t quÃ¡ sá»‘ trang
             if (page < 1) {
                 page = 1;
             }
@@ -138,7 +138,7 @@ public class ProductPageController {
                 page = totalPages;
             }
 
-            // Lấy products cho trang hiện tại
+            // Láº¥y products cho trang hiá»‡n táº¡i
             int startIndex = (page - 1) * limit;
             int endIndex = Math.min(startIndex + limit, totalProducts);
 
@@ -151,14 +151,13 @@ public class ProductPageController {
 
             model.addAttribute("products", paginatedProducts);
 
-            // Lấy series động dựa theo brand đã chọn (thay vì categories từ DB)
+            // Láº¥y series Ä‘á»™ng dá»±a theo brand Ä‘Ã£ chá»n (thay vÃ¬ categories tá»« DB)
             List<com.proj.webprojrct.product.dto.ProductSeriesDto> availableSeries;
-            System.out.println("Selected brands: " + brand);
             if (brand != null && !brand.isEmpty()) {
-                // Có chọn brand → Tự động generate series từ products của các brand đã chọn
+                // CÃ³ chá»n brand â†’ Tá»± Ä‘á»™ng generate series tá»« products cá»§a cÃ¡c brand Ä‘Ã£ chá»n
                 availableSeries = generateSeriesByBrands(allProducts, brand);
             } else {
-                // Chưa chọn brand → Không hiện series (để user chọn brand trước)
+                // ChÆ°a chá»n brand â†’ KhÃ´ng hiá»‡n series (Ä‘á»ƒ user chá»n brand trÆ°á»›c)
                 availableSeries = java.util.Collections.emptyList();
             }
 
@@ -166,7 +165,7 @@ public class ProductPageController {
             model.addAttribute("brands", productService.getAllBrands());
             model.addAttribute("selectedCategories", category != null ? category : java.util.Collections.emptyList());
             model.addAttribute("selectedBrands", brand != null ? brand : java.util.Collections.emptyList());
-            model.addAttribute("selectedSeries", series != null ? series : java.util.Collections.emptyList()); // Thêm selected series
+            model.addAttribute("selectedSeries", series != null ? series : java.util.Collections.emptyList()); // ThÃªm selected series
             model.addAttribute("searchName", name != null ? name : "");
             model.addAttribute("selectedSort", sort);
             model.addAttribute("selectedLimit", limit);
@@ -176,7 +175,7 @@ public class ProductPageController {
             model.addAttribute("startIndex", startIndex + 1);
             model.addAttribute("endIndex", endIndex);
         } catch (Exception e) {
-            model.addAttribute("error", "Không thể tải dữ liệu: " + e.getMessage());
+            model.addAttribute("error", "KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u: " + e.getMessage());
         }
         return "shop";
     }
@@ -184,7 +183,7 @@ public class ProductPageController {
     // //admin
     // @GetMapping("/products")
     // public String products(Model model) {
-    //     // Có thể thêm logic load products vào model nếu cần
+    //     // CÃ³ thá»ƒ thÃªm logic load products vÃ o model náº¿u cáº§n
     //     return "product_list";
     // }
     //user
@@ -193,17 +192,17 @@ public class ProductPageController {
         ProductResponse product = productService.getById(id);
         model.addAttribute("product", product);
 
-        // Sản phẩm liên quan: cùng category
+        // Sáº£n pháº©m liÃªn quan: cÃ¹ng category
         List<ProductResponse> relatedProducts = new java.util.ArrayList<>();
         if (product.getCategory() != null) {
             relatedProducts = productService.getByCategoryId(product.getCategory().getId());
-            // Loại bỏ chính sản phẩm đang xem
+            // Loáº¡i bá» chÃ­nh sáº£n pháº©m Ä‘ang xem
             relatedProducts.removeIf(p -> p.getId().equals(product.getId()));
         }
         model.addAttribute("relatedProducts", relatedProducts);
 
-        // Sản phẩm cùng dòng (cùng series, khác model variant)
-        // Ví dụ: iPhone 15 → hiện iPhone 15 Pro, iPhone 15 Pro Max, iPhone 15 Plus
+        // Sáº£n pháº©m cÃ¹ng dÃ²ng (cÃ¹ng series, khÃ¡c model variant)
+        // VÃ­ dá»¥: iPhone 15 â†’ hiá»‡n iPhone 15 Pro, iPhone 15 Pro Max, iPhone 15 Plus
         List<ProductResponse> versionProducts = new java.util.ArrayList<>();
         if (product.getName() != null && product.getBrand() != null) {
             String currentSeries = extractSeriesName(product.getName());
@@ -218,7 +217,7 @@ public class ProductPageController {
                     continue;
                 }
 
-                // Cùng brand và cùng series
+                // CÃ¹ng brand vÃ  cÃ¹ng series
                 if (product.getBrand().equals(p.getBrand())) {
                     String productSeries = extractSeriesName(p.getName());
                     if (currentSeries.equals(productSeries)) {
@@ -229,7 +228,7 @@ public class ProductPageController {
         }
 
         List<ProductResponse> sameProducts = new java.util.ArrayList<>();
-        // Sản phẩm cùng thương hiệu
+        // Sáº£n pháº©m cÃ¹ng thÆ°Æ¡ng hiá»‡u
         if (product.getBrand() != null) {
             List<ProductResponse> allProducts = productService.getAll();
             for (ProductResponse p : allProducts) {
@@ -256,7 +255,7 @@ public class ProductPageController {
             model.addAttribute("products", dealProducts);
             model.addAttribute("categories", categoryService.getAll());
         } catch (Exception e) {
-            model.addAttribute("error", "Không thể tải dữ liệu khuyến mãi: " + e.getMessage());
+            model.addAttribute("error", "KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u khuyáº¿n mÃ£i: " + e.getMessage());
         }
         return "deals";
     }
@@ -280,8 +279,8 @@ public class ProductPageController {
 
     /**
      * Extract series name from product name Example: "iPhone 15 Pro Max 256GB
-     * Titan Đen" → "iPhone 15" Example: "Samsung Galaxy S24 Ultra 512GB" →
-     * "Galaxy S24" Example: "Xiaomi 14 Ultra 16GB/512GB" → "Xiaomi 14"
+     * Titan Äen" â†’ "iPhone 15" Example: "Samsung Galaxy S24 Ultra 512GB" â†’
+     * "Galaxy S24" Example: "Xiaomi 14 Ultra 16GB/512GB" â†’ "Xiaomi 14"
      */
     private String extractSeriesName(String productName) {
         if (productName == null || productName.trim().isEmpty()) {
@@ -326,7 +325,7 @@ public class ProductPageController {
         }
 
         // Fallback: Extract brand + first number/word
-        // Example: "ASUS ROG Phone 8" → "ASUS ROG Phone 8"
+        // Example: "ASUS ROG Phone 8" â†’ "ASUS ROG Phone 8"
         String[] words = name.split("\\s+");
         if (words.length >= 2) {
             // Try to find pattern: Brand + Number
@@ -343,12 +342,12 @@ public class ProductPageController {
     }
 
     /**
-     * Lấy danh sách category con (subcategories) từ database dựa theo brands đã
-     * chọn Trả về dưới dạng ProductSeriesDto để tương thích với code hiện tại
+     * Láº¥y danh sÃ¡ch category con (subcategories) tá»« database dá»±a theo brands Ä‘Ã£
+     * chá»n Tráº£ vá» dÆ°á»›i dáº¡ng ProductSeriesDto Ä‘á»ƒ tÆ°Æ¡ng thÃ­ch vá»›i code hiá»‡n táº¡i
      *
-     * @param products Danh sách sản phẩm để đếm
-     * @param brands Danh sách brands đã chọn
-     * @return Danh sách ProductSeriesDto (seriesName = category name, brand =
+     * @param products Danh sÃ¡ch sáº£n pháº©m Ä‘á»ƒ Ä‘áº¿m
+     * @param brands Danh sÃ¡ch brands Ä‘Ã£ chá»n
+     * @return Danh sÃ¡ch ProductSeriesDto (seriesName = category name, brand =
      * parent category name)
      */
     private List<com.proj.webprojrct.product.dto.ProductSeriesDto> generateSeriesByBrands(
@@ -357,10 +356,10 @@ public class ProductPageController {
 
         List<com.proj.webprojrct.product.dto.ProductSeriesDto> result = new java.util.ArrayList<>();
 
-        // Lấy tất cả categories từ database
+        // Láº¥y táº¥t cáº£ categories tá»« database
         List<com.proj.webprojrct.category.dto.CategoryDto> allCategories = categoryService.getAll();
 
-        // Tạo map: category parent name -> category parent ID
+        // Táº¡o map: category parent name -> category parent ID
         java.util.Map<String, Long> brandToCategoryId = new java.util.HashMap<>();
         for (com.proj.webprojrct.category.dto.CategoryDto cat : allCategories) {
             if (cat.getParentId() == null && brands.contains(cat.getName())) {
@@ -368,30 +367,30 @@ public class ProductPageController {
             }
         }
 
-        // Tạo map: category parent ID -> category parent name
+        // Táº¡o map: category parent ID -> category parent name
         java.util.Map<Long, String> categoryIdToBrand = new java.util.HashMap<>();
         for (java.util.Map.Entry<String, Long> entry : brandToCategoryId.entrySet()) {
             categoryIdToBrand.put(entry.getValue(), entry.getKey());
         }
 
-        // Lấy tất cả category con của các brands đã chọn
+        // Láº¥y táº¥t cáº£ category con cá»§a cÃ¡c brands Ä‘Ã£ chá»n
         for (com.proj.webprojrct.category.dto.CategoryDto subCat : allCategories) {
             if (subCat.getParentId() != null && brandToCategoryId.containsValue(subCat.getParentId())) {
-                // Đếm số lượng sản phẩm thuộc category con này
+                // Äáº¿m sá»‘ lÆ°á»£ng sáº£n pháº©m thuá»™c category con nÃ y
                 long productCount = products.stream()
                         .filter(p -> p.getCategory() != null
                         && p.getCategory().getId().equals(subCat.getId()))
                         .count();
 
-                // Lấy tên brand (category cha)
+                // Láº¥y tÃªn brand (category cha)
                 String brandName = categoryIdToBrand.getOrDefault(subCat.getParentId(), "Unknown");
 
-                // Tạo ProductSeriesDto
+                // Táº¡o ProductSeriesDto
                 com.proj.webprojrct.product.dto.ProductSeriesDto seriesDto
                         = new com.proj.webprojrct.product.dto.ProductSeriesDto(
-                                subCat.getName(), // seriesName = tên category con
-                                brandName, // brand = tên category cha
-                                Long.valueOf(productCount) // số lượng sản phẩm
+                                subCat.getName(), // seriesName = tÃªn category con
+                                brandName, // brand = tÃªn category cha
+                                Long.valueOf(productCount) // sá»‘ lÆ°á»£ng sáº£n pháº©m
                         );
 
                 result.add(seriesDto);

@@ -22,6 +22,7 @@ import java.nio.file.StandardCopyOption;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import com.proj.webprojrct.storage.service.FileSignatureValidator;
 
 @Service
 @Transactional
@@ -156,7 +157,10 @@ public class ProductServiceImpl implements ProductService {
         String filename = id + "_" + System.currentTimeMillis() + ext;
         File dest = new File(dir, filename);
 
-        try (InputStream in = file.getInputStream()) {
+        try (InputStream in = FileSignatureValidator.ensureMarkSupported(file.getInputStream())) {
+            if (!FileSignatureValidator.isValidImage(in)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tệp tải lên không phải là ảnh hợp lệ, có dấu hiệu giả mạo!");
+            }
             Files.copy(in, dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
 
