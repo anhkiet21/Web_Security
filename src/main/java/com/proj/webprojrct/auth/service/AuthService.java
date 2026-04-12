@@ -41,8 +41,13 @@ import com.proj.webprojrct.auth.entity.OtpCode;
 import com.proj.webprojrct.auth.entity.OtpType;
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import com.proj.webprojrct.common.config.logging.SecurityEventLogger;
+import com.proj.webprojrct.common.config.metrics.LoginMetrics;
 
 @AllArgsConstructor
 @Service
@@ -57,6 +62,8 @@ public class AuthService {
     private final speedSMsService sSms;
     private final emailService emailService;
     private final JwtUtil jwtUtil;
+    // [LOGGING/MONITORING] Custom Prometheus metrics bean - OWASP A09
+    private final LoginMetrics loginMetrics;
 
     public LoginResponse handleLogin(String phone, String password, HttpSession session, Model model) throws Exception {
 
@@ -69,6 +76,9 @@ public class AuthService {
             User user = userDetails.getUser();
 
             if (user == null || !user.getIsActive()) {
+                // [LOGGING] Tài khoản không active dù xác thực đúng mật khẩu - OWASP A09
+                SecurityEventLogger.loginFailure(phone, getClientIp(), "ACCOUNT_INACTIVE");
+                loginMetrics.recordLoginFailure();
                 throw new RuntimeException("Tài khoản không tồn tại hoặc đã bị khóa.");
             }
 
@@ -79,14 +89,48 @@ public class AuthService {
             user.setRefreshToken(refreshToken);
             userRepository.save(user);
 
+            // [LOGGING] Ghi log đăng nhập thành công kèm role - OWASP A09
+            // Admin/Seller login ghi mức WARN để nổi bật trong log
+            SecurityEventLogger.loginSuccess(phone, getClientIp(), user.getRole().name());
+            // [METRICS] Tăng counter Prometheus
+            loginMetrics.recordLoginSuccess();
+
             return new LoginResponse(user, accessToken, refreshToken);
         } catch (org.springframework.security.authentication.DisabledException e) {
+            // [LOGGING] Ghi log tài khoản bị khóa - OWASP A09
+            SecurityEventLogger.loginFailure(phone, getClientIp(), "ACCOUNT_DISABLED");
+            loginMetrics.recordLoginFailure();
             model.addAttribute("error", "Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
             throw new RuntimeException("Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
         } catch (BadCredentialsException e) {
+            // [LOGGING] Ghi log sai mật khẩu - OWASP A09
+            SecurityEventLogger.loginFailure(phone, getClientIp(), "BAD_CREDENTIALS");
+            loginMetrics.recordLoginFailure();
             model.addAttribute("error", "Sai số điện thoại hoặc mật khẩu!");
             throw new RuntimeException("Sai số điện thoại hoặc mật khẩu!");
         }
+    }
+
+    /**
+     * [LOGGING HELPER] Lấy IP thực của client, hỗ trợ reverse proxy (X-Forwarded-For).
+     * Dùng RequestContextHolder để truy cập request từ service layer.
+     */
+    private String getClientIp() {
+        try {
+            ServletRequestAttributes attrs =
+                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attrs != null) {
+                HttpServletRequest request = attrs.getRequest();
+                String xForwardedFor = request.getHeader("X-Forwarded-For");
+                if (xForwardedFor != null && !xForwardedFor.isBlank()) {
+                    return xForwardedFor.split(",")[0].trim();
+                }
+                return request.getRemoteAddr();
+            }
+        } catch (Exception ignored) {
+            // Không thể lấy IP => trả về unknown, không được throw exception
+        }
+        return "unknown";
     }
 
     public void validateRegisterRequest(RegisterRequest request) {
@@ -126,7 +170,11 @@ public class AuthService {
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(UserRole.USER);
         user.setVerifyPhone(true); // Đã xác thực OTP
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        // [LOGGING] Ghi log đăng ký thành công (qua OTP flow) - OWASP A09
+        SecurityEventLogger.registerSuccess(request.getPhone(), getClientIp());
+        loginMetrics.recordRegister();
+        return saved;
     }
 
     public User registerUser(RegisterRequest request) {
@@ -154,7 +202,11 @@ public class AuthService {
         User user = authMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(UserRole.USER);
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        // [LOGGING] Ghi log đăng ký thành công - OWASP A09
+        SecurityEventLogger.registerSuccess(request.getPhone(), getClientIp());
+        loginMetrics.recordRegister();
+        return saved;
     }
 
     public User handleRefreshToken(String refreshToken) {
@@ -215,6 +267,9 @@ public class AuthService {
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
+        // [LOGGING] Ghi log reset mật khẩu qua SMS - OWASP A09
+        SecurityEventLogger.passwordReset(phone, getClientIp(), "SMS");
+
         return true;
     }
 
@@ -235,6 +290,10 @@ public class AuthService {
         emailService.sendEmail(email, "Reset Mật Khẩu", emailBody);
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+
+        // [LOGGING] Ghi log reset mật khẩu qua Email - OWASP A09
+        SecurityEventLogger.passwordReset(email, getClientIp(), "EMAIL");
+
         return true;
     }
 
@@ -267,6 +326,9 @@ public class AuthService {
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+
+        // [LOGGING] Ghi log đổi mật khẩu thành công - OWASP A09
+        SecurityEventLogger.passwordChanged(phone, getClientIp());
 
         return "Đổi mật khẩu thành công!";
     }

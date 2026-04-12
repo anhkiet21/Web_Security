@@ -7,8 +7,10 @@ import com.proj.webprojrct.user.entity.User;
 import com.proj.webprojrct.user.repository.UserRepository;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.proj.webprojrct.common.config.logging.SecurityEventLogger;
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
 
 import java.util.HashMap;
@@ -130,8 +132,14 @@ public class AuthController {
     @PostMapping("/dologout")
     public String logout(@CookieValue(value = "refresh_token", required = false) String refreshToken,
             HttpServletResponse response,
-            HttpSession session) {
+            HttpSession session,
+            HttpServletRequest request) {
+        // [LOGGING] Lấy username trước khi xóa SecurityContext - OWASP A09
+        String loggedUsername = "anonymous";
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
+            loggedUsername = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+        }
         if (authentication != null && authentication.isAuthenticated()) {
             SecurityContextHolder.clearContext();
         }
@@ -143,11 +151,14 @@ public class AuthController {
                 if (user != null) {
                     user.setRefreshToken(null);
                     userRepo.save(user);
+                    if ("anonymous".equals(loggedUsername)) loggedUsername = phone;
                 }
             } catch (Exception e) {
                 // token không hợp lệ thì bỏ qua
             }
         }
+        // [LOGGING] Ghi log đăng xuất - OWASP A09
+        SecurityEventLogger.logout(loggedUsername, getClientIp(request));
 
         Cookie accessCookie = new Cookie("access_token", null);
         accessCookie.setHttpOnly(true);
@@ -465,4 +476,12 @@ public class AuthController {
         return response;
     }
 
+    // [LOGGING] Lấy IP thực của client - OWASP A09
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
+    }
 }

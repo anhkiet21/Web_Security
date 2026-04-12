@@ -53,8 +53,53 @@ services:
     networks:
       - cps-network
 
+  # ================================================================
+  # PROMETHEUS - Thu thập metrics từ Spring Boot app (OWASP A09)
+  # Truy cập UI: http://localhost:9090
+  # Scrape endpoint: http://web:8080/actuator/prometheus
+  # ================================================================
+  prometheus:
+    image: prom/prometheus:v2.51.2
+    container_name: cps_prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - web
+    networks:
+      - cps-network
+
+  # ================================================================
+  # ALERTMANAGER - Nhận alert từ Prometheus, gửi email/webhook (OWASP A09)
+  # Truy cập UI: http://localhost:9093
+  # Cấu hình: monitoring/alertmanager.yml
+  # ================================================================
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: cps_alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - cps-network
+
 volumes:
   mysql_data:
+  prometheus_data:    # Lưu dữ liệu metrics 15 ngày
 
 
 networks:

@@ -28,6 +28,10 @@ import com.proj.webprojrct.user.dto.request.UserAdminUpdateRequest;
 import com.proj.webprojrct.user.dto.request.UserCreateRequest;
 import com.proj.webprojrct.user.dto.response.UserAdminResponse;
 import com.proj.webprojrct.user.entity.UserRole;
+import com.proj.webprojrct.common.config.logging.SecurityEventLogger;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -190,6 +194,9 @@ public class UserService {
         User userToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy user cần cập nhật"));
 
+        // [LOGGING] Lưu role cũ trước khi cập nhật - OWASP A09
+        UserRole oldRole = userToUpdate.getRole();
+
         userToUpdate.setFullName(updateRequest.getFullname());
         userToUpdate.setEmail(updateRequest.getEmail());
         userToUpdate.setAddress(updateRequest.getAddress());
@@ -201,6 +208,16 @@ public class UserService {
         }
 
         userRepository.save(userToUpdate);
+
+        // [LOGGING] Ghi log thay đổi role nếu có - OWASP A09
+        if (updateRequest.getRole() != null && oldRole != updateRequest.getRole()) {
+            SecurityEventLogger.roleChanged(
+                    currUser.getPhone(),
+                    userToUpdate.getPhone(),
+                    oldRole.name(),
+                    updateRequest.getRole().name(),
+                    getClientIp());
+        }
 
         return userMapper.toAdminResponse(userToUpdate);
     }
@@ -223,6 +240,9 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy user cần xóa"));
         userToDelete.setIsActive(false);
         userRepository.save(userToDelete);
+
+        // [LOGGING] Ghi log xóa user - OWASP A09
+        SecurityEventLogger.userDeleted(currUser.getPhone(), String.valueOf(userId), getClientIp());
     }
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -319,4 +339,19 @@ public class UserService {
             return userMapper.toDto(user);
         }
 
+    // [LOGGING] Lấy IP thực của client - OWASP A09
+    private String getClientIp() {
+        try {
+            ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attrs == null) return "unknown";
+            HttpServletRequest req = attrs.getRequest();
+            String ip = req.getHeader("X-Forwarded-For");
+            if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+                return ip.split(",")[0].trim();
+            }
+            return req.getRemoteAddr();
+        } catch (Exception e) {
+            return "unknown";
+        }
+    }
 }

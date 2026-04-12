@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proj.webprojrct.common.ResponseMessage;
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
+import com.proj.webprojrct.common.config.logging.SecurityEventLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -105,6 +106,9 @@ public class OrderController {
                 if ("00".equals(responseCode) && "05".equals(txnStatus)) {
                     isRefunded = true;
                     orderService.cancelOrder(orderId);
+                    // [LOGGING] Ghi log hủy đơn hàng VNPay - OWASP A09
+                    String username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+                    SecurityEventLogger.orderCancelled(username, orderId, getClientIp(request), "VNPAY_REFUND");
                     return ResponseEntity.ok(new ResponseMessage("Đơn hàng đã được hủy và hoàn tiền thành công! Tiền sẽ được hoàn lại vào tài khoản của bạn trong 5-7 ngày làm việc."));
                 } else {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -113,6 +117,9 @@ public class OrderController {
             } else {
                 // COD hoặc chưa thanh toán - chỉ hủy đơn
                 orderService.cancelOrder(orderId);
+                // [LOGGING] Ghi log hủy đơn hàng COD - OWASP A09
+                String username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+                SecurityEventLogger.orderCancelled(username, orderId, getClientIp(request), "COD_CANCEL");
                 return ResponseEntity.ok(new ResponseMessage("Đơn hàng đã được hủy thành công!"));
             }
 
@@ -120,6 +127,15 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseMessage("Lỗi khi xử lý hủy đơn hàng: " + e.getMessage()));
         }
+    }
+
+    // [LOGGING] Lấy IP thực của client - OWASP A09
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 
     @PutMapping("/{orderId}/refund")
