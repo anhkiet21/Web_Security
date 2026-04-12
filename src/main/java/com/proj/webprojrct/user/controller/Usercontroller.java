@@ -57,8 +57,6 @@ public class Usercontroller {
                 Object principal = authentication.getPrincipal();
                 if (principal instanceof CustomUserDetails cud) {
                     u = cud.getUser();
-                } else if (principal instanceof com.proj.webprojrct.auth.service.CustomOauth2User oau) {
-                    u = oau.getUser();
                 }
 
                 if (u != null) {
@@ -114,3 +112,4 @@ public class Usercontroller {
         }
     }
 }
+

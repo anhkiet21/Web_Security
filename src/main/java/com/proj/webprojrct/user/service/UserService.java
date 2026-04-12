@@ -18,7 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
-import com.proj.webprojrct.auth.service.CustomOauth2User;
+
 import com.proj.webprojrct.user.dto.request.UserUpdateRequest;
 import com.proj.webprojrct.user.entity.User;
 import com.proj.webprojrct.user.dto.response.UserResponse;
@@ -51,8 +51,6 @@ public class UserService {
         Object principal = authentication.getPrincipal();
         if (principal instanceof CustomUserDetails cud) {
             return cud.getUser();
-        } else if (principal instanceof CustomOauth2User oau) {
-            return oau.getUser();
         }
         throw new RuntimeException("Không xác định được thông tin người dùng.");
     }
@@ -332,3 +330,4 @@ public class UserService {
         }
 
 }
+

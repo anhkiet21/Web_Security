@@ -47,6 +47,6 @@ public class Oauth2Service {
         }
 
         User user = optionalUser;
-        return new CustomOauth2User(user, oauth2User.getAttributes());
+        return new com.proj.webprojrct.common.config.security.CustomUserDetails(user, oauth2User.getAttributes());
     }
 }
