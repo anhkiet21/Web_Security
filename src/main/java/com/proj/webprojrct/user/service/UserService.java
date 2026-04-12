@@ -2,6 +2,7 @@ package com.proj.webprojrct.user.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
@@ -167,9 +168,13 @@ public class UserService {
             throw new RuntimeException("Email đã tồn tại trong hệ thống.");
         }
         User newUser = userMapper.toEntity(userCreateRequest);
-        newUser.setPasswordHash(passwordEncoder.encode("123"));
+        // FIX V-13: Sinh mật khẩu ngẫu nhiên an toàn thay vì hardcode "123"
+        String tempPassword = generateTempPassword();
+        newUser.setPasswordHash(passwordEncoder.encode(tempPassword));
         userRepository.save(newUser);
-        return userMapper.toAdminResponse(newUser);
+        UserAdminResponse response = userMapper.toAdminResponse(newUser);
+        response.setTempPassword(tempPassword); // trả lại 1 lần duy nhất cho admin
+        return response;
     }
 
     public UserAdminResponse handleUpdateUser(Authentication authentication, UserAdminUpdateRequest updateRequest, long id) {
@@ -318,5 +323,34 @@ public class UserService {
 
             return userMapper.toDto(user);
         }
+
+    /**
+     * FIX V-13: Sinh mật khẩu tạm ngẫu nhiên — ít nhất 12 ký tự,
+     * bao gồm chữ hoa, chữ thường, số, ký tự đặc biệt.
+     */
+    private String generateTempPassword() {
+        SecureRandom random = new SecureRandom();
+        String upper   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower   = "abcdefghijklmnopqrstuvwxyz";
+        String digits  = "0123456789";
+        String special = "!@#$%";
+        String all     = upper + lower + digits + special;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(upper.charAt(random.nextInt(upper.length())));
+        sb.append(lower.charAt(random.nextInt(lower.length())));
+        sb.append(digits.charAt(random.nextInt(digits.length())));
+        sb.append(special.charAt(random.nextInt(special.length())));
+        for (int i = 4; i < 12; i++) {
+            sb.append(all.charAt(random.nextInt(all.length())));
+        }
+        // Xào trộn để tránh các ký tự bắt buộc luôn ở đầu
+        char[] chars = sb.toString().toCharArray();
+        for (int i = chars.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            char tmp = chars[i]; chars[i] = chars[j]; chars[j] = tmp;
+        }
+        return new String(chars);
+    }
 
 }

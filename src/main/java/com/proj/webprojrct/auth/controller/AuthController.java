@@ -1,5 +1,6 @@
 package com.proj.webprojrct.auth.controller;
 
+import com.proj.webprojrct.auth.service.LoginAttemptService;
 import com.proj.webprojrct.auth.service.AuthService;
 import com.proj.webprojrct.user.entity.UserRole;
 import com.proj.webprojrct.common.config.security.JwtUtil;
@@ -46,6 +47,7 @@ public class AuthController {
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
+    private final LoginAttemptService loginAttemptService; // FIX V-09
 
     @GetMapping("/login")
     public String loginPage() {
@@ -64,13 +66,26 @@ public class AuthController {
             HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) { //login
+        String phone = loginRequest.getPhone();
+
+        // FIX V-09: Kiểm tra khóa brute force
+        if (loginAttemptService.isBlocked(phone)) {
+            long minutes = loginAttemptService.getRemainingLockMinutes(phone);
+            redirectAttributes.addFlashAttribute("error",
+                    "Tài khoản bị khóa do quá nhiều lần đăng nhập sai. Thử lại sau " + minutes + " phút.");
+            return "redirect:/login";
+        }
+
         try {
             LoginResponse loginResponse = authService.handleLogin(
-                    loginRequest.getPhone(),
+                    phone,
                     loginRequest.getPassword(),
                     session,
                     model
             );
+
+            // FIX V-09: Đăng nhập thành công → xóa bộ đếm
+            loginAttemptService.loginSucceeded(phone);
 
             User user = loginResponse.getUser();
             String accessToken = loginResponse.getAccessToken();
@@ -89,10 +104,10 @@ public class AuthController {
             return "redirect:/home";
 
         } catch (Exception e) {
-            //model.addAttribute("error", e.getMessage());
-            //return "login";
+            // FIX V-09: Đăng nhập thất bại → tăng bộ đếm
+            loginAttemptService.loginFailed(phone);
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/login"; //giữ lại model login
+            return "redirect:/login";
         }
     }
 

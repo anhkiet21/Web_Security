@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.proj.webprojrct.payment.vnpay.service.PaymentService;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -61,7 +62,8 @@ public class OrderServiceImpl implements OrderService {
         // if (!user.getVerifyPhone()) {
         //     throw new RuntimeException("Chưa xác thực số điện thoại.");
         // }
-        // lấy số lượng trước khi order
+        // FIX V-20: Tính lại totalAmount từ DB, không tin giá trị client gửi lên
+        BigDecimal serverTotalAmount = BigDecimal.ZERO;
         if (request.getOrderItems() != null) {
             for (OrderRequest.OrderItemRequest itemReq : request.getOrderItems()) {
                 Product product = productRepository.findById(itemReq.getProductId())
@@ -71,14 +73,19 @@ public class OrderServiceImpl implements OrderService {
                     throw new RuntimeException("Không đủ số lượng sản phẩm " + product.getName()
                             + ". Còn lại: " + product.getStock() + ", yêu cầu: " + itemReq.getQuantity());
                 }
+
+                // Lấy giá từ DB, nhân với số lượng
+                BigDecimal itemTotal = product.getPrice()
+                        .multiply(BigDecimal.valueOf(itemReq.getQuantity()));
+                serverTotalAmount = serverTotalAmount.add(itemTotal);
             }
         }
 
         Order order = new Order();
         order.setUser(user);
         order.setStatus("PENDING");
-        order.setTotalAmount(request.getTotalAmount());
-        order.setShippingAddress(request.getShippingAddress()); // Use address from request
+        order.setTotalAmount(serverTotalAmount); // FIX V-20: dùng giá tính từ server
+        order.setShippingAddress(request.getShippingAddress());
         order.setCreatedAt(LocalDateTime.now());
         order = orderRepository.save(order);
 

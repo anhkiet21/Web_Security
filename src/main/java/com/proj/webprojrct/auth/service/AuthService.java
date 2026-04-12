@@ -92,7 +92,7 @@ public class AuthService {
     public void validateRegisterRequest(RegisterRequest request) {
         // Validate password
         if (!isValidPassword(request.getPassword())) {
-            throw new RuntimeException("Mật khẩu phải có ít nhất 6 ký tự, bao gồm cả chữ cái và số!");
+            throw new RuntimeException("Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (!@#$%...)!");
         }
 
         if (!request.getPassword().equals(request.getConfirmPassword())) {
@@ -132,7 +132,7 @@ public class AuthService {
     public User registerUser(RegisterRequest request) {
         // Validate password
         if (!isValidPassword(request.getPassword())) {
-            throw new RuntimeException("Mật khẩu phải có ít nhất 6 ký tự, bao gồm cả chữ cái và số!");
+            throw new RuntimeException("Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (!@#$%...)!");
         }
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Mật khẩu và xác nhận mật khẩu không khớp!");
@@ -255,9 +255,9 @@ public class AuthService {
             //return "Mật khẩu cũ không đúng!";
         }
 
-        // Validate mật khẩu mới (tối thiểu 6 ký tự, có chữ và số)
+        // Validate mật khẩu mới
         if (!isValidPassword(request.getNewPassword())) {
-            throw new RuntimeException("Mật khẩu mới phải có ít nhất 6 ký tự, bao gồm cả chữ cái và số!");
+            throw new RuntimeException("Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (!@#$%...)!");
         }
 
         if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
@@ -407,14 +407,14 @@ public class AuthService {
         return email.matches(emailRegex);
     }
 
+    // FIX V-13: Chính sách mật khẩu mạnh — ít nhất 8 ký tự, chữ hoa, chữ thường, số, ký tự đặc biệt
     private boolean isValidPassword(String password) {
-        if (password == null || password.length() < 6) {
-            return false;
-        }
-        // Phải có ít nhất 1 chữ cái và 1 số
-        boolean hasLetter = password.matches(".*[A-Za-z].*");
-        boolean hasDigit = password.matches(".*\\d.*");
-        return hasLetter && hasDigit;
+        if (password == null || password.length() < 8) return false;
+        if (!password.matches(".*[A-Z].*")) return false;           // ít nhất 1 chữ hoa
+        if (!password.matches(".*[a-z].*")) return false;           // ít nhất 1 chữ thường
+        if (!password.matches(".*[0-9].*")) return false;           // ít nhất 1 chữ số
+        if (!password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{}|;':,./<>?].*")) return false; // ký tự đặc biệt
+        return true;
     }
 
 }

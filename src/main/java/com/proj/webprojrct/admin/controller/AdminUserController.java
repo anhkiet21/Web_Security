@@ -25,6 +25,8 @@ import com.proj.webprojrct.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.proj.webprojrct.user.entity.User;
 
 @Controller
@@ -93,7 +95,7 @@ public class AdminUserController {
 
     @PostMapping("/admin/createUser")
     public String handleCreateUser(@ModelAttribute UserCreateRequest userCreateRequest,
-            Model model, Authentication authentication) {
+            Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
 
         authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -103,11 +105,15 @@ public class AdminUserController {
         }
 
         try {
-            userService.handleCreateUser(authentication, userCreateRequest);
+            UserAdminResponse created = userService.handleCreateUser(authentication, userCreateRequest);
+            // FIX V-13: Hiển thị mật khẩu tạm cho admin biết để thông báo cho người dùng mới
+            redirectAttributes.addFlashAttribute("success",
+                    "Tạo tài khoản thành công! Mật khẩu tạm: "
+                    + created.getTempPassword()
+                    + " — Yêu cầu người dùng đổi mật khẩu sau khi đăng nhập lần đầu.");
             return "redirect:/admin/users";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
-            // reload users to show the page
             try {
                 model.addAttribute("users", userService.getAllUsers(authentication));
             } catch (Exception ex) {
