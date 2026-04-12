@@ -35,6 +35,8 @@
           <p class="subtitle">Chào mừng bạn trở lại! Vui lòng đăng nhập để tiếp tục.</p>
 
           <form action="<c:url value='/dologin' />" method="post">
+            <%-- ✅ CSRF Token: Ngăn Login CSRF Attack từ trang giả mạo --%>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             <c:if test="${not empty error}">
               <div class="alert alert-danger">
                 <i class="fa fa-exclamation-circle"></i> ${error}

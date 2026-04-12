@@ -63,6 +63,8 @@
                         </div>
 
                         <form id="resetForm" action="${pageContext.request.contextPath}/doResetPassword" method="post">
+                            <%-- ✅ CSRF Token --%>
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                             <div class="form-group mb-3">
                                 <label for="input">
                                     <i class="fa fa-envelope"></i> Email hoặc số điện thoại

@@ -514,6 +514,8 @@
                         <c:if test="${order.status == 'PAID'}">
                             <form action="${pageContext.request.contextPath}/seller/accept-order/${order.orderId}"
                                 method="post" style="display: inline;">
+                                <%-- ✅ CSRF Token --%>
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                 <button type="submit" class="btn-action btn-accept">
                                     <i class="fa fa-check"></i> Xác nhận đơn hàng
                                 </button>
@@ -554,6 +556,8 @@
 
                                 <form action="${pageContext.request.contextPath}/seller/cancel-order/${order.orderId}"
                                     method="post" onsubmit="return validateCancelForm()">
+                                    <%-- ✅ CSRF Token --%>
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                     <div style="margin-bottom: 15px;">
                                         <label for="cancelNote"
                                             style="display: block; font-weight: bold; margin-bottom: 8px; color: #333;">
@@ -586,6 +590,8 @@
                         <c:if test="${order.status == 'ACCEPTED'}">
                             <form action="${pageContext.request.contextPath}/seller/ship-order/${order.orderId}"
                                 method="post" style="display: inline;">
+                                <%-- ✅ CSRF Token --%>
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                 <button type="submit" class="btn-action btn-ship">
                                     <i class="fa fa-truck"></i> Chuyển sang vận chuyển
                                 </button>
@@ -596,6 +602,8 @@
                         <c:if test="${order.status == 'SHIPPING'}">
                             <form action="${pageContext.request.contextPath}/seller/deliver-order/${order.orderId}"
                                 method="post" style="display: inline;">
+                                <%-- ✅ CSRF Token --%>
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                 <button type="submit" class="btn-action btn-deliver">
                                     <i class="fa fa-check-circle"></i> Đánh dấu đã giao
                                 </button>

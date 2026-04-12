@@ -487,6 +487,8 @@
                                                 <form
                                                     action="${pageContext.request.contextPath}/seller/accept-order/${order.orderId}"
                                                     method="post" style="display:inline;">
+                                                    <%-- ✅ CSRF Token --%>
+                                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                                     <button type="submit" class="btn-accept">
                                                         <i class="fa fa-check"></i> Xác Nhận Đơn Hàng
                                                     </button>
@@ -540,6 +542,8 @@
                                             <form
                                                 action="${pageContext.request.contextPath}/seller/cancel-order/${order.orderId}"
                                                 method="post" onsubmit="return validateCancelForm(${order.orderId});">
+                                                <%-- ✅ CSRF Token --%>
+                                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                                 <label for="cancelNote-${order.orderId}">
                                                     <i class="fa fa-comment"></i> Lý do hủy đơn: <span
                                                         style="color: red;">*</span>

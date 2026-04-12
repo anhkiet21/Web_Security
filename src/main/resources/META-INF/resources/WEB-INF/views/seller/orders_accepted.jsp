@@ -395,6 +395,8 @@
                                             <form
                                                 action="${pageContext.request.contextPath}/seller/ship-order/${order.orderId}"
                                                 method="post" style="display:inline;">
+                                                <%-- ✅ CSRF Token --%>
+                                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                                 <button type="submit" class="btn-ship">
                                                     <i class="fa fa-truck"></i> Chuyển sang Vận Chuyển
                                                 </button>

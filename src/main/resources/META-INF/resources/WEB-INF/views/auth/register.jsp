@@ -44,6 +44,8 @@
         </div>
 
         <form id="registerForm" action="${pageContext.request.contextPath}/doregister" method="post">
+          <%-- ✅ CSRF Token: Ngăn Register CSRF Attack từ trang giả mạo --%>
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
           <h2 class="section-title">
             <i class="fa fa-user"></i> Thông tin cá nhân
           </h2>

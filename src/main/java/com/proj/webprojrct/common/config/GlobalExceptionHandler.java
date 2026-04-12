@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex) {
         var body = ErrorResponse.builder()
                 .message("Internal error")
-                .details(java.util.List.of(ex.getMessage()))
+                .details(java.util.List.of("Internal error occurred"))
                 .build();
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -85,6 +85,8 @@
                         <h3 style="margin-top: 0;">Tạo người dùng mới</h3>
                         <form action="${pageContext.request.contextPath}/admin/createUser" method="post"
                             id="createUserForm">
+                            <%-- ✅ CSRF Token --%>
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                             <table style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
                                 <tr>
                                     <td style="width: 120px;"><label>Số điện thoại:</label></td>
@@ -258,6 +260,8 @@
                                                 <form
                                                     action="${pageContext.request.contextPath}/admin/updateUser/${user.id}"
                                                     method="post" class="editUserForm">
+                                                    <%-- ✅ CSRF Token --%>
+                                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                                     <table
                                                         style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
                                                         <tr>

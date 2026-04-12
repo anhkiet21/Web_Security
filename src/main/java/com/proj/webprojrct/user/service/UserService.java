@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
+import com.proj.webprojrct.auth.service.CustomOauth2User;
 import com.proj.webprojrct.user.dto.request.UserUpdateRequest;
 import com.proj.webprojrct.user.entity.User;
 import com.proj.webprojrct.user.dto.response.UserResponse;
@@ -39,8 +40,22 @@ import lombok.*;
 @NoArgsConstructor
 @Service
 public class UserService {
-    //hàm thêm vào service phân trang
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    /**
+     * Helper: Lấy User từ principal — hỗ trợ cả 2 loại login:
+     * - Đăng nhập thường (CustomUserDetails)
+     * - Đăng nhập OAuth2/Google (CustomOauth2User)
+     */
+    private User extractUser(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof CustomUserDetails cud) {
+            return cud.getUser();
+        } else if (principal instanceof CustomOauth2User oau) {
+            return oau.getUser();
+        }
+        throw new RuntimeException("Không xác định được thông tin người dùng.");
+    }
 
     @Autowired
     private AvatarStorageService avatarStorageService;
@@ -233,8 +248,7 @@ public class UserService {
             throw new RuntimeException("Bạn chưa đăng nhập.");
         }
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userDetails.getUser();
+        User user = extractUser(authentication);
 
         return userMapper.toDto(user);
     }
@@ -246,8 +260,7 @@ public class UserService {
             throw new RuntimeException("Bạn chưa đăng nhập.");
         }
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User existingUser = userDetails.getUser();
+        User existingUser = extractUser(authentication);
 
         if (avt != null && !avt.isEmpty()) {
             try (InputStream inputStream = avt.getInputStream()) {
@@ -278,8 +291,7 @@ public class UserService {
                 || authentication instanceof AnonymousAuthenticationToken) {
             throw new RuntimeException("Bạn chưa đăng nhập.");
         }
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User currUser = userDetails.getUser();
+        User currUser = extractUser(authentication);
         if (currUser.getRole() != UserRole.ADMIN) {
             throw new RuntimeException("Bạn không đủ quyền thực hiện thao tác này.");
         }
@@ -308,8 +320,7 @@ public class UserService {
                 throw new RuntimeException("Bạn chưa đăng nhập.");
             }
 
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            User currUser = userDetails.getUser();
+            User currUser = extractUser(authentication);
             if (currUser.getRole() != UserRole.ADMIN) {
                 throw new RuntimeException("Bạn không đủ quyền truy cập.");
             }

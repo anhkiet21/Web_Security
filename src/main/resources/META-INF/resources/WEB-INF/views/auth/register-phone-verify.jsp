@@ -113,6 +113,8 @@
 
                     <form method="post" action="${pageContext.request.contextPath}/register-phone-skip"
                         style="margin: 0;">
+                        <%-- ✅ CSRF Token --%>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                         <button type="submit" class="btn btn-google w-100">
                             <i class="fa fa-clock-o"></i> Để sau (Xác thực trong cài đặt)
                         </button>

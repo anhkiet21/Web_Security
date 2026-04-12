@@ -917,9 +917,9 @@
                                         tin
                                     </h6>
 
-                                    <form action="${pageContext.request.contextPath}/profile-update" method="post"
+                                    <form action="${pageContext.request.contextPath}/profile-update?${_csrf.parameterName}=${_csrf.token}"
+                                        method="post"
                                         enctype="multipart/form-data">
-                                        <div class="row">
                                             <div class="col-md-6">
                                                 <div style="margin-bottom:20px;">
                                                     <label
@@ -1056,6 +1056,8 @@
                                     </c:if>
 
                                     <form action="${pageContext.request.contextPath}/change-password" method="post">
+                                        <%-- ✅ CSRF Token --%>
+                                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                         <div style="margin-bottom:20px;">
                                             <label
                                                 style="font-weight:600; color:#2B2D42; margin-bottom:8px; display:flex; align-items:center; gap:8px; font-size:14px;">

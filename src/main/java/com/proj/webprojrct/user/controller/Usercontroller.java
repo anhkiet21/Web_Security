@@ -52,9 +52,17 @@ public class Usercontroller {
 
             // Get user statistics
             try {
-                CustomUserDetails cud = (CustomUserDetails) authentication.getPrincipal();
-                com.proj.webprojrct.user.entity.User u = cud.getUser();
-                Long userId = u.getId();
+                // ✅ Hỗ trợ cả đăng nhập thường (CustomUserDetails) và OAuth2 (CustomOauth2User)
+                com.proj.webprojrct.user.entity.User u = null;
+                Object principal = authentication.getPrincipal();
+                if (principal instanceof CustomUserDetails cud) {
+                    u = cud.getUser();
+                } else if (principal instanceof com.proj.webprojrct.auth.service.CustomOauth2User oau) {
+                    u = oau.getUser();
+                }
+
+                if (u != null) {
+                    Long userId = u.getId();
 
                 // Get total orders and total spent
                 int totalOrders = orderService.getTotalOrdersByUserId(userId);
@@ -74,6 +82,7 @@ public class Usercontroller {
                 boolean verifyEmail = u.getVerifyEmail() != null && u.getVerifyEmail();
                 model.addAttribute("verifyPhone", verifyPhone);
                 model.addAttribute("verifyEmail", verifyEmail);
+                } // end if (u != null)
             } catch (Exception e) {
                 model.addAttribute("totalOrders", 0);
                 model.addAttribute("totalSpent", 0.0);

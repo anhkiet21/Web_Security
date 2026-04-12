@@ -39,6 +39,8 @@
                         <li>
                           <form action="${pageContext.request.contextPath}/dologout" method="post"
                             style="display: inline">
+                            <%-- ✅ CSRF Token --%>
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                             <button type="submit" style="
                     background: none;
                     border: none;

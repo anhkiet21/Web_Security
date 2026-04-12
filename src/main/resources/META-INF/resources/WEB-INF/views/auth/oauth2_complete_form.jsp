@@ -35,6 +35,8 @@
                     <p class="subtitle">Vui lòng cung cấp thêm một số thông tin để hoàn tất đăng ký</p>
 
                     <form action="${pageContext.request.contextPath}/oauth2/complete" method="post">
+                        <%-- ✅ CSRF Token --%>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                         <c:if test="${not empty error}">
                             <div class="alert alert-danger">
                                 <i class="fa fa-exclamation-circle"></i> ${error}

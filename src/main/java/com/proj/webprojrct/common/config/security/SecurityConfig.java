@@ -30,8 +30,8 @@ public class SecurityConfig {
     private final CustomUserDetailsService uds;
     private final PasswordEncoder passwordEncoder;
     private final JwtAuthenticationFilter jwtFilter;
-    // private final CustomAccessDeniedHandler accessDeniedHandler;
-    // private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired(required = false)
     private CustomOauth2UserService customOauth2UserService;
@@ -45,47 +45,83 @@ public class SecurityConfig {
     public SecurityConfig(
             CustomUserDetailsService uds,
             PasswordEncoder passwordEncoder,
-            JwtAuthenticationFilter jwtFilter
-    // CustomAccessDeniedHandler accessDeniedHandler,
-    // CustomAuthenticationEntryPoint authenticationEntryPoint
-    ) {
+            JwtAuthenticationFilter jwtFilter,
+            CustomAccessDeniedHandler accessDeniedHandler,
+            CustomAuthenticationEntryPoint authenticationEntryPoint) {
         this.uds = uds;
         this.passwordEncoder = passwordEncoder;
         this.jwtFilter = jwtFilter;
-        // this.accessDeniedHandler = accessDeniedHandler;
-        // this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        // ✅ CSRF: Bật lại với CookieCsrfTokenRepository
+        // Spring sẽ set cookie XSRF-TOKEN (HttpOnly=false) để JS đọc được
+        // JS phải đọc cookie đó rồi gắn vào header X-XSRF-TOKEN hoặc field _csrf
+        http.csrf(csrf -> csrf
+                .csrfTokenRepository(
+                        org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringRequestMatchers(
+                        // ✅ Chỉ exempt các endpoint thuần stateless / OAuth2 flow
+                        "/refresh",
+                        "/api/send-otp", "/api/verify-otp",
+                        "/register-phone/**", "/oauth2/**",
+
+                        // ✅ REST API stateless (JWT-based) — CORS đóng vai trò bảo vệ thay thế
+                        "/api/cart/**", "/api/favorite/**",
+                        "/api/vnpay/**", "/api/chat/**",
+                        "/api/order/**", "/api/reviews/**",
+                        "/api/media/**", "/api/documents/**",
+                        "/api/products/**", "/api/categories/**"
+
+                        // ✅ /dologin, /doregister, /doResetPassword, /dologout:
+                        //    KHÔNG exempt — form JSP đã có ${_csrf.token}
+                        //    → Tấn công Login CSRF từ trang khác origin bị chặn 403
+                ))
+                // ⚠️ CSRF yêu cầu session để lưu token — đổi từ STATELESS sang IF_REQUIRED
+                // JWT vẫn hoạt động bình thường vì JwtAuthenticationFilter chạy trước session
+                // check
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/oauth2/**", "/login", "/dologin", "/register", "/doregister", "/doResetPassword", "/resetPassword", "/refresh", "/home", "/about", "/product/**", "/products", "/shop", "/deals", "/css/**", "/js/**", "/fonts/**", "/img/**", "/image/**", "/uploads/**", "/favicon.ico", "/error", "/error/**", "/webjars/**", "/WEB-INF/views/**", "/WEB-INF/decorators/**", "/common/**").permitAll()
-                .requestMatchers("/api/products/**", "/api/categories/**", "/api/media/**", "/api/cart/**", "/api/favorite/**", "/api/documents/**", "/api/reviews/**").permitAll()
-                .requestMatchers("/about", "/faq", "/warranty", "/return", "/payment", "/shipping", "/contact").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/seller/**").hasAnyRole("SELLER", "ADMIN")
-                // .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "SELLER")
-                .anyRequest().authenticated()
-                )
-                // .exceptionHandling(e -> e
-                // .accessDeniedHandler(accessDeniedHandler)
-                // .authenticationEntryPoint(authenticationEntryPoint)
-                // )
+                        .requestMatchers("/", "/oauth2/**", "/login", "/dologin", "/register", "/doregister",
+                                "/doResetPassword", "/resetPassword", "/refresh", "/home", "/about", "/product/**",
+                                "/products", "/shop", "/deals", "/css/**", "/js/**", "/fonts/**", "/img/**",
+                                "/image/**", "/uploads/**", "/favicon.ico", "/error", "/error/**", "/webjars/**",
+                                "/WEB-INF/views/**", "/WEB-INF/decorators/**", "/common/**",
+                                // ✅ Phone verification sau khi đăng ký — chưa login nhưng cần truy cập
+                                "/register-phone/**", "/register-phone-skip", "/register-phone-verify",
+                                // ✅ OTP API — cần permit để gửi/xác thực OTP
+                                "/api/send-otp", "/api/verify-otp")
+                        .permitAll()
+                        .requestMatchers("/api/products/**", "/api/categories/**", "/api/media/**", "/api/documents/**",
+                                "/api/reviews/**")
+                        .permitAll()
+                        .requestMatchers("/about", "/faq", "/warranty", "/return", "/payment", "/shipping", "/contact")
+                        .permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/seller/**").hasAnyRole("SELLER", "ADMIN")
+                        // /api/csrf-token: chỉ user đã đăng nhập mới gọi được
+                        .requestMatchers("/api/csrf-token").authenticated()
+                        // .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "SELLER")
+                        .anyRequest().authenticated())
+                .exceptionHandling(e -> e
+                        .accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable());
 
         // Only configure OAuth2 if beans are available
-        if (customOauth2UserService != null && oauth2SuccessHandler != null && oAuth2AuthenticationFailureHandler != null) {
+        if (customOauth2UserService != null && oauth2SuccessHandler != null
+                && oAuth2AuthenticationFailureHandler != null) {
             http.oauth2Login(oauth2 -> oauth2
                     .loginPage("/login")
                     .defaultSuccessUrl("/", true)
                     .userInfoEndpoint(userInfo -> userInfo.userService(customOauth2UserService))
                     .successHandler(oauth2SuccessHandler)
-                    .failureHandler(oAuth2AuthenticationFailureHandler)
-            );
+                    .failureHandler(oAuth2AuthenticationFailureHandler));
         }
 
         return http.build();

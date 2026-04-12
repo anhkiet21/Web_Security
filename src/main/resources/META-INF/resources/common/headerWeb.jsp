@@ -51,6 +51,8 @@ isAuthenticated); %>
                 method="post"
                 style="display: inline"
               >
+                <%-- ✅ CSRF Token --%>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <button
                   type="submit"
                   style="

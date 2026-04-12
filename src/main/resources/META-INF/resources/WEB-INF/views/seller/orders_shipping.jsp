@@ -381,6 +381,8 @@
                                             <form
                                                 action="${pageContext.request.contextPath}/seller/deliver-order/${order.orderId}"
                                                 method="post" style="display:inline;">
+                                                <%-- ✅ CSRF Token --%>
+                                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                                 <button type="submit" class="btn-deliver">
                                                     <i class="fa fa-check-circle"></i> Xác Nhận Đã Giao Hàng
                                                 </button>

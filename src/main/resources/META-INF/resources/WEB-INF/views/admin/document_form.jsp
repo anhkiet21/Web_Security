@@ -301,7 +301,7 @@
                         <c:set var="formAction"
                             value="${document != null ? pageContext.request.contextPath.concat('/admin/document/update/').concat(document.id) : pageContext.request.contextPath.concat('/admin/document/create')}" />
 
-                        <form action="${formAction}" method="post" enctype="multipart/form-data"
+                        <form action="${formAction}?${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data"
                             onsubmit="syncEditor()">
                             <div class="form-group">
                                 <label>Title:</label>
