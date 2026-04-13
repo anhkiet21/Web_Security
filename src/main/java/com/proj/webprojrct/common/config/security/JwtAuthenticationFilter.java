@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.proj.webprojrct.common.config.security.SecureCookieUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -70,10 +71,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // cấp access mới
                 String newAccess = jwtUtil.generateAccessToken(userDetails);
 
-                Cookie newAccessCookie = new Cookie("access_token", newAccess);
-                newAccessCookie.setHttpOnly(true);
-                newAccessCookie.setPath("/");
-                res.addCookie(newAccessCookie);
+                // [FIX V-04] Cookie bảo mật: Secure + SameSite=Lax
+                SecureCookieUtil.addAccessTokenCookie(res, newAccess);
 
                 var auth = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
@@ -91,19 +90,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void clearTokens(HttpServletResponse response) {
-        // Xóa access_token
-        Cookie accessCookie = new Cookie("access_token", null);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(0);
-        response.addCookie(accessCookie);
-
-        // Xóa refresh_token
-        Cookie refreshCookie = new Cookie("refresh_token", null);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(0);
-        response.addCookie(refreshCookie);
+        // [FIX V-04] Xóa cookie bảo mật: Secure + SameSite=Lax
+        SecureCookieUtil.clearAccessTokenCookie(response);
+        SecureCookieUtil.clearRefreshTokenCookie(response);
     }
 
 }
