@@ -65,12 +65,10 @@ public class SecurityConfig {
                 // đồng thời cho phép lấy Token, API nếu có frontend riêng.
                 http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 // ✅ CSRF: Bật lại với CookieCsrfTokenRepository
-                                // Spring sẽ set cookie XSRF-TOKEN (HttpOnly=false) để JS đọc được
-                                // JS phải đọc cookie đó rồi gắn vào header X-XSRF-TOKEN hoặc field _csrf
+                                // XSRF-TOKEN được set HttpOnly=true (không cho JS đọc cookie)
+                                // Form/JSP gửi token qua ${_csrf.token}
                                 .csrf(csrf -> csrf
-                                                .csrfTokenRepository(
-                                                                org.springframework.security.web.csrf.CookieCsrfTokenRepository
-                                                                                .withHttpOnlyFalse())
+                                                .csrfTokenRepository(csrfTokenRepository())
                                                 .ignoringRequestMatchers(
                                                                 // ✅ Chỉ exempt các endpoint thuần stateless / OAuth2
                                                                 // flow
@@ -183,6 +181,13 @@ public class SecurityConfig {
                 }
 
                 return http.build();
+        }
+
+        private org.springframework.security.web.csrf.CookieCsrfTokenRepository csrfTokenRepository() {
+                org.springframework.security.web.csrf.CookieCsrfTokenRepository repo = new org.springframework.security.web.csrf.CookieCsrfTokenRepository();
+                repo.setCookieHttpOnly(true);
+                repo.setCookieCustomizer(cookie -> cookie.sameSite("Lax"));
+                return repo;
         }
 
         @Bean
