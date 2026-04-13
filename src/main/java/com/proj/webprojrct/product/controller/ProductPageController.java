@@ -192,7 +192,7 @@ public class ProductPageController {
     //     return "product_list";
     // }
     //user
-    @GetMapping("/product/{id}")
+    @GetMapping("/product/{id:\\d+}")
     public String productDetail(@PathVariable Long id, Model model) {
         ProductResponse product = productService.getById(id);
         model.addAttribute("product", product);

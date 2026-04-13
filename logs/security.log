@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 2026-04-14 00:02:35.118 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
 2026-04-14 00:04:58.236 | ERROR | SYSTEM_ERROR | type=ResponseStatusException | ip=127.0.0.1 | message=404 NOT_FOUND "Không tìm thấy sản phẩm #3251873590373371461"
 2026-04-14 00:26:03.817 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
@@ -60,3 +61,8 @@
 2026-04-14 01:48:46.949 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/users-by-time
 2026-04-14 01:48:49.498 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
 2026-04-14 01:48:49.821 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+=======
+2026-04-13 20:08:30.150 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
+2026-04-13 20:35:38.686 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
+2026-04-13 21:13:27.682 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
+>>>>>>> origin/fix/vulnerable-js-and-error-disclosure
