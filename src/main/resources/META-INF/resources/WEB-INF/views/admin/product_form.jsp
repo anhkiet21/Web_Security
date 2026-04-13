@@ -10,7 +10,7 @@
       <link rel="stylesheet" href="<c:url value='/css/admin-dashboard.css'/>" />
       <link rel="stylesheet" href="<c:url value='/css/products_admin.css'/>" />
       <link rel="stylesheet" href="<c:url value='/css/product_form.css'/>" />
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6Ica999/6U3+1p6N+W8sELpAo0P5PLf4KJIp4jOSAmUJ6UiO/I6Z8GDZC+/2xG9l6U5l5n6l2b7xvFeoJEB6Digw1k3D6Z0SqnX+0Gooy2cuglRez2oJ6TP2PzefDs2fzGEG==" crossorigin="anonymous" />
     </head>
 
     <body>

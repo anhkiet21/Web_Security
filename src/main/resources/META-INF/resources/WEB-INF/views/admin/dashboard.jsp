@@ -316,12 +316,12 @@
       <!-- /app-layout -->
 
       <!-- WebSocket libraries for chat notifications -->
-      <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
       <script src="<c:url value='/js/admin-chat-notifications.js'/>"></script>
 
       <!-- Chart.js -->
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js" integrity="sha384-+nKQEiC5EvhczHxVn9Yx8RJWb1x1o1t4bm/FYnGV8eK3opgDdGztqKqRR3YKHyCuXapnwXCfJOLLmObAunLUaw==" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js" integrity="sha384-6nKQEiC5EvhczHxVn9Yx8RJWb1x1o1t4bm/FYnGV8eK3opgDdGztqKqRR3YKHyCuXapnwXCfJOLLmObAunLUaw==" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js" integrity="sha384-+p6l2b7xvFeoJEB6Digw1k3D6Z0SqnX+0Gooy2cuglRez2oJ6TP2PzefDs2fzGEG" crossorigin="anonymous"></script>
       <script>
         // compute theme colors once (read from CSS variables)
         const __cs_theme = getComputedStyle(document.documentElement);

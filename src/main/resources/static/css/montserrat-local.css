@@ -1,0 +1,42 @@
+/*
+Montserrat font-face for local usage (wght 400,500,600,700,800)
+Download Montserrat .woff2 files and place in static/fonts/
+*/
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/montserrat-v25-latin-400.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../fonts/montserrat-v25-latin-500.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../fonts/montserrat-v25-latin-600.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/montserrat-v25-latin-700.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 800;
+  src: url('../fonts/montserrat-v25-latin-800.woff2') format('woff2');
+  font-display: swap;
+}
+body, html {
+  font-family: 'Montserrat', Arial, sans-serif;
+}

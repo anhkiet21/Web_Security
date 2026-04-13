@@ -129,8 +129,15 @@ public class SecurityConfig {
                                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                                 .formLogin(form -> form.disable())
                                 .httpBasic(httpBasic -> httpBasic.disable())
-                                .requiresChannel(channel -> channel
-                                                .anyRequest().requiresSecure());
+                                                        .requiresChannel(channel -> channel
+                                                                        .anyRequest().requiresSecure())
+                                                        .headers(headers -> headers
+                                                                .httpStrictTransportSecurity(hsts -> hsts
+                                                                        .includeSubDomains(true)
+                                                                        .preload(true)
+                                                                        .maxAgeInSeconds(31536000)
+                                                                )
+                                                        );
 
                 // Only configure OAuth2 if beans are available
                 if (customOauth2UserService != null && oauth2SuccessHandler != null

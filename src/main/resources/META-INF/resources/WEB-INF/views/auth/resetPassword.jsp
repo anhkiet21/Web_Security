@@ -7,22 +7,13 @@ contentType="text/html;charset=UTF-8" %>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Đặt lại mật khẩu - CellPhone Store</title>
 
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+	<!-- Google Fonts (local) -->
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/montserrat-local.css" />
 
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6Fhw5jv4l1r1rVZlK6Y1E6k1b6U5zTh+V/uGNzcRCjSc5vNmi1zC2f13p6Jb6aVx3Kfg==" crossorigin="anonymous" />
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-VgpO+QdMZkR0pQfM9vDOMkMt2rt7NmBGG99nmHn7+PBkO5RAwOB1p5MNDoAuCEVs" crossorigin="anonymous" />
 
     <!-- CSS riêng -->
     <link
@@ -123,7 +114,7 @@ contentType="text/html;charset=UTF-8" %>
     </div>
 
     <!-- JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoA6VKHrj9W0nPEzvF6lZl6pnh36t+sx4CkXWvZ2R5h7N6E" crossorigin="anonymous"></script>
 
     <style>
       /* Inline validation styles */

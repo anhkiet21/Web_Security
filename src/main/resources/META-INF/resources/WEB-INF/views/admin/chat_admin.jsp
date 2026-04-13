@@ -46,8 +46,8 @@ contentType="text/html;charset=UTF-8" language="java" %>
       </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js" integrity="sha512-+vQwQ6VykBLL8GMDIS9ZhDJW60Trw7O3cu6UytzszbmWzxubUoil58x2oyS9MhUlCT3VkOITkkpFmS6r30YpgA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-6nKQEiC5EvhczHxVn9Yx8RJWb1x1o1t4bm/FYnGV8eK3opgDdGztqKqRR3YKHyCuXapnwXCfJOLLmObAunLUaw==" crossorigin="anonymous"></script>
     <script src="<c:url value='/js/admin-chat-notifications.js'/>"></script>
     <script src="<c:url value='/js/chat-admin.js'/>"></script>
 
