@@ -11,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.proj.webprojrct.sms.smsService;
 import com.proj.webprojrct.sms.speedSMsService;
 import com.proj.webprojrct.email.emailService;
 
@@ -58,7 +57,6 @@ public class AuthService {
     private final AuthenticationManager authManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final smsService smsS;
     private final speedSMsService sSms;
     private final emailService emailService;
     private final JwtUtil jwtUtil;

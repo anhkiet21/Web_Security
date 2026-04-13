@@ -128,7 +128,9 @@ public class SecurityConfig {
                                                 .authenticationEntryPoint(authenticationEntryPoint))
                                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                                 .formLogin(form -> form.disable())
-                                .httpBasic(httpBasic -> httpBasic.disable());
+                                .httpBasic(httpBasic -> httpBasic.disable())
+                                .requiresChannel(channel -> channel
+                                                .anyRequest().requiresSecure());
 
                 // Only configure OAuth2 if beans are available
                 if (customOauth2UserService != null && oauth2SuccessHandler != null

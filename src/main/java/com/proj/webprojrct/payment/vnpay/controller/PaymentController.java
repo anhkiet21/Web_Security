@@ -40,7 +40,6 @@ import com.proj.webprojrct.order.repository.OrderRepository;
 import com.proj.webprojrct.order.service.OrderService;
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
 import com.proj.webprojrct.user.entity.UserRole;
-import com.twilio.http.Response;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +60,8 @@ public class PaymentController {
     private final OrderService orderService;
 
     @GetMapping("/create_payment")
-    public ResponseEntity<?> createPayment(@RequestParam("orderId") Long orderId, @RequestParam("method") String method, HttpServletRequest request) throws UnsupportedEncodingException {
+    public ResponseEntity<?> createPayment(@RequestParam("orderId") Long orderId, @RequestParam("method") String method,
+            HttpServletRequest request) throws UnsupportedEncodingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("vui lòng đăng nhập để thực hiện thanh toán.");
@@ -121,14 +121,13 @@ public class PaymentController {
 
         OrderResponse order = orderService.getOrderById(orderId, userId);
 
-
         Payment payment = paymentService.getPaymentByOrderId(orderId);
         if (payment == null || payment.getMethod().equals("COD")) {
             return ResponseEntity.ok("ok");
         }
 
         try {
-            String result = paymentService.handleQuery(orderId,userId, request);
+            String result = paymentService.handleQuery(orderId, userId, request);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,9 +148,10 @@ public class PaymentController {
         CustomUserDetails refundUser = (CustomUserDetails) authentication.getPrincipal();
         UserRole role = refundUser.getUser().getRole();
         if (role != UserRole.SELLER && role != UserRole.ADMIN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Chỉ SELLER hoặc ADMIN mới có thể thực hiện hoàn tiền.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Chỉ SELLER hoặc ADMIN mới có thể thực hiện hoàn tiền.");
         }
-        
+
         if (!("SUCCESS".equalsIgnoreCase(paymentService.getPaymentStatusByOrderId(orderId)))) {
             return ResponseEntity.status(HttpStatus.OK).body("Đơn hàng chưa được thanh toán, không thể hoàn tiền.");
         }

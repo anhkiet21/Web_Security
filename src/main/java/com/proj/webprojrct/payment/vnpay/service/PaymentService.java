@@ -43,7 +43,6 @@ import com.proj.webprojrct.payment.entity.Payment;
 import com.proj.webprojrct.payment.entity.PaymentUrlVnpay;
 import com.proj.webprojrct.payment.repository.PaymentRepository;
 import com.proj.webprojrct.payment.repository.PaymentUrlVnpayRepository;
-import com.twilio.twiml.voice.Pay;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,22 +59,24 @@ public class PaymentService {
 
     private final OrderService orderService;
 
-    public PaymentResDto createPaymentUrl(Long orderId, Long userId, HttpServletRequest request) throws UnsupportedEncodingException {
+    public PaymentResDto createPaymentUrl(Long orderId, Long userId, HttpServletRequest request)
+            throws UnsupportedEncodingException {
 
         String orderType = "other";
 
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
-        
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
+
         Long orderUserId = order.getUser().getId();
         if (!orderUserId.equals(userId)) {
             throw new AccessDeniedException("Báº¡n khÃ´ng cÃ³ quyá»n thanh toÃ¡n cho Ä‘Æ¡n hÃ ng nÃ y.");
         }
-        
+
         BigDecimal totalAmountBigDecimal = order.getTotalAmount();
         BigDecimal multiplier = new BigDecimal("100");
         long amount = totalAmountBigDecimal.multiply(multiplier).longValue();
         // String bankCode = req.getParameter("bankCode");
-        //long amount = 100000 * 100; //test
+        // long amount = 100000 * 100; //test
 
         String vnp_TxnRef = String.valueOf(orderId);
 
@@ -87,10 +88,10 @@ public class PaymentService {
         vnp_Params.put("vnp_TmnCode", Config.vnp_TmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
-        //vnp_Params.put("vnp_BankCode", "NCB");
+        // vnp_Params.put("vnp_BankCode", "NCB");
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
-        vnp_Params.put("vnp_OrderType", orderType);  // ðŸ”¹ báº¯t buá»™c
+        vnp_Params.put("vnp_OrderType", orderType); // ðŸ”¹ báº¯t buá»™c
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", Config.vnp_ReturnUrl); // ðŸ”¹ báº¯t buá»™c
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr); // ðŸ”¹ báº¯t buá»™c
@@ -113,11 +114,11 @@ public class PaymentService {
             String fieldName = (String) itr.next();
             String fieldValue = (String) vnp_Params.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                //Build hash data
+                // Build hash data
                 hashData.append(fieldName);
                 hashData.append('=');
                 hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                //Build query
+                // Build query
                 query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
                 query.append('=');
                 query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
@@ -192,9 +193,7 @@ public class PaymentService {
         fields.remove("vnp_SecureHashType");
         fields.remove("vnp_SecureHash");
 
-
         String signValue = Config.hashAllFields(fields);
-
 
         Map<String, Object> result = new HashMap<>();
         if (signValue.equals(vnp_SecureHash)) {
@@ -202,49 +201,70 @@ public class PaymentService {
             String responseCode = request.getParameter("vnp_ResponseCode");
             String transactionStatus = request.getParameter("vnp_TransactionStatus");
 
-            // ThÃ´ng bÃ¡o vnp_ResponseCode - Báº£ng mÃ£ lá»—i truy váº¥n giao dá»‹ch querydr
+            // ThÃ´ng bÃ¡o vnp_ResponseCode - Báº£ng mÃ£ lá»—i truy váº¥n giao dá»‹ch
+            // querydr
             Map<String, String> queryResponseMessages = new HashMap<>();
             queryResponseMessages.put("00", "YÃªu cáº§u thÃ nh cÃ´ng");
-            queryResponseMessages.put("02", "MÃ£ Ä‘á»‹nh danh káº¿t ná»‘i khÃ´ng há»£p lá»‡ (kiá»ƒm tra láº¡i TmnCode)");
+            queryResponseMessages.put("02",
+                    "MÃ£ Ä‘á»‹nh danh káº¿t ná»‘i khÃ´ng há»£p lá»‡ (kiá»ƒm tra láº¡i TmnCode)");
             queryResponseMessages.put("03", "Dá»¯ liá»‡u gá»­i sang khÃ´ng Ä‘Ãºng Ä‘á»‹nh dáº¡ng");
             queryResponseMessages.put("91", "KhÃ´ng tÃ¬m tháº¥y giao dá»‹ch yÃªu cáº§u");
-            queryResponseMessages.put("94", "YÃªu cáº§u trÃ¹ng láº·p, duplicate request trong thá»i gian giá»›i háº¡n cá»§a API");
+            queryResponseMessages.put("94",
+                    "YÃªu cáº§u trÃ¹ng láº·p, duplicate request trong thá»i gian giá»›i háº¡n cá»§a API");
             queryResponseMessages.put("97", "Checksum khÃ´ng há»£p lá»‡");
-            queryResponseMessages.put("99", "CÃ¡c lá»—i khÃ¡c (lá»—i cÃ²n láº¡i, khÃ´ng cÃ³ trong danh sÃ¡ch mÃ£ lá»—i Ä‘Ã£ liá»‡t kÃª)");
+            queryResponseMessages.put("99",
+                    "CÃ¡c lá»—i khÃ¡c (lá»—i cÃ²n láº¡i, khÃ´ng cÃ³ trong danh sÃ¡ch mÃ£ lá»—i Ä‘Ã£ liá»‡t kÃª)");
 
-            // ThÃ´ng bÃ¡o vnp_ResponseCode - Báº£ng mÃ£ lá»—i yÃªu cáº§u hoÃ n tráº£ (refund)
+            // ThÃ´ng bÃ¡o vnp_ResponseCode - Báº£ng mÃ£ lá»—i yÃªu cáº§u hoÃ n tráº£
+            // (refund)
             Map<String, String> refundResponseMessages = new HashMap<>();
             refundResponseMessages.put("00", "YÃªu cáº§u thÃ nh cÃ´ng");
-            refundResponseMessages.put("02", "MÃ£ Ä‘á»‹nh danh káº¿t ná»‘i khÃ´ng há»£p lá»‡ (kiá»ƒm tra láº¡i TmnCode)");
+            refundResponseMessages.put("02",
+                    "MÃ£ Ä‘á»‹nh danh káº¿t ná»‘i khÃ´ng há»£p lá»‡ (kiá»ƒm tra láº¡i TmnCode)");
             refundResponseMessages.put("03", "Dá»¯ liá»‡u gá»­i sang khÃ´ng Ä‘Ãºng Ä‘á»‹nh dáº¡ng");
             refundResponseMessages.put("91", "KhÃ´ng tÃ¬m tháº¥y giao dá»‹ch yÃªu cáº§u hoÃ n tráº£");
-            refundResponseMessages.put("94", "Giao dá»‹ch Ä‘Ã£ Ä‘Æ°á»£c gá»­i yÃªu cáº§u hoÃ n tiá»n trÆ°á»›c Ä‘Ã³. YÃªu cáº§u nÃ y VNPAY Ä‘ang xá»­ lÃ½");
-            refundResponseMessages.put("95", "Giao dá»‹ch nÃ y khÃ´ng thÃ nh cÃ´ng bÃªn VNPAY. VNPAY tá»« chá»‘i xá»­ lÃ½ yÃªu cáº§u");
+            refundResponseMessages.put("94",
+                    "Giao dá»‹ch Ä‘Ã£ Ä‘Æ°á»£c gá»­i yÃªu cáº§u hoÃ n tiá»n trÆ°á»›c Ä‘Ã³. YÃªu cáº§u nÃ y VNPAY Ä‘ang xá»­ lÃ½");
+            refundResponseMessages.put("95",
+                    "Giao dá»‹ch nÃ y khÃ´ng thÃ nh cÃ´ng bÃªn VNPAY. VNPAY tá»« chá»‘i xá»­ lÃ½ yÃªu cáº§u");
             refundResponseMessages.put("97", "Checksum khÃ´ng há»£p lá»‡");
-            refundResponseMessages.put("99", "CÃ¡c lá»—i khÃ¡c (lá»—i cÃ²n láº¡i, khÃ´ng cÃ³ trong danh sÃ¡ch mÃ£ lá»—i Ä‘Ã£ liá»‡t kÃª)");
+            refundResponseMessages.put("99",
+                    "CÃ¡c lá»—i khÃ¡c (lá»—i cÃ²n láº¡i, khÃ´ng cÃ³ trong danh sÃ¡ch mÃ£ lá»—i Ä‘Ã£ liá»‡t kÃª)");
 
             // ThÃ´ng bÃ¡o vnp_ResponseCode - MÃ£ lá»—i thanh toÃ¡n
             Map<String, String> responseMessages = new HashMap<>();
             responseMessages.put("00", "Giao dá»‹ch thÃ nh cÃ´ng");
-            responseMessages.put("07", "Trá»« tiá»n thÃ nh cÃ´ng. Giao dá»‹ch bá»‹ nghi ngá» (liÃªn quan tá»›i lá»«a Ä‘áº£o, giao dá»‹ch báº¥t thÆ°á»ng)");
-            responseMessages.put("09", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: Tháº»/TÃ i khoáº£n cá»§a khÃ¡ch hÃ ng chÆ°a Ä‘Äƒng kÃ½ dá»‹ch vá»¥ InternetBanking táº¡i ngÃ¢n hÃ ng");
-            responseMessages.put("10", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: KhÃ¡ch hÃ ng xÃ¡c thá»±c thÃ´ng tin tháº»/tÃ i khoáº£n khÃ´ng Ä‘Ãºng quÃ¡ 3 láº§n");
-            responseMessages.put("11", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: ÄÃ£ háº¿t háº¡n chá» thanh toÃ¡n. Xin quÃ½ khÃ¡ch vui lÃ²ng thá»±c hiá»‡n láº¡i giao dá»‹ch");
-            responseMessages.put("12", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: Tháº»/TÃ i khoáº£n cá»§a khÃ¡ch hÃ ng bá»‹ khÃ³a");
-            responseMessages.put("13", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do QuÃ½ khÃ¡ch nháº­p sai máº­t kháº©u xÃ¡c thá»±c giao dá»‹ch (OTP). Xin quÃ½ khÃ¡ch vui lÃ²ng thá»±c hiá»‡n láº¡i giao dá»‹ch");
+            responseMessages.put("07",
+                    "Trá»« tiá»n thÃ nh cÃ´ng. Giao dá»‹ch bá»‹ nghi ngá» (liÃªn quan tá»›i lá»«a Ä‘áº£o, giao dá»‹ch báº¥t thÆ°á»ng)");
+            responseMessages.put("09",
+                    "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: Tháº»/TÃ i khoáº£n cá»§a khÃ¡ch hÃ ng chÆ°a Ä‘Äƒng kÃ½ dá»‹ch vá»¥ InternetBanking táº¡i ngÃ¢n hÃ ng");
+            responseMessages.put("10",
+                    "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: KhÃ¡ch hÃ ng xÃ¡c thá»±c thÃ´ng tin tháº»/tÃ i khoáº£n khÃ´ng Ä‘Ãºng quÃ¡ 3 láº§n");
+            responseMessages.put("11",
+                    "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: ÄÃ£ háº¿t háº¡n chá» thanh toÃ¡n. Xin quÃ½ khÃ¡ch vui lÃ²ng thá»±c hiá»‡n láº¡i giao dá»‹ch");
+            responseMessages.put("12",
+                    "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: Tháº»/TÃ i khoáº£n cá»§a khÃ¡ch hÃ ng bá»‹ khÃ³a");
+            responseMessages.put("13",
+                    "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do QuÃ½ khÃ¡ch nháº­p sai máº­t kháº©u xÃ¡c thá»±c giao dá»‹ch (OTP). Xin quÃ½ khÃ¡ch vui lÃ²ng thá»±c hiá»‡n láº¡i giao dá»‹ch");
             responseMessages.put("24", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: KhÃ¡ch hÃ ng há»§y giao dá»‹ch");
-            responseMessages.put("51", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: TÃ i khoáº£n cá»§a quÃ½ khÃ¡ch khÃ´ng Ä‘á»§ sá»‘ dÆ° Ä‘á»ƒ thá»±c hiá»‡n giao dá»‹ch");
-            responseMessages.put("65", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: TÃ i khoáº£n cá»§a QuÃ½ khÃ¡ch Ä‘Ã£ vÆ°á»£t quÃ¡ háº¡n má»©c giao dá»‹ch trong ngÃ y");
+            responseMessages.put("51",
+                    "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: TÃ i khoáº£n cá»§a quÃ½ khÃ¡ch khÃ´ng Ä‘á»§ sá»‘ dÆ° Ä‘á»ƒ thá»±c hiá»‡n giao dá»‹ch");
+            responseMessages.put("65",
+                    "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: TÃ i khoáº£n cá»§a QuÃ½ khÃ¡ch Ä‘Ã£ vÆ°á»£t quÃ¡ háº¡n má»©c giao dá»‹ch trong ngÃ y");
             responseMessages.put("75", "NgÃ¢n hÃ ng thanh toÃ¡n Ä‘ang báº£o trÃ¬");
-            responseMessages.put("79", "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: KH nháº­p sai máº­t kháº©u thanh toÃ¡n quÃ¡ sá»‘ láº§n quy Ä‘á»‹nh. Xin quÃ½ khÃ¡ch vui lÃ²ng thá»±c hiá»‡n láº¡i giao dá»‹ch");
-            responseMessages.put("99", "CÃ¡c lá»—i khÃ¡c (lá»—i cÃ²n láº¡i, khÃ´ng cÃ³ trong danh sÃ¡ch mÃ£ lá»—i Ä‘Ã£ liá»‡t kÃª)");
+            responseMessages.put("79",
+                    "Giao dá»‹ch khÃ´ng thÃ nh cÃ´ng do: KH nháº­p sai máº­t kháº©u thanh toÃ¡n quÃ¡ sá»‘ láº§n quy Ä‘á»‹nh. Xin quÃ½ khÃ¡ch vui lÃ²ng thá»±c hiá»‡n láº¡i giao dá»‹ch");
+            responseMessages.put("99",
+                    "CÃ¡c lá»—i khÃ¡c (lá»—i cÃ²n láº¡i, khÃ´ng cÃ³ trong danh sÃ¡ch mÃ£ lá»—i Ä‘Ã£ liá»‡t kÃª)");
 
-            // ThÃ´ng bÃ¡o vnp_TransactionStatus - Báº£ng mÃ£ lá»—i tÃ¬nh tráº¡ng thanh toÃ¡n
+            // ThÃ´ng bÃ¡o vnp_TransactionStatus - Báº£ng mÃ£ lá»—i tÃ¬nh tráº¡ng thanh
+            // toÃ¡n
             Map<String, String> statusMessages = new HashMap<>();
             statusMessages.put("00", "Giao dá»‹ch thanh toÃ¡n thÃ nh cÃ´ng");
             statusMessages.put("01", "Giao dá»‹ch chÆ°a hoÃ n táº¥t");
             statusMessages.put("02", "Giao dá»‹ch bá»‹ lá»—i");
-            statusMessages.put("04", "Giao dá»‹ch Ä‘áº£o (KhÃ¡ch hÃ ng Ä‘Ã£ bá»‹ trá»« tiá»n táº¡i NgÃ¢n hÃ ng nhÆ°ng GD chÆ°a thÃ nh cÃ´ng á»Ÿ VNPAY)");
+            statusMessages.put("04",
+                    "Giao dá»‹ch Ä‘áº£o (KhÃ¡ch hÃ ng Ä‘Ã£ bá»‹ trá»« tiá»n táº¡i NgÃ¢n hÃ ng nhÆ°ng GD chÆ°a thÃ nh cÃ´ng á»Ÿ VNPAY)");
             statusMessages.put("05", "VNPAY Ä‘ang xá»­ lÃ½ giao dá»‹ch nÃ y (GD hoÃ n tiá»n)");
             statusMessages.put("06", "VNPAY Ä‘Ã£ gá»­i yÃªu cáº§u hoÃ n tiá»n sang NgÃ¢n hÃ ng (GD hoÃ n tiá»n)");
             statusMessages.put("07", "Giao dá»‹ch bá»‹ nghi ngá» gian láº­n");
@@ -261,12 +281,12 @@ public class PaymentService {
             result.put("transactionStatus", transactionStatus);
             result.put("transactionMessage", statusMessages.getOrDefault(transactionStatus, "KhÃ´ng xÃ¡c Ä‘á»‹nh"));
 
-            //xoa paymentUrlVnpay sau khi thanh toan thanh cong
+            // xoa paymentUrlVnpay sau khi thanh toan thanh cong
             long orderId = Long.parseLong(request.getParameter("vnp_TxnRef"));
             PaymentUrlVnpay paymentUrl = paymentUrlVnpayRepository.findByOrderId(orderId);
             paymentUrlVnpayRepository.delete(paymentUrl);
             if (transactionStatus.equals("00")) {
-                //cáº­p nháº­t tráº¡ng thÃ¡i payment
+                // cáº­p nháº­t tráº¡ng thÃ¡i payment
                 Payment payment = paymentRepository.findByOrderId(orderId);
                 payment.setStatus("SUCCESS");
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -279,7 +299,8 @@ public class PaymentService {
                 try {
                     orderService.updateProductStockAfterPayment(orderId);
                 } catch (Exception e) {
-                    System.err.println("âŒ Failed to update product stock for order " + orderId + ": " + e.getMessage());
+                    System.err
+                            .println("âŒ Failed to update product stock for order " + orderId + ": " + e.getMessage());
                     e.printStackTrace();
                     // Don't throw exception here to avoid breaking the payment flow
                 }
@@ -294,8 +315,9 @@ public class PaymentService {
 
     public String handleQuery(long orderId, Long userId, HttpServletRequest request) throws Exception {
 
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
-        
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
+
         Long orderUserId = order.getUser().getId();
         if (!orderUserId.equals(userId)) {
             throw new AccessDeniedException("Báº¡n khÃ´ng cÃ³ quyá»n thanh toÃ¡n cho Ä‘Æ¡n hÃ ng nÃ y.");
@@ -404,11 +426,13 @@ public class PaymentService {
         }
     }
 
-    public String handleRefund(long orderId, String trantype, int percent, HttpServletRequest request) throws Exception {
+    public String handleRefund(long orderId, String trantype, int percent, HttpServletRequest request)
+            throws Exception {
         if ("02".equals(trantype)) {
             percent = 100;
         }
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
         BigDecimal totalAmountBigDecimal = order.getTotalAmount();
         BigDecimal multiplier = new BigDecimal("100");
         long originalAmountVND = totalAmountBigDecimal.multiply(multiplier).longValue();
@@ -422,10 +446,11 @@ public class PaymentService {
         String vnp_TransactionType = trantype;
         String vnp_TxnRef = String.valueOf(orderId);
         double discount = (double) percent / 100.0;
-        //long amount = 100000 * 100; //test
+        // long amount = 100000 * 100; //test
         String vnp_Amount = String.valueOf(amount);
         String vnp_OrderInfo = "Hoan tien GD OrderId:" + vnp_TxnRef;
-        String vnp_TransactionNo = ""; //Assuming value of the parameter "vnp_TransactionNo" does not exist on your system.
+        String vnp_TransactionNo = ""; // Assuming value of the parameter "vnp_TransactionNo" does not exist on your
+                                       // system.
         String vnp_CreateBy = "kiet";
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -492,12 +517,13 @@ public class PaymentService {
     }
 
     public void createPaymentCOD(Long orderId, Long userId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new EntityNotFoundException("KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng (Order) vá»›i ID: " + orderId));
         Long orderUserId = order.getUser().getId();
         if (!orderUserId.equals(userId)) {
             throw new AccessDeniedException("Báº¡n khÃ´ng cÃ³ quyá»n thanh toÃ¡n cho Ä‘Æ¡n hÃ ng nÃ y.");
         }
-        
+
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String createdAt = formatter.format(cld.getTime());
@@ -510,7 +536,7 @@ public class PaymentService {
                 .build();
         paymentRepository.save(payment);
 
-        // cáº­p nháº­t sá»‘ lÆ°á»£ng 
+        // cáº­p nháº­t sá»‘ lÆ°á»£ng
         try {
             orderService.updateProductStockAfterPayment(orderId);
         } catch (Exception e) {

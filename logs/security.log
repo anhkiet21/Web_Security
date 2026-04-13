@@ -1,2 +1,6 @@
-2026-04-12 22:38:42.342 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
-2026-04-12 22:39:52.796 | INFO  | LOGOUT | user=08***02 | ip=127.0.0.1
+2026-04-13 13:03:33.018 | INFO  | SENSITIVE_API | user=08***02 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 13:03:46.059 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 13:04:08.007 | INFO  | SENSITIVE_API | user=08***02 | ip=127.0.0.1 | uri=GET /api/vnpay/payment/create_payment
+2026-04-13 13:24:47.862 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 13:24:51.148 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
+2026-04-13 13:24:51.886 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
