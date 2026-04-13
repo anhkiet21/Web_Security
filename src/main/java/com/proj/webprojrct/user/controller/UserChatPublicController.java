@@ -37,7 +37,7 @@ public class UserChatPublicController {
             var resp = userService.handleGetUserByPhone(authentication, phone);
             return ResponseEntity.ok(resp);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(404).body(Map.of("error", "Không tìm thấy người dùng."));
         }
     }
 }

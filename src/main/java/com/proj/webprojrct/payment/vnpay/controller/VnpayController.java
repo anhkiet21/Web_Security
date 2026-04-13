@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -24,6 +26,8 @@ import java.util.TimeZone;
 @Controller
 @RequiredArgsConstructor
 public class VnpayController {
+
+    private static final Logger log = LoggerFactory.getLogger(VnpayController.class);
 
     private final PaymentService paymentService;
 
@@ -56,9 +60,9 @@ public class VnpayController {
             return "payment/return";
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi xử lý callback VNPAY", e);
             model.addAttribute("success", false);
-            model.addAttribute("message", "Lỗi xử lý callback VNPAY: " + e.getMessage());
+            model.addAttribute("message", "Lỗi hệ thống khi xử lý thanh toán. Vui lòng liên hệ hỗ trợ.");
             return "user/vnpay_result";
         }
     }

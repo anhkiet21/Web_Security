@@ -16,10 +16,14 @@ import java.util.Map;
 import org.springframework.security.core.Authentication;
 
 import com.proj.webprojrct.user.entity.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/admin/api/reviews")
 public class AdminReviewController {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminReviewController.class);
 
     @Autowired
     private ReviewService reviewService;
@@ -42,10 +46,11 @@ public class AdminReviewController {
             return ResponseEntity.ok(Map.of("message", "Đã xóa đánh giá thành công"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of("error", "Đánh giá không tồn tại."));
         } catch (Exception e) {
+            log.error("Lỗi khi xóa đánh giá id={}", reviewId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Không thể xóa đánh giá: " + e.getMessage()));
+                    .body(Map.of("error", "Lỗi hệ thống khi xóa đánh giá. Vui lòng thử lại sau."));
         }
     }
 }

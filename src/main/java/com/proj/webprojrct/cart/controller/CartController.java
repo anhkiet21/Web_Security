@@ -13,10 +13,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
+
+    private static final Logger log = LoggerFactory.getLogger(CartController.class);
 
     @Autowired
     private CartService cartService;
@@ -35,8 +39,9 @@ public class CartController {
             CartResponse cart = cartService.getCartByUserId(userDetails.getUser().getId());
             return ResponseEntity.ok(cart);
         }catch(Exception e){
+            log.error("Lỗi khi lấy giỏ hàng cho user", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi lấy giỏ hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống khi lấy giỏ hàng. Vui lòng thử lại sau."));
         }
     }
 
@@ -54,8 +59,9 @@ public class CartController {
             cartService.addItemToCart(userDetails.getUser().getId(), request);
             return ResponseEntity.ok(new ResponseMessage("Thêm hàng vào giỏ thành công!"));
         }catch(Exception e){
+            log.error("Lỗi khi thêm hàng vào giỏ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi thêm hàng vào giỏ: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống khi thêm hàng vào giỏ. Vui lòng thử lại sau."));
         }
     }
 
@@ -75,8 +81,9 @@ public class CartController {
             cartService.updateItemQuantity(userDetails.getUser().getId(), cartItemId, request.getQuantity());
             return ResponseEntity.ok(new ResponseMessage("Đã cập nhật số lượng sản phẩm!"));
         }catch(Exception e){
+            log.error("Lỗi khi cập nhật số lượng sản phẩm", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi cập nhật số lượng sản phẩm: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống khi cập nhật số lượng. Vui lòng thử lại sau."));
         }
     }
 
@@ -94,8 +101,9 @@ public class CartController {
             cartService.removeItemFromCart(userDetails.getUser().getId(), productId);
             return ResponseEntity.ok(new ResponseMessage("Đã xóa sản phẩm khỏi giỏ hàng!"));
         }catch(Exception e){
+            log.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi xóa sản phẩm khỏi giỏ hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống khi xóa sản phẩm. Vui lòng thử lại sau."));
         }
     }
 
@@ -113,8 +121,9 @@ public class CartController {
             cartService.clearCart(userDetails.getUser().getId());
             return ResponseEntity.ok(new ResponseMessage("Đã xóa toàn bộ giỏ hàng!"));
         }catch(Exception e){
+            log.error("Lỗi khi xóa toàn bộ giỏ hàng", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi xóa toàn bộ giỏ hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống khi xóa giỏ hàng. Vui lòng thử lại sau."));
         }
     }
 }

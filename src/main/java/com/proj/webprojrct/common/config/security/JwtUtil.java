@@ -12,9 +12,13 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class JwtUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     //private final Key refreshKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
@@ -51,6 +55,7 @@ public class JwtUtil {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            log.warn("Invalid refresh token: {}", e.getMessage());
             return false;
         }
     }
@@ -77,6 +82,7 @@ public class JwtUtil {
         try {
             return !isTokenExpired(token);
         } catch (Exception e) {
+            log.warn("Token validation failed: {}", e.getMessage());
             return false;
         }
     }

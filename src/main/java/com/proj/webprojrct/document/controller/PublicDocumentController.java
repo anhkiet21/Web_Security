@@ -12,10 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.proj.webprojrct.document.entity.Document;
 import com.proj.webprojrct.document.dto.response.DocumentPublicResponse;
 import com.proj.webprojrct.document.service.DocumentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/documents")
 public class PublicDocumentController {
+
+    private static final Logger log = LoggerFactory.getLogger(PublicDocumentController.class);
 
     @Autowired
     private DocumentService documentService;
@@ -35,7 +39,8 @@ public class PublicDocumentController {
             DocumentPublicResponse response = new DocumentPublicResponse(document);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            log.error("Lỗi khi lấy document cho product id={}", productId, e);
+            return ResponseEntity.status(500).body(Map.of("error", "Lỗi hệ thống. Vui lòng thử lại sau."));
         }
     }
 }

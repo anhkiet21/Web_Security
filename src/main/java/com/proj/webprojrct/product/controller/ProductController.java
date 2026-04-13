@@ -18,11 +18,15 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /////////////////////////////////Dành cho USER////////////////////////////////////////////
 @RestController
 @RequestMapping(value = "/api/products", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProductController {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     private final ProductService service;
 
@@ -64,7 +68,8 @@ public class ProductController {
             }
             return res;
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi tải ảnh: " + e.getMessage());
+            log.error("Lỗi tải ảnh khi tạo sản phẩm", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi hệ thống khi tải ảnh. Vui lòng thử lại.");
         }
     }
 
@@ -247,7 +252,8 @@ public class ProductController {
             }
             return res;
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi tải ảnh: " + e.getMessage());
+            log.error("Lỗi tải ảnh khi cập nhật sản phẩm id={}", id, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi hệ thống khi tải ảnh. Vui lòng thử lại.");
         }
     }
 
@@ -313,7 +319,8 @@ public class ProductController {
             service.uploadImage(id, file);
             return ResponseEntity.ok(service.getById(id));
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi tải ảnh: " + e.getMessage());
+            log.error("Lỗi tải ảnh cho sản phẩm id={}", id, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi hệ thống khi tải ảnh. Vui lòng thử lại.");
         }
     }
 
@@ -339,7 +346,8 @@ public class ProductController {
             }
             return ResponseEntity.ok(service.getById(id));
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi tải ảnh: " + e.getMessage());
+            log.error("Lỗi tải nhiều ảnh cho sản phẩm id={}", id, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi hệ thống khi tải ảnh. Vui lòng thử lại.");
         }
     }
 
@@ -355,7 +363,8 @@ public class ProductController {
             service.deleteImage(id);
             return ResponseEntity.noContent().build();
         } catch (IOException e) {
-            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi xóa ảnh: " + e.getMessage());
+            log.error("Lỗi xóa ảnh id={}", id, e);
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi hệ thống khi xóa ảnh. Vui lòng thử lại.");
         }
     }
 }

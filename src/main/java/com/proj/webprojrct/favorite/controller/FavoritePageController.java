@@ -30,7 +30,7 @@ public class FavoritePageController {
                 return "redirect:/login";
             }
         } catch (Exception e) {
-            model.addAttribute("error", "Không thể tải dữ liệu: " + e.getMessage());
+            model.addAttribute("error", "Không thể tải dữ liệu. Vui lòng thử lại sau.");
         }
 
         return "user/wishlist";

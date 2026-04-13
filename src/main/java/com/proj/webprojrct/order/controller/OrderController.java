@@ -18,12 +18,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderController.class);
 
     @Autowired
     private OrderService orderService;
@@ -44,8 +48,9 @@ public class OrderController {
             OrderResponse order = orderService.createOrder(userDetails.getUser().getId(), request);
             return ResponseEntity.ok(order);
         } catch (Exception e) {
+            log.error("Lỗi khi tạo đơn hàng", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi tạo đơn hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống khi tạo đơn hàng. Vui lòng thử lại sau."));
         }
     }
 
@@ -65,8 +70,9 @@ public class OrderController {
             // TODO: Check order.userId == userDetails.getUser().getId() to bảo mật
             return ResponseEntity.ok(order);
         } catch (Exception e) {
+            log.error("Lỗi khi lấy đơn hàng id={}", orderId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi lấy đơn hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống khi lấy đơn hàng. Vui lòng thử lại sau."));
         }
     }
 
@@ -83,8 +89,9 @@ public class OrderController {
             List<OrderResponse> orders = orderService.getOrdersByUserId(userDetails.getUser().getId());
             return ResponseEntity.ok(orders);
         } catch (Exception e) {
+            log.error("Lỗi khi lấy danh sách đơn hàng", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi lấy danh sách đơn hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống khi lấy danh sách đơn hàng. Vui lòng thử lại sau."));
         }
     }
 
@@ -132,8 +139,7 @@ public class OrderController {
                 } else {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body(new ResponseMessage(
-                                    "Hoàn tiền thất bại. Vui lòng liên hệ hỗ trợ. Chi tiết: "
-                                            + refundResult));
+                                    "Hoàn tiền thất bại. Vui lòng liên hệ hỗ trợ."));
                 }
             } else {
                 // COD or not paid - only cancel order
@@ -145,8 +151,9 @@ public class OrderController {
             }
 
         } catch (Exception e) {
+            log.error("Lỗi khi xử lý hủy đơn hàng id={}", orderId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi xử lý hủy đơn hàng: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống khi xử lý hủy đơn hàng. Vui lòng thử lại sau."));
         }
     }
 
@@ -174,10 +181,11 @@ public class OrderController {
             return ResponseEntity.ok(new ResponseMessage("Yêu cầu hoàn tiền đã được gửi thành công!"));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
+                    .body(new ResponseMessage("Yêu cầu hoàn tiền không hợp lệ."));
         } catch (Exception e) {
+            log.error("Lỗi khi gửi yêu cầu hoàn tiền cho đơn hàng id={}", orderId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi gửi yêu cầu hoàn tiền: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống khi gửi yêu cầu hoàn tiền. Vui lòng thử lại sau."));
         }
     }
 

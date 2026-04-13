@@ -27,9 +27,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
     private OrderRepository orderRepository;
@@ -107,7 +111,7 @@ public class OrderServiceImpl implements OrderService {
             sendOrderConfirmationEmail(user, savedOrder, request.getOrderItems());
         } catch (Exception e) {
             // Log error but don't fail the order
-            System.err.println("Failed to send order confirmation email: " + e.getMessage());
+            log.error("Failed to send order confirmation email for order {}", savedOrder.getId(), e);
         }
 
         return getOrderById(savedOrder.getId());

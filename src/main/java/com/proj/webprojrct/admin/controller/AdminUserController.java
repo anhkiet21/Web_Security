@@ -92,7 +92,7 @@ public class AdminUserController {
             return "admin/users";
         } catch (RuntimeException e) {
             logger.error("Error getting users", e);
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("error", "Lỗi hệ thống khi tải danh sách người dùng.");
             return "admin/users";
         }
     }
@@ -118,7 +118,8 @@ public class AdminUserController {
                     + " — Yêu cầu người dùng đổi mật khẩu sau khi đăng nhập lần đầu.");
             return "redirect:/admin/users";
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
+            logger.error("Lỗi khi tạo user", e);
+            model.addAttribute("error", "Lỗi khi tạo tài khoản. Vui lòng thử lại.");
             try {
                 model.addAttribute("users", userService.getAllUsers(authentication));
             } catch (Exception ex) {
@@ -144,7 +145,8 @@ public class AdminUserController {
             userService.handleUpdateUser(authentication, updateRequest, userId);
             return "redirect:/admin/users";
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
+            logger.error("Lỗi khi cập nhật user id={}", userId, e);
+            model.addAttribute("error", "Lỗi khi cập nhật tài khoản. Vui lòng thử lại.");
             return "admin/users";
         }
     }
@@ -163,7 +165,8 @@ public class AdminUserController {
             userService.handleDeleteUser(authentication, userId);
             return "redirect:/admin/users";
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
+            logger.error("Lỗi khi xóa user id={}", userId, e);
+            model.addAttribute("error", "Lỗi khi xóa tài khoản. Vui lòng thử lại.");
             return "redirect:/admin/users";
         }
     }

@@ -48,10 +48,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import com.proj.webprojrct.common.config.logging.SecurityEventLogger;
 import com.proj.webprojrct.common.config.metrics.LoginMetrics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @AllArgsConstructor
 @Service
 public class AuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final OtpCodeRepository otpCodeRepository;
     private final AuthMapper authMapper;
@@ -121,6 +125,7 @@ public class AuthService {
             }
         } catch (Exception ignored) {
             // Không thể lấy IP => trả về unknown, không được throw exception
+            log.debug("Không thể lấy client IP", ignored);
         }
         return "unknown";
     }
@@ -244,7 +249,7 @@ public class AuthService {
         try {
             smsSentSuccessfully = sSms.sendSMS(formattedPhone, smsBody);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Lỗi gửi SMS reset mật khẩu cho phone={}", phone, e);
             model.addAttribute("error", "Lỗi hệ thống gửi SMS, vui lòng thử lại sau.");
             return false;
         }

@@ -31,10 +31,14 @@ import com.proj.webprojrct.user.dto.request.UserCreateRequest;
 import com.proj.webprojrct.user.dto.response.UserAdminResponse;
 import com.proj.webprojrct.user.dto.response.UserResponse;
 import com.proj.webprojrct.user.entity.UserRole;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NoArgsConstructor
 @Controller
 public class Usercontroller {
+
+    private static final Logger log = LoggerFactory.getLogger(Usercontroller.class);
 
     @Autowired
     private UserService userService;
@@ -88,7 +92,8 @@ public class Usercontroller {
                 model.addAttribute("verifyEmail", false);
             }
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
+            log.error("Lỗi khi lấy thông tin người dùng", e);
+            model.addAttribute("error", "Lỗi hệ thống. Vui lòng thử lại sau.");
         }
 
         return "user/profile";
@@ -107,7 +112,8 @@ public class Usercontroller {
             model.addAttribute("user", updatedUser);
             return "redirect:/profile";
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
+            log.error("Lỗi khi cập nhật profile", e);
+            model.addAttribute("error", "Lỗi khi cập nhật thông tin. Vui lòng thử lại.");
             return "redirect:/profile";
         }
     }

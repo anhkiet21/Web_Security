@@ -47,10 +47,14 @@ import com.twilio.twiml.voice.Pay;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RequiredArgsConstructor
 @Service
 public class PaymentService {
+
+    private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
     private final PaymentRepository paymentRepository;
 
@@ -279,8 +283,7 @@ public class PaymentService {
                 try {
                     orderService.updateProductStockAfterPayment(orderId);
                 } catch (Exception e) {
-                    System.err.println("âŒ Failed to update product stock for order " + orderId + ": " + e.getMessage());
-                    e.printStackTrace();
+                    log.error("Failed to update product stock for order {}", orderId, e);
                     // Don't throw exception here to avoid breaking the payment flow
                 }
             }
@@ -399,8 +402,8 @@ public class PaymentService {
             paymentRepository.save(payment);
             return response.toString();
         } catch (Exception e) {
-            e.printStackTrace();
-            return e.getMessage();
+            log.error("Lỗi khi query giao dịch orderId={}", orderId, e);
+            return "Lỗi hệ thống khi truy vấn giao dịch.";
         }
     }
 
@@ -514,9 +517,8 @@ public class PaymentService {
         try {
             orderService.updateProductStockAfterPayment(orderId);
         } catch (Exception e) {
-            System.err.println("Cáº­p nháº­t tháº¥t báº¡i " + orderId + ": " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("KhÃ´ng thá»ƒ cáº­p nháº­t sá»‘ lÆ°á»£ng sáº£n pháº©m: " + e.getMessage());
+            log.error("Cập nhật thất bại cho đơn hàng {}", orderId, e);
+            throw new RuntimeException("Không thể cập nhật số lượng sản phẩm. Vui lòng thử lại.");
         }
     }
 
@@ -591,8 +593,8 @@ public class PaymentService {
 
             return expiresAt.isAfter(LocalDateTime.now());
         } catch (Exception e) {
-            // log lá»—i parse format
-            e.printStackTrace();
+            // log lỗi parse format
+            log.error("Lỗi kiểm tra thời hạn thanh toán cho đơn hàng {}", orderId, e);
             return false;
         }
     }

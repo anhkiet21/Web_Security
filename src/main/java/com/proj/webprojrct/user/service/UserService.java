@@ -301,7 +301,7 @@ public class UserService {
                 }
                 existingUser.setAvatarUrl("/uploads/avatars/" + savedFileName);
             } catch (IOException e) {
-                throw new RuntimeException("Lỗi khi lưu avatar: " + e.getMessage());
+                throw new RuntimeException("Lỗi khi lưu avatar. Vui lòng thử lại.");
             }
         }
 
