@@ -38,3 +38,9 @@
 2026-04-13 14:05:26.253 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/chat/unread-stats
 2026-04-13 14:44:00.341 | INFO  | LOGIN_SUCCESS | user=03***32 | role=USER | ip=0:0:0:0:0:0:0:1
 >>>>>>> origin/A05_Injection
+2026-04-13 16:40:29.364 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 16:55:44.392 | INFO  | LOGOUT | user=08***02 | ip=127.0.0.1
+2026-04-13 16:55:48.713 | INFO  | LOGOUT | user=08***02 | ip=127.0.0.1
+2026-04-13 16:55:52.925 | INFO  | LOGOUT | user=08***02 | ip=127.0.0.1
+2026-04-13 17:03:03.532 | INFO  | LOGOUT | user=08***02 | ip=0:0:0:0:0:0:0:1
+2026-04-13 17:04:28.636 | INFO  | LOGOUT | user=08***02 | ip=127.0.0.1

@@ -166,9 +166,9 @@ public class SecurityConfig {
                 // Chỉ định cụ thể domain được phép truy cập (VD: frontend React, Vue, App
                 // mobile)
                 configuration.setAllowedOrigins(java.util.Arrays.asList(
-                                "http://localhost:8080",
-                                "http://localhost:3000",
-                                "http://127.0.0.1:8080"));
+                                "https://localhost:8080",
+                                "https://localhost:3000",
+                                "https://127.0.0.1:8080"));
 
                 // Các method được phép
                 configuration.setAllowedMethods(
