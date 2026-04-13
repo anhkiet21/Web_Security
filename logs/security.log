@@ -28,3 +28,4 @@
 2026-04-13 14:05:24.008 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/chat/unread-stats
 2026-04-13 14:05:26.056 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/categories
 2026-04-13 14:05:26.253 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 14:44:00.341 | INFO  | LOGIN_SUCCESS | user=03***32 | role=USER | ip=0:0:0:0:0:0:0:1

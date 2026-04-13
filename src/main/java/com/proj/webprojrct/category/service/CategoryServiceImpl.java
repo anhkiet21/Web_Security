@@ -81,7 +81,8 @@ public class CategoryServiceImpl implements CategoryService {
     public Page<CategoryDto> getPagedCategories(Pageable pageable, String name) {
         Page<Category> categoryPage;
         if (name != null && !name.trim().isEmpty()) {
-            categoryPage = repo.findByNameContainingIgnoreCase(name, pageable);
+            String safeName = name.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+            categoryPage = repo.findByNameContainingIgnoreCase(safeName, pageable);
         } else {
             categoryPage = repo.findAll(pageable);
         }

@@ -300,6 +300,8 @@ public class UserService {
                     avatarStorageService.delete(oldFileName);
                 }
                 existingUser.setAvatarUrl("/uploads/avatars/" + savedFileName);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("File avatar không hợp lệ: Chỉ chấp nhận file ảnh (.jpg, .jpeg, .png, .gif, .webp)");
             } catch (IOException e) {
                 throw new RuntimeException("Lỗi khi lưu avatar: " + e.getMessage());
             }

@@ -115,8 +115,14 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(page, size, s);
 
         Specification<Product> spec = (root, cq, cb) -> cb.conjunction();
-        if (brand != null && !brand.isBlank()) spec = spec.and((r, cq2, cb2) -> cb2.like(cb2.lower(r.get("brand")), "%" + brand.toLowerCase() + "%"));
-        if (name != null && !name.isBlank()) spec = spec.and((r, cq2, cb2) -> cb2.like(cb2.lower(r.get("name")), "%" + name.toLowerCase() + "%"));
+        if (brand != null && !brand.isBlank()) {
+            String safeBrand = escapeSqlLike(brand.toLowerCase());
+            spec = spec.and((r, cq2, cb2) -> cb2.like(cb2.lower(r.get("brand")), "%" + safeBrand + "%", '\\'));
+        }
+        if (name != null && !name.isBlank()) {
+            String safeName = escapeSqlLike(name.toLowerCase());
+            spec = spec.and((r, cq2, cb2) -> cb2.like(cb2.lower(r.get("name")), "%" + safeName + "%", '\\'));
+        }
         if (minPrice != null) spec = spec.and((r, cq2, cb2) -> cb2.greaterThanOrEqualTo(r.get("price"), minPrice));
         if (maxPrice != null) spec = spec.and((r, cq2, cb2) -> cb2.lessThanOrEqualTo(r.get("price"), maxPrice));
 
@@ -132,7 +138,14 @@ public class ProductServiceImpl implements ProductService {
     public List<String> suggestNames(String q, int limit) {
         if (q == null || q.isBlank()) return java.util.Collections.emptyList();
         var page = PageRequest.of(0, Math.max(1, limit));
-        return repo.findDistinctNamesMatching(q, page);
+        return repo.findDistinctNamesMatching(escapeSqlLike(q), page);
+    }
+
+    private static String escapeSqlLike(String input) {
+        if (input == null) return null;
+        return input.replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_");
     }
 
     @Override
