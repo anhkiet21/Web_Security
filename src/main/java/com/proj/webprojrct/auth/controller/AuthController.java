@@ -7,12 +7,12 @@ import com.proj.webprojrct.common.config.security.JwtUtil;
 import com.proj.webprojrct.user.entity.User;
 import com.proj.webprojrct.user.repository.UserRepository;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import com.proj.webprojrct.common.config.logging.SecurityEventLogger;
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
+import com.proj.webprojrct.common.config.security.SecureCookieUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -96,15 +96,9 @@ public class AuthController {
             String accessToken = loginResponse.getAccessToken();
             String refreshToken = loginResponse.getRefreshToken();
 
-            Cookie accessCookie = new Cookie("access_token", accessToken);
-            accessCookie.setHttpOnly(true);
-            accessCookie.setPath("/");
-            response.addCookie(accessCookie);
-
-            Cookie refreshCookie = new Cookie("refresh_token", refreshToken);
-            refreshCookie.setHttpOnly(true);
-            refreshCookie.setPath("/");
-            response.addCookie(refreshCookie);
+            // [FIX V-04] Cookie bảo mật: Secure + SameSite=Lax
+            SecureCookieUtil.addAccessTokenCookie(response, accessToken);
+            SecureCookieUtil.addRefreshTokenCookie(response, refreshToken);
 
             return "redirect:/home";
 
@@ -130,10 +124,8 @@ public class AuthController {
             User user = authService.handleRefreshToken(refreshToken);
             String newAccess = authService.generateAccessToken(user);
 
-            Cookie accessCookie = new Cookie("access_token", newAccess);
-            accessCookie.setHttpOnly(true);
-            accessCookie.setPath("/");
-            response.addCookie(accessCookie);
+            // [FIX V-04] Cookie bảo mật: Secure + SameSite=Lax
+            SecureCookieUtil.addAccessTokenCookie(response, newAccess);
 
             model.addAttribute("message", "Token refreshed successfully!");
             model.addAttribute("user", user.getFullName());
@@ -180,20 +172,9 @@ public class AuthController {
         // [LOGGING] Ghi log đăng xuất - OWASP A09
         SecurityEventLogger.logout(loggedUsername, getClientIp(request));
 
-        Cookie accessCookie = new Cookie("access_token", null);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setPath("/"); // path giá»‘ng lÃºc táº¡o
-        accessCookie.setDomain("localhost"); // domain giá»‘ng lÃºc táº¡o
-        accessCookie.setMaxAge(0); // xÃ³a cookie
-        response.addCookie(accessCookie);
-
-        // XÃ³a refresh_token
-        Cookie refreshCookie = new Cookie("refresh_token", null);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setPath("/");
-        refreshCookie.setDomain("localhost");
-        refreshCookie.setMaxAge(0);
-        response.addCookie(refreshCookie);
+        // [FIX V-04] Xóa cookie bảo mật: Secure + SameSite=Lax
+        SecureCookieUtil.clearAccessTokenCookie(response);
+        SecureCookieUtil.clearRefreshTokenCookie(response);
 
         session.invalidate();
 
@@ -230,16 +211,9 @@ public class AuthController {
             // LÆ°u refresh token vÃ o database
             authService.saveRefreshToken(newUser.getPhone(), refreshToken);
 
-            // LÆ°u token vÃ o cookie
-            Cookie accessCookie = new Cookie("access_token", accessToken);
-            accessCookie.setHttpOnly(true);
-            accessCookie.setPath("/");
-            response.addCookie(accessCookie);
-
-            Cookie refreshCookie = new Cookie("refresh_token", refreshToken);
-            refreshCookie.setHttpOnly(true);
-            refreshCookie.setPath("/");
-            response.addCookie(refreshCookie);
+            // [FIX V-04] Cookie bảo mật: Secure + SameSite=Lax
+            SecureCookieUtil.addAccessTokenCookie(response, accessToken);
+            SecureCookieUtil.addRefreshTokenCookie(response, refreshToken);
 
             // Authenticate user trong SecurityContext
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,

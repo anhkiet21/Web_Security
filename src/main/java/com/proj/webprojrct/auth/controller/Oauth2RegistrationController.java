@@ -1,8 +1,8 @@
 package com.proj.webprojrct.auth.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.proj.webprojrct.common.config.security.SecureCookieUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,15 +51,9 @@ public class Oauth2RegistrationController {
             // LÆ°u refresh token vÃ o database
             authService.saveRefreshToken(user.getPhone(), refreshToken);
 
-            Cookie accessCookie = new Cookie("access_token", accessToken);
-            accessCookie.setHttpOnly(true);
-            accessCookie.setPath("/");
-            response.addCookie(accessCookie);
-
-            Cookie refreshCookie = new Cookie("refresh_token", refreshToken);
-            refreshCookie.setHttpOnly(true);
-            refreshCookie.setPath("/");
-            response.addCookie(refreshCookie);
+            // [FIX V-04] Cookie bảo mật: Secure + SameSite=Lax
+            SecureCookieUtil.addAccessTokenCookie(response, accessToken);
+            SecureCookieUtil.addRefreshTokenCookie(response, refreshToken);
 
             session.removeAttribute("oauth2_email");
             session.removeAttribute("oauth2_name");
@@ -107,15 +101,9 @@ public class Oauth2RegistrationController {
             // LÆ°u refresh token vÃ o database
             authService.saveRefreshToken(user.getPhone(), refreshToken);
 
-            Cookie accessCookie = new Cookie("access_token", accessToken);
-            accessCookie.setHttpOnly(true);
-            accessCookie.setPath("/");
-            response.addCookie(accessCookie);
-
-            Cookie refreshCookie = new Cookie("refresh_token", refreshToken);
-            refreshCookie.setHttpOnly(true);
-            refreshCookie.setPath("/");
-            response.addCookie(refreshCookie);
+            // [FIX V-04] Cookie bảo mật: Secure + SameSite=Lax
+            SecureCookieUtil.addAccessTokenCookie(response, accessToken);
+            SecureCookieUtil.addRefreshTokenCookie(response, refreshToken);
 
             // XÃ³a session OAuth2 táº¡m
             session.removeAttribute("oauth2_email");
