@@ -1,2 +1,126 @@
 2026-04-12 22:38:42.342 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
 2026-04-12 22:39:52.796 | INFO  | LOGOUT | user=08***02 | ip=127.0.0.1
+2026-04-13 10:43:13.807 | INFO  | LOGIN_SUCCESS | user=01***89 | role=USER | ip=127.0.0.1
+2026-04-13 10:51:22.162 | INFO  | SENSITIVE_API | user=01***89 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 10:51:46.219 | INFO  | SENSITIVE_API | user=01***89 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 10:53:10.995 | INFO  | LOGOUT | user=01***89 | ip=127.0.0.1
+2026-04-13 10:57:22.831 | INFO  | LOGIN_SUCCESS | user=09***21 | role=USER | ip=127.0.0.1
+2026-04-13 11:19:06.908 | INFO  | LOGOUT | user=03***38 | ip=0:0:0:0:0:0:0:1
+2026-04-13 11:19:19.722 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 11:19:22.407 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin
+2026-04-13 11:19:22.848 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/overview
+2026-04-13 11:19:23.102 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/orders
+2026-04-13 11:19:23.117 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:19:23.165 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/revenue
+2026-04-13 11:19:23.206 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/top-products
+2026-04-13 11:19:23.247 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/users-by-time
+2026-04-13 11:19:25.661 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:19:26.159 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:19:34.642 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:19:34.863 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:19:36.608 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:19:36.801 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:19:38.416 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:19:38.639 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:19:41.321 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:19:41.517 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:20:11.911 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:20:41.915 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:21:11.911 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:21:22.704 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 11:21:35.895 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 11:21:41.924 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:21:43.292 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 11:22:11.916 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:22:41.913 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:23:29.923 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:24:29.930 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:24:37.496 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 11:25:29.939 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:26:29.920 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:36:51.949 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=PUT /api/orders/3109338208/cancel
+2026-04-13 11:36:52.045 | WARN  | ORDER_CANCELLED | user=09***21 | orderId=3109338208 | reason=COD_CANCEL | ip=127.0.0.1
+2026-04-13 11:37:06.614 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:37:09.357 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products/edit/45
+2026-04-13 11:37:18.313 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:37:18.515 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:37:48.916 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:38:18.921 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:38:48.913 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:39:18.917 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:39:48.921 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:40:18.921 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:41:29.932 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:44:42.139 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 11:45:17.683 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 11:45:42.681 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=PUT /api/orders/5292099782/cancel
+2026-04-13 11:45:42.731 | WARN  | ORDER_CANCELLED | user=09***21 | orderId=5292099782 | reason=COD_CANCEL | ip=127.0.0.1
+2026-04-13 11:51:57.019 | INFO  | LOGIN_SUCCESS | user=09***21 | role=USER | ip=127.0.0.1
+2026-04-13 11:52:28.399 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 11:52:30.501 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin
+2026-04-13 11:52:30.832 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/overview
+2026-04-13 11:52:31.001 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/orders
+2026-04-13 11:52:31.004 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:52:31.054 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/revenue
+2026-04-13 11:52:31.084 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/top-products
+2026-04-13 11:52:31.126 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/users-by-time
+2026-04-13 11:52:32.025 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:52:32.490 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:52:34.029 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:52:34.185 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:52:35.819 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:52:35.971 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:52:38.212 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:52:38.355 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:52:42.457 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products/edit/45
+2026-04-13 11:52:51.317 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 11:52:51.503 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:53:21.928 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:53:25.551 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 11:53:33.199 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 11:53:38.954 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 11:53:51.922 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:54:21.911 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:54:51.911 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:55:21.918 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:55:51.918 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:56:29.918 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 11:57:29.928 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:00:29.039 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=POST /api/orders/create
+2026-04-13 12:00:38.981 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=GET /api/vnpay/payment/create_payment
+2026-04-13 12:01:25.052 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:01:27.601 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 12:01:27.893 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:01:29.367 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 12:01:29.622 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:01:31.186 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 12:01:31.325 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:01:39.472 | INFO  | SENSITIVE_API | user=09***21 | ip=127.0.0.1 | uri=PUT /api/orders/9890969567/cancel
+2026-04-13 12:01:39.513 | WARN  | ORDER_CANCELLED | user=09***21 | orderId=9890969567 | reason=COD_CANCEL | ip=127.0.0.1
+2026-04-13 12:01:43.331 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/products
+2026-04-13 12:01:43.489 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:02:13.930 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:02:43.921 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:03:13.918 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:03:43.918 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:04:13.915 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:04:43.913 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:05:29.923 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:06:29.921 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:06:53.779 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:07:13.914 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:07:43.920 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:08:29.934 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:09:29.925 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:10:29.924 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:11:29.922 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:12:29.930 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:13:29.921 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:14:29.921 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:15:29.920 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:16:29.920 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:17:29.917 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:18:29.917 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:19:29.919 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:20:29.922 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 12:21:29.919 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats

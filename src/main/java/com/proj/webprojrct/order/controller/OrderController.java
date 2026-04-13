@@ -43,6 +43,9 @@ public class OrderController {
         try {
             OrderResponse order = orderService.createOrder(userDetails.getUser().getId(), request);
             return ResponseEntity.ok(order);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseMessage("Lỗi khi tạo đơn hàng: " + e.getMessage()));

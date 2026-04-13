@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -55,51 +56,66 @@ public class OrderServiceImpl implements OrderService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     @Override
+    @Transactional // FIX V-22: Bọc toàn bộ trong transaction để tránh race condition
     public OrderResponse createOrder(Long userId, OrderRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // TODO: UNCOMMENT THIS LINE WHEN PHONE VERIFICATION IS READY
-        // if (!user.getVerifyPhone()) {
-        // throw new RuntimeException("Chưa xác thực số điện thoại.");
-        // }
-        // FIX V-20: Tính lại totalAmount từ DB, không tin giá trị client gửi lên
+        if (request.getOrderItems() == null || request.getOrderItems().isEmpty()) {
+            throw new RuntimeException("Đơn hàng phải có ít nhất 1 sản phẩm.");
+        }
+
+        // FIX V-21 + V-22: Validate quantity VÀ lock từng sản phẩm theo thứ tự ID tăng dần
+        // (sắp xếp để tránh deadlock khi nhiều transaction cùng lock)
+        List<OrderRequest.OrderItemRequest> sortedItems = request.getOrderItems().stream()
+                .sorted(java.util.Comparator.comparing(OrderRequest.OrderItemRequest::getProductId))
+                .collect(Collectors.toList());
+
         BigDecimal serverTotalAmount = BigDecimal.ZERO;
-        if (request.getOrderItems() != null) {
-            for (OrderRequest.OrderItemRequest itemReq : request.getOrderItems()) {
-                Product product = productRepository.findById(itemReq.getProductId())
-                        .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductId()));
-
-                if (product.getStock() < itemReq.getQuantity()) {
-                    throw new RuntimeException("Không đủ số lượng sản phẩm " + product.getName()
-                            + ". Còn lại: " + product.getStock() + ", yêu cầu: " + itemReq.getQuantity());
-                }
-
-                // Lấy giá từ DB, nhân với số lượng
-                BigDecimal itemTotal = product.getPrice()
-                        .multiply(BigDecimal.valueOf(itemReq.getQuantity()));
-                serverTotalAmount = serverTotalAmount.add(itemTotal);
+        for (OrderRequest.OrderItemRequest itemReq : sortedItems) {
+            // FIX V-21: Validate số lượng tại đây
+            if (itemReq.getQuantity() <= 0) {
+                throw new IllegalArgumentException("Số lượng sản phẩm phải lớn hơn 0");
             }
+            if (itemReq.getQuantity() > 100) {
+                throw new IllegalArgumentException("Số lượng mỗi sản phẩm không được vượt quá 100");
+            }
+
+            // FIX V-22: Dùng PESSIMISTIC_WRITE lock — chặn transaction khác đọc/ghi cùng lúc
+            Product product = productRepository.findByIdWithLock(itemReq.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductId()));
+
+            if (product.getStock() < itemReq.getQuantity()) {
+                throw new RuntimeException("Không đủ số lượng sản phẩm " + product.getName()
+                        + ". Còn lại: " + product.getStock() + ", yêu cầu: " + itemReq.getQuantity());
+            }
+
+            // FIX V-22: Trừ stock ngay trong cùng transaction — không để TOCTOU
+            product.setStock(product.getStock() - itemReq.getQuantity());
+            productRepository.save(product);
+
+            // FIX V-20: Lấy giá từ DB
+            BigDecimal itemTotal = product.getPrice()
+                    .multiply(BigDecimal.valueOf(itemReq.getQuantity()));
+            serverTotalAmount = serverTotalAmount.add(itemTotal);
         }
 
         Order order = new Order();
         order.setUser(user);
         order.setStatus("PENDING");
-        order.setTotalAmount(serverTotalAmount); // FIX V-20: dùng giá tính từ server
+        order.setTotalAmount(serverTotalAmount);
         order.setShippingAddress(request.getShippingAddress());
         order.setCreatedAt(LocalDateTime.now());
         order = orderRepository.save(order);
 
         final Order savedOrder = order;
-        if (request.getOrderItems() != null) {
-            for (OrderRequest.OrderItemRequest itemReq : request.getOrderItems()) {
-                OrderItem orderItem = new OrderItem();
-                orderItem.setOrder(savedOrder);
-                orderItem.setProductId(itemReq.getProductId());
-                orderItem.setQuantity(itemReq.getQuantity());
-                orderItem.setPrice(itemReq.getPrice());
-                orderItemRepository.save(orderItem);
-            }
+        for (OrderRequest.OrderItemRequest itemReq : sortedItems) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(savedOrder);
+            orderItem.setProductId(itemReq.getProductId());
+            orderItem.setQuantity(itemReq.getQuantity());
+            orderItem.setPrice(itemReq.getPrice());
+            orderItemRepository.save(orderItem);
         }
 
         // Send order confirmation email
@@ -256,6 +272,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional // FIX V-22: Transaction + lock khi hoàn stock
     public void cancelOrder(Long orderId, long userId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -267,14 +284,13 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("Only PENDING or PAID orders can be cancelled.");
         }
 
-        // Restore product stock when cancelling
+        // Hoàn stock với lock để tránh race condition
         List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
         for (OrderItem item : orderItems) {
-            Product product = productRepository.findById(item.getProductId())
+            Product product = productRepository.findByIdWithLock(item.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProductId()));
 
-            int restoredStock = product.getStock() + item.getQuantity();
-            product.setStock(restoredStock);
+            product.setStock(product.getStock() + item.getQuantity());
             productRepository.save(product);
         }
 
@@ -318,29 +334,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional // FIX V-22: Race condition payment
     public void updateProductStockAfterPayment(Long orderId) {
-        // Get order and its items
+        // FIX V-22: Stock da duoc tru tai createOrder() bang PESSIMISTIC_WRITE lock.
+        // Method nay chi can xac nhan order thanh PAID - KHONG tru stock lan 2.
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
-
-        // cáº­p nháº­t sá»‘ lÆ°á»£ng
-        for (OrderItem item : orderItems) {
-            Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found: " + item.getProductId()));
-
-            int newStock = product.getStock() - item.getQuantity();
-
-            if (newStock < 0) {
-                throw new RuntimeException("Insufficient stock for product: " + product.getName());
-            }
-
-            product.setStock(newStock);
-            productRepository.save(product);
+        if (!"PENDING".equals(order.getStatus())) {
+            return;
         }
 
-        // Update order status to PAID
         order.setStatus("PAID");
         orderRepository.save(order);
     }
