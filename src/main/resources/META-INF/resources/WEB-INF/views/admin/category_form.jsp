@@ -11,6 +11,8 @@ contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+      crossorigin="anonymous"
     />
   </head>
   <body>
@@ -195,7 +197,7 @@ contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
       </div>
     </div>
 
-    <script>
+    <script nonce="${cspNonce}">
       const ctx = "<%=request.getContextPath()%>";
       const api = ctx + "/api/categories";
       const form = document.getElementById("categoryForm");
@@ -324,7 +326,7 @@ contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
     </script>
 
     <!-- Script để toggle sidebar -->
-    <script>
+    <script nonce="${cspNonce}">
       (function () {
         const sidebar = document.getElementById("sidebar");
         const toggle = document.getElementById("navToggle");

@@ -5,6 +5,7 @@ import com.proj.webprojrct.common.config.security.JwtAuthenticationFilter;
 
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.HeaderWriterFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,7 @@ public class SecurityConfig {
         private final CustomUserDetailsService uds;
         private final PasswordEncoder passwordEncoder;
         private final JwtAuthenticationFilter jwtFilter;
+        private final CspNonceFilter cspNonceFilter;
         private final CustomAccessDeniedHandler accessDeniedHandler;
         private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
@@ -46,11 +48,13 @@ public class SecurityConfig {
                         CustomUserDetailsService uds,
                         PasswordEncoder passwordEncoder,
                         JwtAuthenticationFilter jwtFilter,
+                        CspNonceFilter cspNonceFilter,
                         CustomAccessDeniedHandler accessDeniedHandler,
                         CustomAuthenticationEntryPoint authenticationEntryPoint) {
                 this.uds = uds;
                 this.passwordEncoder = passwordEncoder;
                 this.jwtFilter = jwtFilter;
+                this.cspNonceFilter = cspNonceFilter;
                 this.accessDeniedHandler = accessDeniedHandler;
                 this.authenticationEntryPoint = authenticationEntryPoint;
         }
@@ -126,11 +130,46 @@ public class SecurityConfig {
                                 .exceptionHandling(e -> e
                                                 .accessDeniedHandler(accessDeniedHandler)
                                                 .authenticationEntryPoint(authenticationEntryPoint))
+                                .addFilterBefore(cspNonceFilter, HeaderWriterFilter.class)
                                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                                 .formLogin(form -> form.disable())
                                 .httpBasic(httpBasic -> httpBasic.disable())
                                 .requiresChannel(channel -> channel
-                                                .anyRequest().requiresSecure());
+                                                .anyRequest().requiresSecure())
+                                // ✅ Content Security Policy (CSP) — ngăn XSS và tải tài nguyên từ nguồn không tin cậy
+                                .headers(headers -> headers
+                                                .httpStrictTransportSecurity(hsts -> hsts
+                                                                .includeSubDomains(true)
+                                                                .preload(true)
+                                                                .maxAgeInSeconds(31536000))
+                                                .addHeaderWriter((request, response) -> {
+                                                        String nonce = (String) request.getAttribute(CspNonceFilter.CSP_NONCE_ATTR);
+                                                        if (nonce == null || nonce.isEmpty()) {
+                                                                return;
+                                                        }
+
+                                                        String csp =
+                                                                        "default-src 'self'; " +
+                                                                                        "script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com; " +
+                                                                                        "script-src-elem 'self' 'nonce-" + nonce
+                                                                                        + "' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com; " +
+                                                                                        "script-src-attr 'unsafe-inline'; " +
+                                                                                        "style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " +
+                                                                                        "style-src-elem 'self' 'nonce-" + nonce
+                                                                                        + "' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " +
+                                                                                        "style-src-attr 'unsafe-inline'; " +
+                                                                                        "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
+                                                                                        "img-src 'self' data: blob: https://developers.google.com https://lh3.googleusercontent.com; " +
+                                                                                        "connect-src 'self' wss://localhost:8080 ws://localhost:8080; " +
+                                                                                        "frame-ancestors 'self'; " +
+                                                                                        "frame-src https://accounts.google.com; " +
+                                                                                        "form-action 'self' https://accounts.google.com; " +
+                                                                                        "upgrade-insecure-requests; " +
+                                                                                        "base-uri 'self'";
+
+                                                        response.setHeader("Content-Security-Policy", csp);
+                                                })
+                                );
 
                 // Only configure OAuth2 if beans are available
                 if (customOauth2UserService != null && oauth2SuccessHandler != null

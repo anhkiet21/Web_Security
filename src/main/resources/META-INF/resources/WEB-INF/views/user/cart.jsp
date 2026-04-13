@@ -7,7 +7,7 @@
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Giỏ hàng - CellPhoneStore</title>
-      <style>
+      <style nonce="${cspNonce}">
         .cart-item-card {
           background: white;
           border: 1px solid #e0e0e0;
@@ -229,7 +229,7 @@
       </div>
       <!-- /SECTION -->
 
-      <script>
+      <script nonce="${cspNonce}">
         let cart = [];
 
         function loadCart() {

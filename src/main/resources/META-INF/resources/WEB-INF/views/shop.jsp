@@ -10,7 +10,7 @@
 				<meta name="viewport" content="width=device-width, initial-scale=1">
 				<title>Sản phẩm - CellPhoneStore</title>
 
-				<style>
+				<style nonce="${cspNonce}">
 					/* Hover animation cho product cards */
 					.product {
 						transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -403,7 +403,7 @@
 				</div>
 				<!-- /NEWSLETTER -->
 
-				<script>
+				<script nonce="${cspNonce}">
 // Kiểm tra đăng nhập từ server-side
 <%
 						org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();

@@ -1,12 +1,12 @@
-﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <!DOCTYPE html>
     <html lang="vi">
 
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Đặt Hàng - CellPhoneStore</title>
-        <style>
+        <title>�?t H�ng - CellPhoneStore</title>
+        <style nonce="${cspNonce}">
             * {
                 margin: 0;
                 padding: 0;
@@ -336,71 +336,71 @@
         <div class="header">
             <div class="header-container">
                 <a href="/shop" class="header-logo"> CellPhoneStore</a>
-                <a href="/cart" class="btn-back"> Quay lại giỏ hàng</a>
+                <a href="/cart" class="btn-back"> Quay l?i gi? h�ng</a>
             </div>
         </div>
 
         <div class="container">
-            <h1> Thông Tin Đặt Hàng</h1>
+            <h1> Th�ng Tin �?t H�ng</h1>
 
             <div id="messageContainer"></div>
 
             <div class="order-content">
                 <div class="order-form-section">
-                    <div class="form-section-title">Thông tin giao hàng</div>
+                    <div class="form-section-title">Th�ng tin giao h�ng</div>
 
                     <form id="orderForm">
                         <div class="form-group">
-                            <label class="form-label required">Họ và tên</label>
+                            <label class="form-label required">H? v� t�n</label>
                             <input type="text" class="form-input" id="fullName" name="fullName"
-                                placeholder="Nhập họ và tên">
+                                placeholder="Nh?p h? v� t�n">
                             <div class="error-message" id="fullNameError"></div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label required">Số điện thoại</label>
+                            <label class="form-label required">S? di?n tho?i</label>
                             <input type="tel" class="form-input" id="phone" name="phone"
-                                placeholder="Nhập số điện thoại">
+                                placeholder="Nh?p s? di?n tho?i">
                             <div class="error-message" id="phoneError"></div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label required">Địa chỉ giao hàng</label>
+                            <label class="form-label required">�?a ch? giao h�ng</label>
                             <textarea class="form-input" id="address" name="address"
-                                placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
+                                placeholder="S? nh�, t�n du?ng, phu?ng/x�, qu?n/huy?n, t?nh/th�nh ph?"></textarea>
                             <div class="error-message" id="addressError"></div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Ghi chú</label>
+                            <label class="form-label">Ghi ch�</label>
                             <textarea class="form-input" id="notes" name="notes"
-                                placeholder="Ghi chú thêm (không bắt buộc)"></textarea>
+                                placeholder="Ghi ch� th�m (kh�ng b?t bu?c)"></textarea>
                         </div>
                     </form>
                 </div>
 
                 <div class="order-summary">
-                    <div class="summary-title">Đơn hàng của bạn</div>
+                    <div class="summary-title">�on h�ng c?a b?n</div>
 
                     <div id="orderItemsList"></div>
 
                     <div class="summary-row">
-                        <span>Tạm tính:</span>
+                        <span>T?m t�nh:</span>
                         <span id="subtotal">0 </span>
                     </div>
 
                     <div class="summary-row">
-                        <span>Phí vận chuyển:</span>
-                        <span id="shippingFee">Miễn phí</span>
+                        <span>Ph� v?n chuy?n:</span>
+                        <span id="shippingFee">Mi?n ph�</span>
                     </div>
 
                     <div class="summary-row total">
-                        <span>Tổng cộng:</span>
+                        <span>T?ng c?ng:</span>
                         <span id="totalPrice">0 </span>
                     </div>
 
                     <button class="btn-place-order" onclick="placeOrder()">
-                        Đặt hàng
+                        �?t h�ng
                     </button>
                 </div>
             </div>
@@ -409,16 +409,16 @@
         <div id="successModal" class="modal">
             <div class="modal-content">
                 <div class="modal-icon"></div>
-                <h2 class="modal-title">Đặt hàng thành công!</h2>
+                <h2 class="modal-title">�?t h�ng th�nh c�ng!</h2>
                 <div class="modal-body" id="modalBody"></div>
                 <div class="modal-buttons">
-                    <button class="btn-modal btn-primary" onclick="goToShop()">Tiếp tục mua sắm</button>
-                    <button class="btn-modal btn-secondary" onclick="viewOrder()">Xem đơn hàng</button>
+                    <button class="btn-modal btn-primary" onclick="goToShop()">Ti?p t?c mua s?m</button>
+                    <button class="btn-modal btn-secondary" onclick="viewOrder()">Xem don h�ng</button>
                 </div>
             </div>
         </div>
 
-        <script>
+        <script nonce="${cspNonce}">
             var selectedItems = [];
             var orderId = null;
 

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Khuyến mãi - CellPhoneStore</title>
     
-    <style>
+    <style nonce="${cspNonce}">
         /* Flash Sale Countdown Styling */
         .hot-deal-countdown {
             display: flex;
@@ -516,7 +516,7 @@
     </div>
     <!-- /NEWSLETTER -->
 
-    <script>
+    <script nonce="${cspNonce}">
         <%
             org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
             boolean isAuthenticated = auth != null && auth.isAuthenticated() && !(auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken);
@@ -804,7 +804,7 @@
         }
     </script>
 
-    <style>
+    <style nonce="${cspNonce}">
         /* Additional styles for deals page */
         .product {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);

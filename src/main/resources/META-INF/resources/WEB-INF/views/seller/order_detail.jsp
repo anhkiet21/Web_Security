@@ -5,7 +5,7 @@
 
                 <title>Chi tiết đơn hàng #${order.orderId} - CellPhoneStore</title>
 
-                <style>
+                <style nonce="${cspNonce}">
                     .order-detail-container {
                         max-width: 1200px;
                         margin: 40px auto;
@@ -643,7 +643,7 @@
                     </div>
                 </div>
 
-                <script>
+                <script nonce="${cspNonce}">
                     function toggleCancelForm() {
                         const form = document.getElementById('cancelOrderForm');
                         if (form.style.display === 'none' || form.style.display === '') {

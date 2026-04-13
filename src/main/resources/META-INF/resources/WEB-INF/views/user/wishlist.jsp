@@ -7,7 +7,7 @@
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Sản phẩm yêu thích - CellPhoneStore</title>
-            <style>
+            <style nonce="${cspNonce}">
                 /* Đảm bảo width đồng nhất cho tất cả product cards */
                 #wishlistContainer {
                     display: flex;
@@ -182,7 +182,7 @@
             </div>
             <!-- /SECTION -->
 
-            <script>
+            <script nonce="${cspNonce}">
                 const ctx = '${pageContext.request.contextPath}';
                 let wishlistData = [];
 

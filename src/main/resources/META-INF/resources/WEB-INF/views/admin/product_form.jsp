@@ -10,7 +10,7 @@
       <link rel="stylesheet" href="<c:url value='/css/admin-dashboard.css'/>" />
       <link rel="stylesheet" href="<c:url value='/css/products_admin.css'/>" />
       <link rel="stylesheet" href="<c:url value='/css/product_form.css'/>" />
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" />
     </head>
 
     <body>
@@ -273,7 +273,7 @@
         </div>
       </div>
 
-      <script>
+      <script nonce="${cspNonce}">
         const ctx = "${pageContext.request.contextPath}";
 
         // Load danh mục cha (Hãng: Apple, Samsung, Xiaomi...)
@@ -457,7 +457,7 @@
           });
       </script>
 
-      <script>
+      <script nonce="${cspNonce}">
         // Sidebar toggle
         (function () {
           const sidebar = document.getElementById("sidebar");

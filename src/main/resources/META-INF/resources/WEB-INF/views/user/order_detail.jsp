@@ -8,7 +8,7 @@
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Chi tiết đơn hàng - CellPhoneStore</title>
-                <style>
+                <style nonce="${cspNonce}">
                     /* Order Detail Page Styles */
                     .order-detail-title {
                         color: #333;
@@ -618,7 +618,7 @@
                 </div>
                 <!-- /ORDER DETAIL SECTION -->
 
-                <script>
+                <script nonce="${cspNonce}">
                     // Inline Alert System
                     function showInlineAlert(message, type = 'danger') {
                         // Remove existing alerts

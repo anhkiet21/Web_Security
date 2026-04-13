@@ -12,6 +12,8 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+      crossorigin="anonymous"
     />
   </head>
   <body>
@@ -404,7 +406,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       </div>
     </div>
 
-    <script>
+    <script nonce="${cspNonce}">
       const ctx = "${pageContext.request.contextPath}";
       const id = document.getElementById("productId").value;
 
@@ -647,7 +649,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       }
     </script>
 
-    <script>
+    <script nonce="${cspNonce}">
       // Sidebar toggle
       (function () {
         const sidebar = document.getElementById("sidebar");

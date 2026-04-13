@@ -7,22 +7,23 @@ contentType="text/html;charset=UTF-8" language="java" %>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Xác thực số điện thoại - CellPhoneStore</title>
 
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Montserrat font (self-hosted) -->
+    <link rel="stylesheet" href="<c:url value='/css/montserrat.css'/>" />
 
     <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
+      crossorigin="anonymous"
     />
 
     <!-- Bootstrap -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
     />
 
     <!-- CSS -->
@@ -241,9 +242,9 @@ contentType="text/html;charset=UTF-8" language="java" %>
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
-    <style>
+    <style nonce="${cspNonce}">
       /* Inline alert animations */
       #dynamicAlert {
         animation: slideDown 0.3s ease-out;
@@ -287,7 +288,7 @@ contentType="text/html;charset=UTF-8" language="java" %>
       }
     </style>
 
-    <script>
+    <script nonce="${cspNonce}">
       const ctx = "${pageContext.request.contextPath}";
 
       // Auto hide alerts after 5 seconds

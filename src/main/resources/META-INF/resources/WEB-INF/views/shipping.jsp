@@ -9,7 +9,7 @@
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Chính Sách Vận Chuyển - CellPhoneStore</title>
 
-            <style>
+            <style nonce="${cspNonce}">
                 .shipping-section {
                     padding: 60px 0;
                     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);

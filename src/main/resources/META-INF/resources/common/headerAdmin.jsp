@@ -241,7 +241,7 @@
             </nav>
             <!-- /NAVIGATION -->
 
-            <script>
+            <script nonce="${cspNonce}">
               // Function to update cart count (global function)
               function updateGlobalCartCount() {
   <%
@@ -558,7 +558,7 @@
               });
             </script>
 
-            <style>
+            <style nonce="${cspNonce}">
               @keyframes slideDown {
                 from {
                   transform: translateY(-100%);
@@ -595,7 +595,7 @@
                 z-index: 10000 !important;
               }
             </style>
-            <style>
+            <style nonce="${cspNonce}">
               @media (max-width: 350px) {
                 .header-search {
                   display: none !important;

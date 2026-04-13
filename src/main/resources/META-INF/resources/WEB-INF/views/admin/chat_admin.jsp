@@ -46,12 +46,12 @@ contentType="text/html;charset=UTF-8" language="java" %>
       </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js" integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous"></script>
     <script src="<c:url value='/js/admin-chat-notifications.js'/>"></script>
     <script src="<c:url value='/js/chat-admin.js'/>"></script>
 
-    <script>
+    <script nonce="${cspNonce}">
       // Hiển thị khung chat khi trang đã tải xong
       document.addEventListener("DOMContentLoaded", function () {
         const chatPage = document.getElementById("chat-page");

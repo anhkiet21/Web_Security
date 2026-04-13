@@ -71,7 +71,7 @@ uri="http://www.springframework.org/tags/form" prefix="form" %>
     <div>
       <a href="/products/${productId}/reviews/new">Add review</a>
     </div>
-    <script>
+    <script nonce="${cspNonce}">
       function toggleReplies(reviewId) {
         var list = document.getElementById("child-list-" + reviewId);
         var btn = document.getElementById("toggle-btn-" + reviewId);

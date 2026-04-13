@@ -155,7 +155,7 @@ pageEncoding="UTF-8" %> <%@ taglib prefix="c" uri="jakarta.tags.core" %>
           </ul>
           <span class="copyright">
             Copyright &copy;
-            <script>
+            <script nonce="${cspNonce}">
               document.write(new Date().getFullYear());
             </script>
             CellPhoneStore - Dự án Web bán điện thoại
@@ -192,7 +192,7 @@ request.setAttribute("isFloatingAuthenticated", isFloatingAuthenticated); %>
   </div>
 </c:if>
 
-<style>
+<style nonce="${cspNonce}">
   .floating-contact-btn {
     position: fixed;
     bottom: 30px;
@@ -334,7 +334,7 @@ request.setAttribute("isFloatingAuthenticated", isFloatingAuthenticated); %>
   }
 </style>
 
-<script>
+<script nonce="${cspNonce}">
   // Update floating chat badge
   function updateFloatingChatBadge() {
       var isLoggedIn = ${ isFloatingAuthenticated };

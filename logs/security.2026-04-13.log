@@ -1,0 +1,50 @@
+2026-04-13 20:58:51.255 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
+2026-04-13 21:07:38.239 | ERROR | SYSTEM_ERROR | type=DataAccessResourceFailureException | ip=127.0.0.1 | message=Unable to acquire JDBC Connection [HikariPool-1 - Connection is not available, request timed out after 30013ms (total=10, active=10, idle=0, waiting=106)] [n/a]
+2026-04-13 21:38:03.518 | ERROR | SYSTEM_ERROR | type=ResponseStatusException | ip=127.0.0.1 | message=404 NOT_FOUND "Không tìm thấy sản phẩm #960852988428903511"
+2026-04-13 22:01:30.061 | INFO  | LOGOUT | user=08***02 | ip=0:0:0:0:0:0:0:1
+2026-04-13 22:01:33.887 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 22:01:35.465 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
+2026-04-13 22:01:37.788 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
+2026-04-13 22:02:08.257 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:02:38.247 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:03:08.250 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:03:38.260 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:04:08.259 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:04:38.260 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:05:26.258 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:06:26.259 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:07:26.261 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:08:26.255 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:09:26.249 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:10:26.252 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:11:26.258 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:12:12.112 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 22:12:14.928 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
+2026-04-13 22:12:24.773 | INFO  | LOGOUT | user=08***07 | ip=0:0:0:0:0:0:0:1
+2026-04-13 22:21:13.175 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 22:21:23.211 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
+2026-04-13 22:21:54.251 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:22:24.246 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:22:54.257 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:23:24.255 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:24:45.280 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 22:24:46.921 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin
+2026-04-13 22:24:47.260 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/overview
+2026-04-13 22:24:47.371 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 22:24:47.457 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/orders
+2026-04-13 22:24:47.508 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/revenue
+2026-04-13 22:24:47.718 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/top-products
+2026-04-13 22:24:47.755 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/users-by-time
+2026-04-13 23:31:49.864 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 23:31:52.749 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin
+2026-04-13 23:31:53.205 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/overview
+2026-04-13 23:31:53.303 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 23:31:53.392 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/orders
+2026-04-13 23:31:53.632 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/revenue
+2026-04-13 23:31:53.656 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/top-products
+2026-04-13 23:31:53.682 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/users-by-time
+2026-04-13 23:36:51.782 | INFO  | LOGOUT | user=08***02 | ip=127.0.0.1
+2026-04-13 23:55:53.525 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-13 23:56:04.284 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
+2026-04-13 23:56:04.946 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 23:59:53.973 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"

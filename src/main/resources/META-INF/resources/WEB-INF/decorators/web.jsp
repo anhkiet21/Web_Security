@@ -13,8 +13,8 @@
 			</title>
 			<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
 
-			<!-- Google font -->
-			<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+			<!-- Montserrat font (self-hosted) -->
+			<link rel="stylesheet" href="<c:url value='/css/montserrat.css'/>" />
 
 
 			<!-- Bootstrap -->
@@ -45,6 +45,7 @@
 
 					<!-- jQuery Plugins -->
 					<script src="${pageContext.request.contextPath}/js/jquery.min.js"></script>
+					<script src="${pageContext.request.contextPath}/js/jquery-migrate.min.js"></script>
 					<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
 					<script src="${pageContext.request.contextPath}/js/slick.min.js"></script>
 					<script src="${pageContext.request.contextPath}/js/nouislider.min.js"></script>
@@ -52,7 +53,7 @@
 					<script src="${pageContext.request.contextPath}/js/main.js"></script>
 
 					<!-- Global cart count update -->
-					<script>
+					<script nonce="${cspNonce}">
     <%
 							org.springframework.security.core.Authentication globalAuth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         boolean isGlobalAuthenticated = globalAuth != null && globalAuth.isAuthenticated() && !(globalAuth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken);

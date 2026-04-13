@@ -4,7 +4,7 @@
 
             <title>Đơn hàng đã chấp nhận - CellPhoneStore</title>
 
-            <style>
+            <style nonce="${cspNonce}">
                 .seller-orders-container {
                     max-width: 1200px;
                     margin: 40px auto;
@@ -247,7 +247,7 @@
                                     </div>
                                 </div>
 
-                                <script>
+                                <script nonce="${cspNonce}">
                                     function applyFilter() {
                                         const orderId = document.getElementById('searchOrderId').value.trim();
                                         const url = new URL(window.location.href);

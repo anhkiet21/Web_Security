@@ -285,7 +285,7 @@ isAuthenticated); %>
 </nav>
 <!-- /NAVIGATION -->
 
-<script>
+<script nonce="${cspNonce}">
                   // Function to update cart count (global function)
                   function updateGlobalCartCount() {
       <%
@@ -602,7 +602,7 @@ isAuthenticated); %>
                   });
 </script>
 
-<style>
+<style nonce="${cspNonce}">
   @keyframes slideDown {
     from {
       transform: translateY(-100%);

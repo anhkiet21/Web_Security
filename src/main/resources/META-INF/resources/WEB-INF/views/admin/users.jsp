@@ -9,7 +9,7 @@
             <link rel="stylesheet" href="<c:url value='/css/admin-dashboard.css'/>" />
             <link rel="stylesheet" href="<c:url value='/css/users_admin.css'/>" />
             <link rel="stylesheet" href="<c:url value='/css/user_forms.css'/>" />
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" />
         </head>
 
         <body>
@@ -346,11 +346,11 @@
             </div>
 
             <!-- WebSocket libraries for chat notifications -->
-            <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js" integrity="sha256-FqcTDrWjDCeZk5r2hLGz4OWjwrWV3ERI5+kWR1DokZA=" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js" integrity="sha256-nkP8cj5xaTdWK/BsZl+57ZCE/Y/i4UNtbNTpgH+6Taw=" crossorigin="anonymous"></script>
             <script src="<c:url value='/js/admin-chat-notifications.js'/>"></script>
 
-            <script>
+            <script nonce="${cspNonce}">
                 function filterTable() {
                     // Get filter values
                     let phone = document.getElementById('filterPhone').value.toLowerCase();

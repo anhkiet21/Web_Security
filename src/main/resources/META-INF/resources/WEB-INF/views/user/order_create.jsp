@@ -8,7 +8,7 @@
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Xác nhận đơn hàng - CellPhoneStore</title>
-                <style>
+                <style nonce="${cspNonce}">
                     /* Order Page Styles */
                     .order-title {
                         color: #333;
@@ -309,7 +309,7 @@
                 </div>
                 <!-- /ORDER PAGE -->
 
-                <script>
+                <script nonce="${cspNonce}">
                     var pendingOrderData;
                     const confirmBtn = document.getElementById('confirm-btn');
                     const messageContainer = document.getElementById('message-container');

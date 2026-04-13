@@ -16,7 +16,7 @@
                 <c:out value="${product.name}" default="Sản phẩm" />
               </title>
 
-              <style>
+              <style nonce="${cspNonce}">
                 /* Hover animation cho product cards trong related/similar products */
                 .product {
                   transition: all 0.3s ease;
@@ -514,7 +514,7 @@
               </div>
               <!-- /Section -->
 
-              <script>
+              <script nonce="${cspNonce}">
                 const ctx = "${pageContext.request.contextPath}";
                 const isUserLoggedIn = ${ isUserAuthenticated };
                 const isAdmin = <c:out value="${pageContext.request.isUserInRole('ADMIN')}" default="false" />;

@@ -7,7 +7,7 @@
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Đặt hàng thành công - CellPhoneStore</title>
-            <style>
+            <style nonce="${cspNonce}">
                 /* Success Page Styles */
                 .success-section {
                     padding: 40px 0 80px;

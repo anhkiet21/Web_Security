@@ -9,7 +9,7 @@
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Phương Thức Thanh Toán - CellPhoneStore</title>
 
-            <style>
+            <style nonce="${cspNonce}">
                 .payment-section {
                     padding: 60px 0;
                     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);

@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt Hàng - CellPhoneStore</title>
-    <style>
+    <style nonce="${cspNonce}">
 /* Order Page Styles */
 .order-title {
     color: #333;
@@ -425,7 +425,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="${cspNonce}">
 var selectedItems = [];
 var orderId = null;
 

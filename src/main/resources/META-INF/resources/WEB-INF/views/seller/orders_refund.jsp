@@ -5,7 +5,7 @@
 
                 <title>Đơn hàng hoàn tiền - CellPhoneStore</title>
 
-                <style>
+                <style nonce="${cspNonce}">
                     .refund-orders-container {
                         max-width: 1200px;
                         margin: 40px auto;
@@ -437,7 +437,7 @@
                 </div>
                 <!-- /SECTION -->
 
-                <script>
+                <script nonce="${cspNonce}">
                     function processRefund(orderId) {
                         const btn = document.getElementById('refund-btn-' + orderId);
                         const trantypeEl = document.getElementById('trantype-' + orderId);

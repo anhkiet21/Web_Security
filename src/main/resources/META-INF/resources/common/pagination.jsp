@@ -139,7 +139,7 @@
     </div>
 </div>
 
-<style>
+<style nonce="${cspNonce}">
     .pagination-container .page-link:hover:not(.disabled):not(.active) {
         background-color: #e9ecef !important;
         border-color: #dee2e6 !important;

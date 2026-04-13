@@ -7,16 +7,15 @@ contentType="text/html;charset=UTF-8" %>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Đăng ký thành viên - CellPhoneStore</title>
 
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Montserrat font (self-hosted) -->
+    <link rel="stylesheet" href="<c:url value='/css/montserrat.css'/>" />
 
     <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
+      crossorigin="anonymous"
     />
 
     <c:url value="/css/register.css" var="registerCss" />
@@ -170,7 +169,7 @@ contentType="text/html;charset=UTF-8" %>
       </button>
     </div>
 
-    <script>
+    <script nonce="${cspNonce}">
       // Hàm hiển thị thông báo lỗi inline
       function showValidationError(message, inputElement) {
         const validationMessage = document.getElementById("validationMessage");

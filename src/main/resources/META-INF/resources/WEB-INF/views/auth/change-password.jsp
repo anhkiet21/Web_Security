@@ -6,7 +6,7 @@ uri="http://www.springframework.org/tags/form" %>
   <head>
     <meta charset="UTF-8" />
     <title>Đổi mật khẩu</title>
-    <style>
+    <style nonce="${cspNonce}">
       body {
         font-family: Arial, sans-serif;
         margin: 20px;
@@ -179,7 +179,7 @@ uri="http://www.springframework.org/tags/form" %>
       </div>
     </div>
 
-    <script>
+    <script nonce="${cspNonce}">
       (function () {
         const newPw = document.getElementById("newPassword");
         const confirmPw = document.getElementById("confirmNewPassword");

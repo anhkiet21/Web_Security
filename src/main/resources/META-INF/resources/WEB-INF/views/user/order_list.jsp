@@ -9,7 +9,7 @@
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>Danh sách đơn hàng - CellPhoneStore</title>
-                    <style>
+                    <style nonce="${cspNonce}">
                         /* Order List Page Styles */
                         .order-list-title {
                             color: #333;
@@ -476,7 +476,7 @@
                     </div>
                     <!-- /ORDER LIST SECTION -->
 
-                    <script>
+                    <script nonce="${cspNonce}">
                         // Simple pagination and cancel logic (cleaned)
                         const ORDERS_PER_PAGE = 5;
                         let currentPage = 1;

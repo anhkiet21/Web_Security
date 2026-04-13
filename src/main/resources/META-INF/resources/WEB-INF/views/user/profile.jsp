@@ -10,7 +10,7 @@
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <title>Trang Cá Nhân - CellPhoneStore</title>
 
-                <style>
+                <style nonce="${cspNonce}">
                     /* Modern Profile Design - Matches Site Layout */
                     .profile-wrapper {
                         padding: 30px 15px;
@@ -578,7 +578,7 @@
                             </button>
                         </div>
 
-                        <style>
+                        <style nonce="${cspNonce}">
                             .profile-tab:hover {
                                 background: #FFF5F5 !important;
                                 color: #D10024 !important;
@@ -1190,7 +1190,7 @@
                             </div>
                         </div>
 
-                        <script>
+                        <script nonce="${cspNonce}">
                             function switchTab(tabName) {
                                 document.querySelectorAll('.tab-content-section').forEach(tab => tab.classList.remove('active'));
                                 document.querySelectorAll('.profile-tab').forEach(btn => btn.classList.remove('active'));
@@ -1571,7 +1571,7 @@
                             }
                         </script>
 
-                        <style>
+                        <style nonce="${cspNonce}">
                             .inline-alert {
                                 padding: 15px 20px;
                                 margin: 0 0 20px 0;

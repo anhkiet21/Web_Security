@@ -14,7 +14,7 @@ prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
   </div>
 </header>
 
-<script>
+<script nonce="${cspNonce}">
   // Add shadow to header when scrolling
   window.addEventListener("scroll", function () {
     const header = document.querySelector(".site-header");

@@ -4,7 +4,7 @@
 
             <title>Danh sách đơn hàng của Seller - CellPhoneStore</title>
 
-            <style>
+            <style nonce="${cspNonce}">
                 .seller-orders-container {
                     max-width: 1200px;
                     margin: 40px auto;
@@ -333,7 +333,7 @@
                                     </div>
                                 </div>
 
-                                <script>
+                                <script nonce="${cspNonce}">
                                     function applyFilter() {
                                         const orderId = document.getElementById('searchOrderId').value.trim();
                                         const url = new URL(window.location.href);
@@ -626,7 +626,7 @@
             </div>
             <!-- /SECTION -->
 
-            <script>
+            <script nonce="${cspNonce}">
                 function toggleCancelForm(orderId) {
                     const form = document.getElementById('cancelOrderForm-' + orderId);
                     const refundNotice = document.getElementById('refundNotice-' + orderId);
@@ -714,7 +714,7 @@
             </div>
             </div> -->
 
-            <script>
+            <script nonce="${cspNonce}">
                 let selectedOrderId = null;
 
                 function openCancelModal(orderId) {

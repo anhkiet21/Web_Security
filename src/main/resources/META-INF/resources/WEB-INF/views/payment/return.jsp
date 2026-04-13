@@ -3,7 +3,7 @@
 
         <title>Kết quả thanh toán - CellPhoneStore</title>
 
-        <script>
+        <script nonce="${cspNonce}">
             const urlParams = new URLSearchParams(window.location.search);
 
             // Bảng mã lỗi vnp_ResponseCode
@@ -50,7 +50,7 @@
 
         </script>
 
-        <style>
+        <style nonce="${cspNonce}">
             /* Success Page Styles */
             .success-section {
                 padding: 40px 0 80px;

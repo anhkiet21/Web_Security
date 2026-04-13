@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
             <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -9,9 +9,9 @@
                     <meta charset="utf-8">
                     <meta http-equiv="X-UA-Compatible" content="IE=edge">
                     <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <title>CellPhoneStore - Trang chủ</title>
+                    <title>CellPhoneStore - Trang ch?</title>
 
-                    <style>
+                    <style nonce="${cspNonce}">
                         /* Flash Sale Countdown Styling */
 
                         .hot-deal-countdown {
@@ -425,7 +425,7 @@
                                                 <c:param name="brand" value="${brandName}" />
                                             </c:url>
                                             <div class="shop-img">
-                                                <%-- Stored XSS: brandName in alt attribute and h3 text — fix: c:out --%>
+                                                <%-- Stored XSS: brandName in alt attribute and h3 text � fix: c:out --%>
                                                 <img src="${pageContext.request.contextPath}/uploads/products/baner${fn:toLowerCase(brandName)}.jpg"
                                                     alt="<c:out value='${brandName}'/>"
                                                     style="width: 100%; height: 300px; object-fit: cover;">
@@ -456,7 +456,7 @@
                                 <!-- section title -->
                                 <div class="col-md-12">
                                     <div class="section-title">
-                                        <h3 class="title">Sản phẩm mới</h3>
+                                        <h3 class="title">S?n ph?m m?i</h3>
                                         <div class="section-nav">
                                             <ul class="section-tab-nav tab-nav">
                                                 <c:forEach items="${brands}" var="brand" varStatus="status">
@@ -546,15 +546,15 @@
                                                                                 test="${not empty product.isActive and product.isActive == false}">
                                                                                 <div class="product-label">
                                                                                     <span class="sale"
-                                                                                        style="background:#ff3b5c;color:#fff;padding:4px 6px;border-radius:4px;border:1px solid rgba(0,0,0,0.06);margin-left:6px;">NGỪNG
+                                                                                        style="background:#ff3b5c;color:#fff;padding:4px 6px;border-radius:4px;border:1px solid rgba(0,0,0,0.06);margin-left:6px;">NG?NG
                                                                                         KINH DOANH</span>
                                                                                 </div>
                                                                             </c:when>
                                                                             <c:when test="${product.stock == 0}">
                                                                                 <div class="product-label">
                                                                                     <span class="sale"
-                                                                                        style="background:#ff3b5c;color:#fff;padding:4px 6px;border-radius:4px;border:1px solid rgba(0,0,0,0.06);margin-left:6px;">HẾT
-                                                                                        HÀNG</span>
+                                                                                        style="background:#ff3b5c;color:#fff;padding:4px 6px;border-radius:4px;border:1px solid rgba(0,0,0,0.06);margin-left:6px;">H?T
+                                                                                        H�NG</span>
                                                                                 </div>
                                                                             </c:when>
                                                                         </c:choose>
@@ -581,7 +581,7 @@
                                                                                         <fmt:formatNumber
                                                                                             value="${discountedPrice}"
                                                                                             type="currency"
-                                                                                            currencySymbol="₫"
+                                                                                            currencySymbol="?"
                                                                                             maxFractionDigits="0" />
                                                                                     </span>
                                                                                     <br>
@@ -590,7 +590,7 @@
                                                                                         <fmt:formatNumber
                                                                                             value="${product.price}"
                                                                                             type="currency"
-                                                                                            currencySymbol="₫"
+                                                                                            currencySymbol="?"
                                                                                             maxFractionDigits="0" />
                                                                                     </del>
                                                                                     <span
@@ -600,11 +600,11 @@
                                                                                     <br>
                                                                                     <span
                                                                                         style="color: #28a745; font-size: 12px; font-weight: bold; background: #e8f5e8; padding: 1px 5px; border-radius: 3px;">
-                                                                                        Tiết kiệm
+                                                                                        Ti?t ki?m
                                                                                         <fmt:formatNumber
                                                                                             value="${savedAmount}"
                                                                                             type="currency"
-                                                                                            currencySymbol="₫"
+                                                                                            currencySymbol="?"
                                                                                             maxFractionDigits="0" />
                                                                                     </span>
                                                                                 </c:when>
@@ -612,7 +612,7 @@
                                                                                     <fmt:formatNumber
                                                                                         value="${product.price}"
                                                                                         type="currency"
-                                                                                        currencySymbol="₫"
+                                                                                        currencySymbol="?"
                                                                                         maxFractionDigits="0" />
                                                                                 </c:otherwise>
                                                                             </c:choose>
@@ -630,13 +630,13 @@
                                                                                 data-product-id="${product.id}"
                                                                                 onclick="toggleFavorite(${product.id}, this)">
                                                                                 <i class="fa fa-heart-o"></i>
-                                                                                <span class="tooltipp">Yêu thích</span>
+                                                                                <span class="tooltipp">Y�u th�ch</span>
                                                                             </button>
                                                                             <a href="${pageContext.request.contextPath}/product/${product.id}"
                                                                                 class="quick-view">
                                                                                 <i class="fa fa-eye"></i>
                                                                                 <span class="tooltipp">Xem chi
-                                                                                    tiết</span>
+                                                                                    ti?t</span>
                                                                             </a>
                                                                         </div>
                                                                     </div>
@@ -646,7 +646,7 @@
                                                                                 test="${not empty product.isActive and product.isActive == false}">
                                                                                 <button class="add-to-cart-btn" disabled
                                                                                     style="background: #999;">
-                                                                                    <i class="fa fa-ban"></i> Ngừng kinh
+                                                                                    <i class="fa fa-ban"></i> Ng?ng kinh
                                                                                     doanh
                                                                                 </button>
                                                                             </c:when>
@@ -654,14 +654,14 @@
                                                                                 <button class="add-to-cart-btn"
                                                                                     onclick="addToCart(${product.id})">
                                                                                     <i class="fa fa-shopping-cart"></i>
-                                                                                    Thêm
-                                                                                    vào giỏ
+                                                                                    Th�m
+                                                                                    v�o gi?
                                                                                 </button>
                                                                             </c:when>
                                                                             <c:otherwise>
                                                                                 <button class="add-to-cart-btn" disabled
                                                                                     style="background: #999;">
-                                                                                    <i class="fa fa-ban"></i> Hết hàng
+                                                                                    <i class="fa fa-ban"></i> H?t h�ng
                                                                                 </button>
                                                                             </c:otherwise>
                                                                         </c:choose>
@@ -697,8 +697,8 @@
                                 <div class="col-md-12">
                                     <div class="hot-deal">
 
-                                        <h2 class="text-uppercase">Flash Sale hôm nay</h2>
-                                        <p>Giảm giá lên đến 50%</p>
+                                        <h2 class="text-uppercase">Flash Sale h�m nay</h2>
+                                        <p>Gi?m gi� l�n d?n 50%</p>
                                         <a class="primary-btn cta-btn"
                                             href="${pageContext.request.contextPath}/deals">Mua
                                             ngay</a>
@@ -721,7 +721,7 @@
                                 <!-- section title -->
                                 <div class="col-md-12">
                                     <div class="section-title">
-                                        <h3 class="title">Sản phẩm bán chạy</h3>
+                                        <h3 class="title">S?n ph?m b�n ch?y</h3>
                                     </div>
                                 </div>
                                 <!-- /section title -->
@@ -785,15 +785,15 @@
                                                         test="${not empty product.isActive and product.isActive == false}">
                                                         <div class="product-label">
                                                             <span class="sale"
-                                                                style="background:#ff3b5c;color:#fff;padding:4px 6px;border-radius:4px;border:1px solid rgba(0,0,0,0.06);margin-left:6px;">NGỪNG
+                                                                style="background:#ff3b5c;color:#fff;padding:4px 6px;border-radius:4px;border:1px solid rgba(0,0,0,0.06);margin-left:6px;">NG?NG
                                                                 KINH DOANH</span>
                                                         </div>
                                                     </c:when>
                                                     <c:when test="${product.stock == 0}">
                                                         <div class="product-label">
                                                             <span class="sale"
-                                                                style="background:#ff3b5c;color:#fff;padding:4px 6px;border-radius:4px;border:1px solid rgba(0,0,0,0.06);margin-left:6px;">HẾT
-                                                                HÀNG</span>
+                                                                style="background:#ff3b5c;color:#fff;padding:4px 6px;border-radius:4px;border:1px solid rgba(0,0,0,0.06);margin-left:6px;">H?T
+                                                                H�NG</span>
                                                         </div>
                                                     </c:when>
                                                 </c:choose>
@@ -816,13 +816,13 @@
                                                             <span
                                                                 style="color: #d70018; font-size: 18px; font-weight: bold;">
                                                                 <fmt:formatNumber value="${discountedPrice}"
-                                                                    type="currency" currencySymbol="₫"
+                                                                    type="currency" currencySymbol="?"
                                                                     maxFractionDigits="0" />
                                                             </span>
                                                             <br>
                                                             <del style="color: #999; font-size: 14px;">
                                                                 <fmt:formatNumber value="${product.price}"
-                                                                    type="currency" currencySymbol="₫"
+                                                                    type="currency" currencySymbol="?"
                                                                     maxFractionDigits="0" />
                                                             </del>
                                                             <span
@@ -832,14 +832,14 @@
                                                             <br>
                                                             <span
                                                                 style="color: #28a745; font-size: 12px; font-weight: bold; background: #e8f5e8; padding: 1px 5px; border-radius: 3px;">
-                                                                Tiết kiệm
+                                                                Ti?t ki?m
                                                                 <fmt:formatNumber value="${savedAmount}" type="currency"
-                                                                    currencySymbol="₫" maxFractionDigits="0" />
+                                                                    currencySymbol="?" maxFractionDigits="0" />
                                                             </span>
                                                         </c:when>
                                                         <c:otherwise>
                                                             <fmt:formatNumber value="${product.price}" type="currency"
-                                                                currencySymbol="₫" maxFractionDigits="0" />
+                                                                currencySymbol="?" maxFractionDigits="0" />
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </h4>
@@ -854,12 +854,12 @@
                                                     <button class="add-to-wishlist" data-product-id="${product.id}"
                                                         onclick="toggleFavorite(${product.id}, this)">
                                                         <i class="fa fa-heart-o"></i>
-                                                        <span class="tooltipp">Yêu thích</span>
+                                                        <span class="tooltipp">Y�u th�ch</span>
                                                     </button>
                                                     <a href="${pageContext.request.contextPath}/product/${product.id}"
                                                         class="quick-view">
                                                         <i class="fa fa-eye"></i>
-                                                        <span class="tooltipp">Xem chi tiết</span>
+                                                        <span class="tooltipp">Xem chi ti?t</span>
                                                     </a>
                                                 </div>
                                             </div>
@@ -869,19 +869,19 @@
                                                         test="${not empty product.isActive and product.isActive == false}">
                                                         <button class="add-to-cart-btn" disabled
                                                             style="background: #999;">
-                                                            <i class="fa fa-ban"></i> Ngừng kinh doanh
+                                                            <i class="fa fa-ban"></i> Ng?ng kinh doanh
                                                         </button>
                                                     </c:when>
                                                     <c:when test="${product.stock > 0}">
                                                         <button class="add-to-cart-btn"
                                                             onclick="addToCart(${product.id})">
-                                                            <i class="fa fa-shopping-cart"></i> Thêm vào giỏ
+                                                            <i class="fa fa-shopping-cart"></i> Th�m v�o gi?
                                                         </button>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <button class="add-to-cart-btn" disabled
                                                             style="background: #999;">
-                                                            <i class="fa fa-ban"></i> Hết hàng
+                                                            <i class="fa fa-ban"></i> H?t h�ng
                                                         </button>
                                                     </c:otherwise>
                                                 </c:choose>
@@ -906,11 +906,11 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="newsletter">
-                                        <p>Đăng ký nhận <strong>TIN TỨC MỚI</strong></p>
+                                        <p>�ang k� nh?n <strong>TIN T?C M?I</strong></p>
                                         <form>
-                                            <input class="input" type="email" placeholder="Nhập email của bạn">
-                                            <button class="newsletter-btn"><i class="fa fa-envelope"></i> Đăng
-                                                ký</button>
+                                            <input class="input" type="email" placeholder="Nh?p email c?a b?n">
+                                            <button class="newsletter-btn"><i class="fa fa-envelope"></i> �ang
+                                                k�</button>
                                         </form>
                                         <ul class="newsletter-follow">
                                             <li><a href="https://www.facebook.com/nhan.le.24813" target="_blank"><i
@@ -931,7 +931,7 @@
                     </div>
                     <!-- /NEWSLETTER -->
 
-                    <script>
+                    <script nonce="${cspNonce}">
     <%
                             org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !(auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken);
@@ -952,7 +952,7 @@
                                 .then(response => {
                                     if (response.ok) return response.json();
                                     else if (response.status === 401 || response.status === 403) throw new Error('Unauthorized');
-                                    else throw new Error('Có lỗi xảy ra');
+                                    else throw new Error('C� l?i x?y ra');
                                 })
                                 .then(data => {
                                     if (typeof updateGlobalCartCount === 'function') updateGlobalCartCount();
@@ -961,7 +961,7 @@
                                     if (error.message === 'Unauthorized') {
                                         window.location.href = '${pageContext.request.contextPath}/login';
                                     } else {
-                                        alert('Có lỗi: ' + error.message);
+                                        alert('C� l?i: ' + error.message);
                                     }
                                 });
                         }
@@ -986,7 +986,7 @@
                                 .then(response => {
                                     if (response.ok) return response.json();
                                     else if (response.status === 401 || response.status === 403) throw new Error('Unauthorized');
-                                    else throw new Error('Có lỗi xảy ra');
+                                    else throw new Error('C� l?i x?y ra');
                                 })
                                 .then(data => {
                                     if (isFavorited) {
@@ -1004,7 +1004,7 @@
                                     if (error.message === 'Unauthorized') {
                                         window.location.href = '${pageContext.request.contextPath}/login';
                                     } else {
-                                        alert('Có lỗi: ' + error.message);
+                                        alert('C� l?i: ' + error.message);
                                     }
                                 });
                         }
@@ -1027,7 +1027,7 @@
                                         });
                                     });
                                 })
-                                .catch(error => console.error('Lỗi khi tải trạng thái yêu thích:', error));
+                                .catch(error => console.error('L?i khi t?i tr?ng th�i y�u th�ch:', error));
                         }
 
                         if (IS_LOGGED_IN) {
@@ -1037,9 +1037,9 @@
                         }
                         // ========== RATING FUNCTIONS ==========
 
-                        // Load rating cho tất cả sản phẩm hiển thị trên trang
+                        // Load rating cho t?t c? s?n ph?m hi?n th? tr�n trang
                         function loadAllProductRatings() {
-                            // Lấy tất cả product IDs từ các thẻ rating (cả new và hot products)
+                            // L?y t?t c? product IDs t? c�c th? rating (c? new v� hot products)
                             const ratingElements = document.querySelectorAll('[id^="rating-"]');
 
                             ratingElements.forEach(element => {
@@ -1048,7 +1048,7 @@
                             });
                         }
 
-                        // Load rating cho một sản phẩm cụ thể
+                        // Load rating cho m?t s?n ph?m c? th?
                         async function loadProductRating(productId, elementId) {
                             try {
                                 const response = await fetch('${pageContext.request.contextPath}/api/reviews/product/' + productId + '/stats');
@@ -1060,14 +1060,14 @@
 
                                 const stats = await response.json();
 
-                                // Update rating stars cho sản phẩm này
+                                // Update rating stars cho s?n ph?m n�y
                                 displayProductStars(elementId, stats.averageRating);
                             } catch (error) {
                                 console.error('Error loading rating for product ' + productId + ':', error);
                             }
                         }
 
-                        // Hiển thị stars dựa trên rating value
+                        // Hi?n th? stars d?a tr�n rating value
                         function displayProductStars(elementId, rating) {
                             const starsContainer = document.getElementById(elementId);
                             if (!starsContainer) return;

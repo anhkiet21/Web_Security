@@ -1,0 +1,62 @@
+2026-04-14 00:02:35.118 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
+2026-04-14 00:04:58.236 | ERROR | SYSTEM_ERROR | type=ResponseStatusException | ip=127.0.0.1 | message=404 NOT_FOUND "Không tìm thấy sản phẩm #3251873590373371461"
+2026-04-14 00:26:03.817 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-14 00:26:06.246 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
+2026-04-14 00:26:06.967 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-14 00:37:28.658 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-14 00:37:30.844 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin
+2026-04-14 00:37:31.357 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/overview
+2026-04-14 00:37:31.535 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/orders
+2026-04-14 00:37:31.756 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/revenue
+2026-04-14 00:37:31.756 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-14 00:37:31.782 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/top-products
+2026-04-14 00:37:31.812 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/users-by-time
+2026-04-14 00:37:38.925 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
+2026-04-14 00:37:39.265 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-14 00:37:42.390 | INFO  | LOGOUT | user=08***07 | ip=0:0:0:0:0:0:0:1
+2026-04-14 00:40:33.238 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-14 00:40:35.526 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
+2026-04-14 00:40:36.304 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-14 00:40:37.523 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin
+2026-04-14 00:40:37.972 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/overview
+2026-04-14 00:40:38.102 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-14 00:40:38.113 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/orders
+2026-04-14 00:40:38.156 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/revenue
+2026-04-14 00:40:38.356 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/top-products
+2026-04-14 00:40:38.385 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/users-by-time
+2026-04-14 00:40:41.051 | INFO  | LOGOUT | user=08***07 | ip=0:0:0:0:0:0:0:1
+2026-04-14 00:42:25.571 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
+2026-04-14 00:43:56.652 | ERROR | SYSTEM_ERROR | type=ResponseStatusException | ip=127.0.0.1 | message=404 NOT_FOUND "Không tìm thấy sản phẩm #3753288809435362233"
+2026-04-14 01:24:32.760 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
+2026-04-14 01:26:29.188 | ERROR | SYSTEM_ERROR | type=ResponseStatusException | ip=127.0.0.1 | message=404 NOT_FOUND "Không tìm thấy sản phẩm #7094943569208229875"
+2026-04-14 01:26:53.665 | ERROR | SYSTEM_ERROR | type=ResponseStatusException | ip=127.0.0.1 | message=404 NOT_FOUND "Không tìm thấy sản phẩm #6031319895159653427"
+2026-04-14 01:27:00.426 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'ctx'"
+2026-04-14 01:27:09.470 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "c:/Windows/system.ini"
+2026-04-14 01:27:12.361 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "../../../../../../../../../../../../../../../../Windows/system.ini"
+2026-04-14 01:27:13.058 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "c:\Windows\system.ini"
+2026-04-14 01:27:13.646 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\..\Windows\system.ini"
+2026-04-14 01:27:14.426 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "/etc/passwd"
+2026-04-14 01:27:15.821 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "../../../../../../../../../../../../../../../../etc/passwd"
+2026-04-14 01:27:16.606 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "/"
+2026-04-14 01:27:17.288 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "../../../../../../../../../../../../../../../../"
+2026-04-14 01:27:17.956 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "c:/"
+2026-04-14 01:27:18.616 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "c:\"
+2026-04-14 01:27:19.548 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "WEB-INF/web.xml"
+2026-04-14 01:27:20.457 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "WEB-INF\web.xml"
+2026-04-14 01:27:21.083 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "/WEB-INF/web.xml"
+2026-04-14 01:27:21.638 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "\WEB-INF\web.xml"
+2026-04-14 01:27:22.269 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "thishouldnotexistandhopefullyitwillnot"
+2026-04-14 01:27:22.945 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "search-suggestions"
+2026-04-14 01:27:23.037 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "/search-suggestions"
+2026-04-14 01:27:23.416 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'limit': Failed to convert value of type 'java.lang.String' to required type 'int'; For input string: "\search-suggestions"
+2026-04-14 01:33:30.118 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
+2026-04-14 01:48:42.135 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-14 01:48:46.152 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin
+2026-04-14 01:48:46.491 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/overview
+2026-04-14 01:48:46.665 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/orders
+2026-04-14 01:48:46.861 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/revenue
+2026-04-14 01:48:46.861 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+2026-04-14 01:48:46.883 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/top-products
+2026-04-14 01:48:46.949 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/stats/users-by-time
+2026-04-14 01:48:49.498 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
+2026-04-14 01:48:49.821 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats

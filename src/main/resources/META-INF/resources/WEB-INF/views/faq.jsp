@@ -9,7 +9,7 @@
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Câu Hỏi Thường Gặp - CellPhoneStore</title>
 
-            <style>
+            <style nonce="${cspNonce}">
                 .faq-section {
                     padding: 60px 0;
                     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -530,7 +530,7 @@
             </div>
             <!-- /FAQ SECTION -->
 
-            <script>
+            <script nonce="${cspNonce}">
                 function toggleAnswer(element) {
                     const faqItem = element.closest('.faq-item');
                     const answer = faqItem.querySelector('.faq-answer');

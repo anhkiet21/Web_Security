@@ -7,7 +7,7 @@
       <title>Trang quản trị</title>
       <meta name="viewport" content="width=device-width,initial-scale=1" />
       <link rel="stylesheet" href="<c:url value='/css/admin-dashboard.css'/>" />
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" />
     </head>
 
     <body>
@@ -316,13 +316,13 @@
       <!-- /app-layout -->
 
       <!-- WebSocket libraries for chat notifications -->
-      <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js" integrity="sha256-FqcTDrWjDCeZk5r2hLGz4OWjwrWV3ERI5+kWR1DokZA=" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js" integrity="sha256-nkP8cj5xaTdWK/BsZl+57ZCE/Y/i4UNtbNTpgH+6Taw=" crossorigin="anonymous"></script>
       <script src="<c:url value='/js/admin-chat-notifications.js'/>"></script>
 
       <!-- Chart.js -->
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-      <script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js" integrity="sha384-DhxhYObIMeMNGyAG7iK11OHzBIKyEIeRL0ad1iFPAOwZB8iirUlTT0O/WJJUk8+o" crossorigin="anonymous"></script>
+      <script nonce="${cspNonce}">
         // compute theme colors once (read from CSS variables)
         const __cs_theme = getComputedStyle(document.documentElement);
         const THEME = {
