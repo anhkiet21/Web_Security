@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.stream.Collectors;
 
@@ -40,9 +41,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
+                                                            HttpServletRequest request) {
+        log.warn("TYPE_MISMATCH | uri={} | ip={} | param={}",
+                request.getRequestURI(), getClientIp(request), ex.getName());
+
+        var body = ErrorResponse.builder()
+                .message("Invalid parameter")
+                .details(java.util.List.of("Invalid request parameter"))
+                .build();
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex, HttpServletRequest request) {
-        // [LOGGING] Log lỗi runtime nghiêm trọng qua SecurityEventLogger - OWASP A09
         SecurityEventLogger.systemError(
                 ex.getClass().getSimpleName(),
                 getClientIp(request),

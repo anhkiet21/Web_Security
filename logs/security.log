@@ -1,0 +1,3 @@
+2026-04-13 20:08:30.150 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
+2026-04-13 20:35:38.686 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
+2026-04-13 21:13:27.682 | ERROR | SYSTEM_ERROR | type=MethodArgumentTypeMismatchException | ip=127.0.0.1 | message=Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "'+imgSrc+'"
