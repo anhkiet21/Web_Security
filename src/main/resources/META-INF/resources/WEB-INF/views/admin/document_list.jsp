@@ -107,7 +107,8 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
                 placeholder="Tìm theo tiêu đề"
                 type="text"
                 autocomplete="off"
-                value="${filterTitle}"
+                <%-- [FIX Reflected XSS] Filter query param in input value attr --%>
+                value="<c:out value='${filterTitle}'/>"
               />
             </div>
             <div class="filter-group">
@@ -127,10 +128,10 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
           </div>
 
           <c:if test="${not empty success}">
-            <div class="alert alert-success">${success}</div>
+            <div class="alert alert-success"><c:out value="${success}"/></div>
           </c:if>
           <c:if test="${not empty error}">
-            <div class="alert alert-danger">${error}</div>
+            <div class="alert alert-danger"><c:out value="${error}"/></div>
           </c:if>
 
           <!-- Debug: Kiểm tra biến null -->
@@ -154,11 +155,11 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
                   <c:forEach var="doc" items="${documents.content}">
                     <tr>
                       <td>${doc.id}</td>
-                      <td>${doc.title}</td>
+                      <td><c:out value="${doc.title}"/></td>
                       <td>
                         <c:forEach var="product" items="${products}">
                           <c:if test="${product.id == doc.productId}">
-                            ${product.name} (ID: ${doc.productId})
+                            <c:out value="${product.name}"/> (ID: ${doc.productId})
                           </c:if>
                         </c:forEach>
                       </td>

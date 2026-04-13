@@ -299,12 +299,12 @@
                                                     <strong style="margin-left: 15px;">Trạng Thái:</strong>
                                                     <span class="status-badge status-${fn:toLowerCase(order.status)}"
                                                         id="status-${order.orderId}">
-                                                        ${order.status}
+                                                        <c:out value="${order.status}"/>
                                                     </span>
                                                     <strong style="margin-left: 15px;">Thanh Toán:</strong>
                                                     <span
                                                         class="payment-badge payment-${order.paymentStatus == 'SUCCESS' ? 'success' : (order.paymentMethod == 'COD' ? 'cod' : 'pending')}">
-                                                        ${order.paymentMethod} - ${order.paymentStatus}
+                                                        <c:out value="${order.paymentMethod}"/> - <c:out value="${order.paymentStatus}"/>
                                                     </span>
                                                 </div>
                                                 <div>
@@ -317,7 +317,7 @@
 
                                             <div class="order-info">
                                                 <div><i class="fa fa-map-marker"></i> <strong>Địa chỉ:</strong>
-                                                    ${order.shippingAddress}</div>
+                                                    <c:out value="${order.shippingAddress}"/></div>
                                                 <div><i class="fa fa-calendar"></i> <strong>Ngày đặt:</strong>
                                                     ${order.createdAt}</div>
                                                 <div><i class="fa fa-user"></i> <strong>Mã KH:</strong> ${order.userId}
@@ -346,7 +346,7 @@
                                                                     <c:when test="${not empty item.productImageUrl}">
                                                                         <img class="product-img"
                                                                             src="${pageContext.request.contextPath}${item.productImageUrl}"
-                                                                            alt="${item.productName}" />
+                                                                            <%-- Stored XSS: product name in alt attribute - fix: c:out --%> alt="<c:out value='${item.productName}'/>" />
                                                                     </c:when>
                                                                     <c:otherwise>
                                                                         <img class="product-img"
@@ -355,7 +355,7 @@
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </td>
-                                                            <td>${item.productName}</td>
+                                                            <td><c:out value="${item.productName}"/></td>
                                                             <td>
                                                                 <fmt:formatNumber value="${item.price}" type="currency"
                                                                     currencySymbol="₫" />

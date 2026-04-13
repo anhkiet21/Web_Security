@@ -180,7 +180,8 @@ public class DocumentService {
     
     public Page<Document> getPagedDocuments(Pageable pageable, String title) {
         if (title != null && !title.trim().isEmpty()) {
-            return documentRepository.findByTitleContainingIgnoreCase(title, pageable);
+            String safeTitle = title.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+            return documentRepository.findByTitleContainingIgnoreCase(safeTitle, pageable);
         }
         return documentRepository.findAll(pageable);
     }

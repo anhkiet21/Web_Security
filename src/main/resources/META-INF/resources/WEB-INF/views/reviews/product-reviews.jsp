@@ -8,14 +8,16 @@ uri="http://www.springframework.org/tags/form" prefix="form" %>
     <h1>Reviews for product ${productId}</h1>
 
     <c:if test="${not empty error}">
-      <div style="color: red">${error}</div>
+      <%-- [FIX Stored XSS] Error flash message --%>
+      <div style="color: red"><c:out value="${error}"/></div>
     </c:if>
 
     <c:forEach var="review" items="${reviewsPage.content}">
       <div style="border: 1px solid #ccc; padding: 8px; margin: 8px 0">
-        <div><strong>By:</strong> ${review.userName}</div>
+        <%-- [FIX Stored XSS] User-controlled display name in review --%>
+        <div><strong>By:</strong> <c:out value="${review.userName}"/></div>
         <div><strong>Rating:</strong> ${review.rating}</div>
-        <div><strong>Comment:</strong> ${review.comment}</div>
+        <div><strong>Comment:</strong> <c:out value="${review.comment}"/></div>
         <div>
           <a
             href="/products/${productId}/reviews/new?parentReviewId=${review.reviewId}"
@@ -41,8 +43,9 @@ uri="http://www.springframework.org/tags/form" prefix="form" %>
               <div
                 style="border-left: 2px solid #ddd; padding: 6px; margin: 6px 0"
               >
-                <div><strong>By:</strong> ${child.userName}</div>
-                <div><strong>Comment:</strong> ${child.comment}</div>
+                <%-- [FIX Stored XSS] User-controlled display name in reply --%>
+                <div><strong>By:</strong> <c:out value="${child.userName}"/></div>
+                <div><strong>Comment:</strong> <c:out value="${child.comment}"/></div>
                 <div>
                   <!-- always reply to the top-level review so replies stay on the same level -->
                   <a

@@ -68,14 +68,14 @@
                     <c:if test="${not empty error}">
                         <div class="alert alert-danger"
                             style="padding: 12px; background: #ffebee; color: #c62828; margin-bottom: 15px; border-radius: 4px;">
-                            <i class="fas fa-exclamation-circle"></i> ${error}
+                            <i class="fas fa-exclamation-circle"></i> <c:out value="${error}"/>
                         </div>
                     </c:if>
 
                     <c:if test="${not empty success}">
                         <div class="alert alert-success"
                             style="padding: 12px; background: #e8f5e9; color: #2e7d32; margin-bottom: 15px; border-radius: 4px;">
-                            <i class="fas fa-check-circle"></i> ${success}
+                            <i class="fas fa-check-circle"></i> <c:out value="${success}"/>
                         </div>
                     </c:if>
 
@@ -215,7 +215,8 @@
                                                 <c:choose>
                                                     <c:when test="${not empty user.avatarUrl}">
                                                         <img src="${pageContext.request.contextPath}${user.avatarUrl}"
-                                                            class="avatar" alt="${user.fullname}" />
+                                                            <%-- Stored XSS: user fullname in alt attribute - fix: c:out --%>
+                                                            class="avatar" alt="<c:out value='${user.fullname}'/>" />
                                                     </c:when>
                                                     <c:otherwise>
                                                         <div
@@ -225,10 +226,10 @@
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
-                                            <td>${user.phone}</td>
-                                            <td><strong>${user.fullname}</strong></td>
-                                            <td>${user.email}</td>
-                                            <td>${user.address}</td>
+                                            <td><c:out value="${user.phone}"/></td>
+                                            <td><strong><c:out value="${user.fullname}"/></strong></td>
+                                            <td><c:out value="${user.email}"/></td>
+                                            <td><c:out value="${user.address}"/></td>
                                             <td>
                                                 <span
                                                     class="badge ${user.role == 'ADMIN' ? 'badge-danger' : 'badge-success'}">${user.role}</span>
@@ -267,13 +268,13 @@
                                                         <tr>
                                                             <td style="width: 120px;"><label>Họ và tên:</label></td>
                                                             <td><input type="text" name="fullname"
-                                                                    value="${user.fullname}"
+                                                                    value="<c:out value='${user.fullname}'/>"
                                                                     style="width: 100%; padding: 5px;" required /></td>
                                                         </tr>
                                                         <tr>
                                                             <td><label>Email:</label></td>
                                                             <td>
-                                                                <input type="email" name="email" value="${user.email}"
+                                                                <input type="email" name="email" value="<c:out value='${user.email}'/>"
                                                                     style="width: 100%; padding: 5px;" required
                                                                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                                                                     placeholder="example@gmail.com" class="editEmail" />
@@ -284,7 +285,7 @@
                                                         <tr>
                                                             <td><label>Địa chỉ:</label></td>
                                                             <td><input type="text" name="address"
-                                                                    value="${user.address}"
+                                                                    value="<c:out value='${user.address}'/>"
                                                                     style="width: 100%; padding: 5px;" /></td>
                                                         </tr>
                                                         <tr>

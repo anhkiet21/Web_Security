@@ -292,10 +292,11 @@
                         </div>
 
                         <c:if test="${not empty error}">
-                            <div class="alert alert-danger">${error}</div>
+                            <%-- [FIX Stored XSS] Flash message --%>
+                            <div class="alert alert-danger"><c:out value="${error}"/></div>
                         </c:if>
                         <c:if test="${not empty success}">
-                            <div class="alert alert-success">${success}</div>
+                            <div class="alert alert-success"><c:out value="${success}"/></div>
                         </c:if>
 
                         <c:set var="formAction"
@@ -305,7 +306,8 @@
                             onsubmit="syncEditor()">
                             <div class="form-group">
                                 <label>Title:</label>
-                                <input type="text" name="title" value="${document != null ? document.title : ''}"
+                                <%-- [FIX Stored XSS] Document title in input value attr --%>
+                                <input type="text" name="title" value="<c:out value='${document.title}'/>"
                                     required />
                             </div>
                             <div class="form-group">
@@ -316,7 +318,8 @@
                                     <c:forEach items="${products}" var="product">
                                         <option value="${product.id}" ${document !=null &&
                                             document.productId==product.id ? 'selected' : '' }>
-                                            ${product.name} (ID: ${product.id})
+                                            <%-- [FIX Stored XSS] Product name in select option text --%>
+                                            <c:out value="${product.name}"/> (ID: ${product.id})
                                         </option>
                                     </c:forEach>
                                 </select>

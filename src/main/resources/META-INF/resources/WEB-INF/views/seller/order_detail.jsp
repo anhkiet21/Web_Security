@@ -385,12 +385,13 @@
                     <!-- Alerts -->
                     <c:if test="${not empty success}">
                         <div class="alert alert-success">
-                            <i class="fa fa-check-circle"></i> ${success}
+                            <%-- [FIX Stored XSS] Flash message from session/redirect attr --%>
+                            <i class="fa fa-check-circle"></i> <c:out value="${success}"/>
                         </div>
                     </c:if>
                     <c:if test="${not empty error}">
                         <div class="alert alert-error">
-                            <i class="fa fa-exclamation-circle"></i> ${error}
+                            <i class="fa fa-exclamation-circle"></i> <c:out value="${error}"/>
                         </div>
                     </c:if>
 
@@ -403,7 +404,7 @@
                                 <span class="info-label">Trạng thái:</span>
                                 <span class="info-value">
                                     <span class="status-badge status-${fn:toLowerCase(order.status)}">
-                                        ${order.status}
+                                        <c:out value="${order.status}"/>
                                     </span>
                                 </span>
                             </div>
@@ -412,7 +413,7 @@
                                 <span class="info-value">
                                     <span
                                         class="payment-badge payment-${order.paymentStatus == 'SUCCESS' ? 'success' : (order.paymentMethod == 'COD' ? 'cod' : 'pending')}">
-                                        ${order.paymentMethod} - ${order.paymentStatus}
+                                        <c:out value="${order.paymentMethod}"/> - <c:out value="${order.paymentStatus}"/>
                                     </span>
                                 </span>
                             </div>
@@ -431,7 +432,7 @@
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Địa chỉ giao hàng:</span>
-                                <span class="info-value">${order.shippingAddress}</span>
+                                <span class="info-value"><c:out value="${order.shippingAddress}"/></span>
                             </div>
                         </div>
 
@@ -468,7 +469,7 @@
                                                 <c:when test="${not empty item.productImageUrl}">
                                                     <img class="product-img"
                                                         src="${pageContext.request.contextPath}${item.productImageUrl}"
-                                                        alt="${item.productName}" />
+                                                        <%-- Stored XSS: product name in alt attribute - fix: c:out --%> alt="<c:out value='${item.productName}'/>" />
                                                 </c:when>
                                                 <c:otherwise>
                                                     <img class="product-img"
@@ -477,7 +478,7 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
-                                        <td>${item.productName}</td>
+                                        <td><c:out value="${item.productName}"/></td>
                                         <td>
                                             <fmt:formatNumber value="${item.price}" type="currency"
                                                 currencySymbol="₫" />

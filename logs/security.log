@@ -1,6 +1,40 @@
+<<<<<<< HEAD
 2026-04-13 13:03:33.018 | INFO  | SENSITIVE_API | user=08***02 | ip=127.0.0.1 | uri=POST /api/orders/create
 2026-04-13 13:03:46.059 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
 2026-04-13 13:04:08.007 | INFO  | SENSITIVE_API | user=08***02 | ip=127.0.0.1 | uri=GET /api/vnpay/payment/create_payment
 2026-04-13 13:24:47.862 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
 2026-04-13 13:24:51.148 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/chat
 2026-04-13 13:24:51.886 | INFO  | ADMIN_ACCESS | user=08***07 | ip=0:0:0:0:0:0:0:1 | uri=GET /admin/api/chat/unread-stats
+=======
+2026-04-12 22:38:42.342 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=0:0:0:0:0:0:0:1
+2026-04-12 22:39:52.796 | INFO  | LOGOUT | user=08***02 | ip=127.0.0.1
+2026-04-13 11:12:40.502 | INFO  | REGISTER_SUCCESS | user=09***24 | ip=0:0:0:0:0:0:0:1
+2026-04-13 14:04:13.439 | INFO  | REGISTER_SUCCESS | user=03***32 | ip=0:0:0:0:0:0:0:1
+2026-04-13 14:04:40.319 | WARN  | LOGIN_SUCCESS | user=08***07 | role=ADMIN | ip=127.0.0.1
+2026-04-13 14:04:44.846 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin
+2026-04-13 14:04:45.256 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/stats/overview
+2026-04-13 14:04:45.458 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/stats/orders
+2026-04-13 14:04:45.461 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 14:04:45.544 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/stats/revenue
+2026-04-13 14:04:45.594 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/stats/top-products
+2026-04-13 14:04:45.640 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/stats/users-by-time
+2026-04-13 14:04:46.192 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/users
+2026-04-13 14:04:46.743 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 14:05:11.847 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin
+2026-04-13 14:05:11.983 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/stats/overview
+2026-04-13 14:05:12.100 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/stats/orders
+2026-04-13 14:05:12.116 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 14:05:12.149 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/stats/revenue
+2026-04-13 14:05:12.182 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/stats/top-products
+2026-04-13 14:05:12.213 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/stats/users-by-time
+2026-04-13 14:05:14.450 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/document
+2026-04-13 14:05:15.009 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 14:05:17.033 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/categories
+2026-04-13 14:05:17.336 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 14:05:19.651 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/categories/edit/1
+2026-04-13 14:05:23.793 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/categories
+2026-04-13 14:05:24.008 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 14:05:26.056 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/categories
+2026-04-13 14:05:26.253 | INFO  | ADMIN_ACCESS | user=08***07 | ip=127.0.0.1 | uri=GET /admin/api/chat/unread-stats
+2026-04-13 14:44:00.341 | INFO  | LOGIN_SUCCESS | user=03***32 | role=USER | ip=0:0:0:0:0:0:0:1
+>>>>>>> origin/A05_Injection

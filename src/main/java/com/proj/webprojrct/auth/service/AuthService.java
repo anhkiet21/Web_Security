@@ -1,9 +1,9 @@
 package com.proj.webprojrct.auth.service;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -127,7 +127,7 @@ public class AuthService {
         // Validate password
         if (!isValidPassword(request.getPassword())) {
             throw new RuntimeException(
-                    "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (!@#$%...)!");
+                    "Mật khẩu phải có ít nhất 12 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (!@#$%...)!");
         }
 
         if (!request.getPassword().equals(request.getConfirmPassword())) {
@@ -168,7 +168,7 @@ public class AuthService {
         // Validate password
         if (!isValidPassword(request.getPassword())) {
             throw new RuntimeException(
-                    "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (!@#$%...)!");
+                    "Mật khẩu phải có ít nhất 12 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (!@#$%...)!");
         }
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Mật khẩu và xác nhận mật khẩu không khớp!");
@@ -306,7 +306,7 @@ public class AuthService {
         // Validate mật khẩu mới
         if (!isValidPassword(request.getNewPassword())) {
             throw new RuntimeException(
-                    "Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (!@#$%...)!");
+                    "Mật khẩu mới phải có ít nhất 12 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (!@#$%...)!");
         }
 
         if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
@@ -433,8 +433,10 @@ public class AuthService {
         }
     }
 
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     private String generateOtp() {
-        int otp = (int) (Math.random() * 900000) + 100000;
+        int otp = SECURE_RANDOM.nextInt(900000) + 100000;
         return String.valueOf(otp);
     }
 
@@ -455,11 +457,15 @@ public class AuthService {
         return email.matches(emailRegex);
     }
 
-    // FIX V-13: Chính sách mật khẩu mạnh — ít nhất 8 ký tự, chữ hoa, chữ thường,
-    // số, ký tự đặc biệt
+    // [FIX A04] 
+    // - Tối thiểu 12 ký tự
+    // - Tối đa 128 ký tự (ngăn DoS với password cực dài trước khi BCrypt xử lý)
+    // - Bắt buộc 4 loại ký tự: hoa, thường, số, đặc biệt
     private boolean isValidPassword(String password) {
-        if (password == null || password.length() < 8)
-            return false;
+        if (password == null || password.length() < 12)
+            return false; // [FIX A04] tăng min từ 8 lên 12
+        if (password.length() > 128)
+            return false; // [FIX A04] giới hạn max để ngăn DoS
         if (!password.matches(".*[A-Z].*"))
             return false; // ít nhất 1 chữ hoa
         if (!password.matches(".*[a-z].*"))

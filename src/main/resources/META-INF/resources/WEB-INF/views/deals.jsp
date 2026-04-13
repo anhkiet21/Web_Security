@@ -320,21 +320,26 @@
                                 <c:choose>
                                     <c:when test="${status.index == 0}">
                                         <img src="${pageContext.request.contextPath}/uploads/products/banersamsung.jpg"
-                                            alt="${brand}" style="width: 100%; height: 250px; object-fit: cover;">
+                                            alt="<c:out value='${brand}'/>" style="width: 100%; height: 250px; object-fit: cover;">
                                     </c:when>
                                     <c:when test="${status.index == 1}">
                                         <img src="${pageContext.request.contextPath}/uploads/products/banerapple.jpg"
-                                            alt="${brand}" style="width: 100%; height: 250px; object-fit: cover;">
+                                            alt="<c:out value='${brand}'/>" style="width: 100%; height: 250px; object-fit: cover;">
                                     </c:when>
                                     <c:otherwise>
                                         <img src="${pageContext.request.contextPath}/uploads/products/banerxiaomi.jpg"
-                                            alt="${brand}" style="width: 100%; height: 250px; object-fit: cover;">
+                                            alt="<c:out value='${brand}'/>" style="width: 100%; height: 250px; object-fit: cover;">
                                     </c:otherwise>
                                 </c:choose>
                             </div>
                             <div class="shop-body" style="text-align: center; padding: 20px;">
-                                <h3 style="color: #333; margin-bottom: 15px;">${brand}<br><span style="color: #d70018;">Hot Deals</span></h3>
-                                <a href="javascript:void(0)" onclick="filterDealsByCategory('${brand}')"
+                                <h3 style="color: #333; margin-bottom: 15px;">
+                                    <%-- [FIX Stored XSS] Brand name in h3 text --%>
+                                    <c:out value="${brand}"/><br><span style="color: #d70018;">Hot Deals</span></h3>
+                                <a href="javascript:void(0)"
+                                   <%-- [FIX JS Injection via onclick] Use data attr instead of JS string literal --%>
+                                   data-deal-brand="<c:out value='${brand}'/>"
+                                   onclick="filterDealsByCategory(this.dataset.dealBrand)"
                                    class="cta-btn" style="background: linear-gradient(45deg, #d70018, #ff6b6b); border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer;">
                                    Xem ngay <i class="fa fa-arrow-circle-right"></i>
                                 </a>
@@ -360,8 +365,12 @@
                                 <i class="fa fa-th"></i> Tất cả
                             </button>
                             <c:forEach items="${dealBrands}" var="brand">
-                                <button class="btn btn-outline-secondary btn-sm category-filter-btn" onclick="filterDealsByCategory('${brand}')" style="margin-right: 10px;">
-                                    ${brand}
+                                <%-- [FIX JS Injection + Stored XSS] Use data-* attr for brand; c:out for btn text --%>
+                                <button class="btn btn-outline-secondary btn-sm category-filter-btn"
+                                    data-deal-brand="<c:out value='${brand}'/>"
+                                    onclick="filterDealsByCategory(this.dataset.dealBrand)"
+                                    style="margin-right: 10px;">
+                                    <c:out value="${brand}"/>
                                 </button>
                             </c:forEach>
                         </div>
@@ -373,20 +382,22 @@
             <div class="row" id="products-container">
                 <c:forEach items="${products}" var="product" varStatus="status">
                     <div class="col-md-3 col-xs-6 product-item" 
-                         data-category="${product.category != null ? product.category.name : ''}"
-                         data-brand="${product.brand}"
+                         <%-- [FIX Stored XSS] data-* attrs encoded to prevent HTML attribute injection --%>
+                         data-category="<c:out value='${product.category != null ? product.category.name : ""}'/>" 
+                         data-brand="<c:out value='${product.brand}'/>"
                          style="margin-bottom: 30px;">
                         <div class="product" style="border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; background: white;">
                             <div class="product-img" style="position: relative;">
                                 <c:choose>
                                     <c:when test="${not empty product.imageUrl}">
+                                        <%-- Stored XSS: product name in alt attribute - fix: c:out --%>
                                         <img src="${pageContext.request.contextPath}${product.imageUrl}"
-                                            alt="${product.name}"
+                                            alt="<c:out value='${product.name}'/>"
                                             style="max-height: 250px; object-fit: contain; width: 100%;">
                                     </c:when>
                                     <c:otherwise>
                                         <img src="${pageContext.request.contextPath}/img/product-placeholder.png"
-                                            alt="${product.name}"
+                                            alt="<c:out value='${product.name}'/>"
                                             style="max-height: 250px; object-fit: contain; width: 100%;">
                                     </c:otherwise>
                                 </c:choose>
@@ -405,11 +416,12 @@
                             
                             <div class="product-body">
                                 <p class="product-category">
-                                    ${product.brand}
+                                    <%-- [FIX Stored XSS] Product brand in text --%>
+                                    <c:out value="${product.brand}"/>
                                 </p>
                                 <h3 class="product-name">
                                     <a href="${pageContext.request.contextPath}/product/${product.id}">
-                                       ${product.name}
+                                       <c:out value="${product.name}"/>
                                     </a>
                                 </h3>
                                 

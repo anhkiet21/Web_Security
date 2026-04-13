@@ -238,14 +238,16 @@
                                     <div class="form-group">
                                         <label class="form-label required" for="fullName">Họ và tên người nhận</label>
                                         <input type="text" id="fullName" class="form-input"
-                                            placeholder="Nhập họ và tên đầy đủ" value="${user.fullName}">
+                                            placeholder="Nhập họ và tên đầy đủ"
+                                            <%-- [FIX Stored XSS] User PII in order form pre-fill --%>
+                                            value="<c:out value='${user.fullName}'/>">
                                         <span class="error-message" id="fullNameError"></span>
                                     </div>
 
                                     <div class="form-group">
                                         <label class="form-label required" for="phone">Số điện thoại</label>
                                         <input type="tel" id="phone" class="form-input" placeholder="Nhập số điện thoại"
-                                            value="${user.phone}">
+                                            value="<c:out value='${user.phone}'/>">
                                         <span class="error-message" id="phoneError"></span>
                                     </div>
 
@@ -276,7 +278,7 @@
                                     <div class="form-group">
                                         <label class="form-label required" for="streetAddress">Số nhà, tên đường</label>
                                         <input type="text" id="streetAddress" class="form-input"
-                                            placeholder="Ví dụ: 123 Đường Lê Văn Việt" value="${user.address}">
+                                            placeholder="Ví dụ: 123 Đường Lê Văn Việt" value="<c:out value='${user.address}'/>">
                                         <span class="error-message" id="streetError"></span>
                                     </div>
 

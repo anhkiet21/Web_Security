@@ -113,14 +113,14 @@
             <c:if test="${not empty success}">
               <div class="alert alert-success"
                 style="padding: 12px; background: #d4edda; color: #155724; margin-bottom: 15px; border-radius: 4px; border: 1px solid #c3e6cb;">
-                <i class="fas fa-check-circle"></i> ${success}
+                <i class="fas fa-check-circle"></i> <c:out value="${success}"/>
               </div>
             </c:if>
 
             <c:if test="${not empty error}">
               <div class="alert alert-danger"
                 style="padding: 12px; background: #f8d7da; color: #721c24; margin-bottom: 15px; border-radius: 4px; border: 1px solid #f5c6cb;">
-                <i class="fas fa-exclamation-circle"></i> ${error}
+                <i class="fas fa-exclamation-circle"></i> <c:out value="${error}"/>
               </div>
             </c:if>
 
@@ -128,8 +128,9 @@
             <div class="filter-container">
               <div class="filter-group">
                 <label>Tên danh mục</label>
-                <input id="name" class="filter-input" placeholder="Tìm theo tên" type="text" value="${filterName}"
-                  autocomplete="off">
+                <input id="name" class="filter-input" placeholder="Tìm theo tên" type="text"
+                  <%-- [FIX Reflected XSS] Filter query param in input value attr --%>
+                  value="<c:out value='${filterName}'/>"  autocomplete="off">
               </div>
               <div class="filter-group">
                 <label>Sắp xếp</label>
@@ -169,7 +170,7 @@
                         <c:forEach var="category" items="${categories.content}" varStatus="status">
                           <tr>
                             <td class="text-center">${categories.number * categories.size + status.index + 1}</td>
-                            <td><strong>${category.name}</strong></td>
+                            <td><strong><c:out value="${category.name}"/></strong></td>
                             <td class="text-muted">
                               <c:choose>
                                 <c:when test="${not empty category.parentId}">
@@ -177,7 +178,7 @@
                                   <c:set var="parentFound" value="false" />
                                   <c:forEach var="cat" items="${allCategories}">
                                     <c:if test="${cat.id == category.parentId && !parentFound}">
-                                      ${cat.name}
+                                      <c:out value="${cat.name}"/>
                                       <c:set var="parentFound" value="true" />
                                     </c:if>
                                   </c:forEach>
@@ -186,15 +187,19 @@
                                 <c:otherwise>-</c:otherwise>
                               </c:choose>
                             </td>
-                            <td class="text-muted">${category.description}</td>
+                            <td class="text-muted"><c:out value="${category.description}"/></td>
                             <td class="text-center">
 
                               <a href="${pageContext.request.contextPath}/admin/categories/edit/${category.id}"
                                 class="btn btn-edit" title="Sửa">
                                 <i class="fas fa-edit"></i>
                               </a>
+                              <%-- [FIX JS Injection via onclick attr] Pass name via data-* attr, not JS string literal --%>
+                              <%-- category.name in '${...}' would allow JS escape: name=Galaxy');alert(1);// --%>
                               <button type="button" class="btn btn-delete" title="Xóa"
-                                onclick="showDeleteModal(${category.id}, '${category.name}')">
+                                data-cat-id="${category.id}"
+                                data-cat-name="<c:out value='${category.name}'/>"
+                                onclick="showDeleteModal(this.dataset.catId, this.dataset.catName)">
                                 <i class="fas fa-trash"></i>
                               </button>
                             </td>

@@ -425,12 +425,13 @@
                                                 <c:param name="brand" value="${brandName}" />
                                             </c:url>
                                             <div class="shop-img">
+                                                <%-- Stored XSS: brandName in alt attribute and h3 text — fix: c:out --%>
                                                 <img src="${pageContext.request.contextPath}/uploads/products/baner${fn:toLowerCase(brandName)}.jpg"
-                                                    alt="${brandName}"
+                                                    alt="<c:out value='${brandName}'/>"
                                                     style="width: 100%; height: 300px; object-fit: cover;">
                                             </div>
                                             <div class="shop-body">
-                                                <h3>${brandName}<br>Collection</h3>
+                                                <h3><c:out value="${brandName}"/><br>Collection</h3>
                                                 <a href="${shopLink}" class="cta-btn">Xem ngay <i
                                                         class="fa fa-arrow-circle-right"></i></a>
                                             </div>
@@ -461,7 +462,8 @@
                                                 <c:forEach items="${brands}" var="brand" varStatus="status">
                                                     <li <c:if test="${status.first}">class="active"</c:if>>
                                                         <a data-toggle="tab"
-                                                            href="#tab-brand-${status.index}">${brand}</a>
+                                                            <%-- Stored XSS: brand name in link text - fix: c:out --%>
+                        href="#tab-brand-${status.index}"><c:out value="${brand}"/></a>
                                                     </li>
                                                 </c:forEach>
                                             </ul>
@@ -494,7 +496,7 @@
                                                                                     <c:if
                                                                                         test="${not empty imgUrl && !foundImage}">
                                                                                         <img src="${pageContext.request.contextPath}${imgUrl}"
-                                                                                            alt="${product.name}"
+                                                                                            alt="<c:out value='${product.name}'/>"
                                                                                             style="max-height: 250px; object-fit: contain;">
                                                                                         <c:set var="foundImage"
                                                                                             value="true" />
@@ -505,12 +507,12 @@
                                                                                         <c:when
                                                                                             test="${not empty product.imageUrl}">
                                                                                             <img src="${pageContext.request.contextPath}${product.imageUrl}"
-                                                                                                alt="${product.name}"
+                                                                                                alt="<c:out value='${product.name}'/>"
                                                                                                 style="max-height: 250px; object-fit: contain;">
                                                                                         </c:when>
                                                                                         <c:otherwise>
                                                                                             <img src="${pageContext.request.contextPath}/img/product-placeholder.png"
-                                                                                                alt="${product.name}"
+                                                                                                alt="<c:out value='${product.name}'/>"
                                                                                                 style="max-height: 250px; object-fit: contain;">
                                                                                         </c:otherwise>
                                                                                     </c:choose>
@@ -519,12 +521,12 @@
                                                                             <c:when
                                                                                 test="${not empty product.imageUrl}">
                                                                                 <img src="${pageContext.request.contextPath}${product.imageUrl}"
-                                                                                    alt="${product.name}"
+                                                                                    alt="<c:out value='${product.name}'/>"
                                                                                     style="max-height: 250px; object-fit: contain;">
                                                                             </c:when>
                                                                             <c:otherwise>
                                                                                 <img src="${pageContext.request.contextPath}/img/product-placeholder.png"
-                                                                                    alt="${product.name}"
+                                                                                    alt="<c:out value='${product.name}'/>"
                                                                                     style="max-height: 250px; object-fit: contain;">
                                                                             </c:otherwise>
                                                                         </c:choose>
@@ -559,11 +561,12 @@
                                                                     </div>
                                                                     <div class="product-body">
                                                                         <!-- Deal labels moved to product-img -->
-                                                                        <p class="product-category">${product.brand}
+                                                                        <%-- [FIX Stored XSS] product.brand and product.name in text --%>
+                                                                        <p class="product-category"><c:out value="${product.brand}"/>
                                                                         </p>
                                                                         <h3 class="product-name">
                                                                             <a
-                                                                                href="${pageContext.request.contextPath}/product/${product.id}">${product.name}</a>
+                                                                                href="${pageContext.request.contextPath}/product/${product.id}"><c:out value="${product.name}"/></a>
                                                                         </h3>
                                                                         <h4 class="product-price">
                                                                             <c:choose>
@@ -735,7 +738,7 @@
                                                             varStatus="status">
                                                             <c:if test="${not empty imgUrl && !foundImage}">
                                                                 <img src="${pageContext.request.contextPath}${imgUrl}"
-                                                                    alt="${product.name}"
+                                                                    alt="<c:out value='${product.name}'/>"
                                                                     style="max-height: 250px; object-fit: contain;">
                                                                 <c:set var="foundImage" value="true" />
                                                             </c:if>
@@ -744,12 +747,12 @@
                                                             <c:choose>
                                                                 <c:when test="${not empty product.imageUrl}">
                                                                     <img src="${pageContext.request.contextPath}${product.imageUrl}"
-                                                                        alt="${product.name}"
+                                                                        alt="<c:out value='${product.name}'/>"
                                                                         style="max-height: 250px; object-fit: contain;">
                                                                 </c:when>
                                                                 <c:otherwise>
                                                                     <img src="${pageContext.request.contextPath}/img/product-placeholder.png"
-                                                                        alt="${product.name}"
+                                                                        alt="<c:out value='${product.name}'/>"
                                                                         style="max-height: 250px; object-fit: contain;">
                                                                 </c:otherwise>
                                                             </c:choose>
@@ -757,12 +760,12 @@
                                                     </c:when>
                                                     <c:when test="${not empty product.imageUrl}">
                                                         <img src="${pageContext.request.contextPath}${product.imageUrl}"
-                                                            alt="${product.name}"
+                                                            alt="<c:out value='${product.name}'/>"
                                                             style="max-height: 250px; object-fit: contain;">
                                                     </c:when>
                                                     <c:otherwise>
                                                         <img src="${pageContext.request.contextPath}/img/product-placeholder.png"
-                                                            alt="${product.name}"
+                                                            alt="<c:out value='${product.name}'/>"
                                                             style="max-height: 250px; object-fit: contain;">
                                                     </c:otherwise>
                                                 </c:choose>
@@ -796,10 +799,11 @@
                                                 </c:choose>
                                             </div>
                                             <div class="product-body">
-                                                <p class="product-category">${product.brand}</p>
+                                                <%-- [FIX Stored XSS] product.brand and product.name in text --%>
+                                                <p class="product-category"><c:out value="${product.brand}"/></p>
                                                 <h3 class="product-name">
                                                     <a
-                                                        href="${pageContext.request.contextPath}/product/${product.id}">${product.name}</a>
+                                                        href="${pageContext.request.contextPath}/product/${product.id}"><c:out value="${product.name}"/></a>
                                                 </h3>
                                                 <h4 class="product-price">
                                                     <c:choose>

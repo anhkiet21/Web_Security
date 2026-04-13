@@ -1874,6 +1874,13 @@
                   }
                 }
 
+                // Escape HTML to prevent XSS when inserting user content into innerHTML 
+                function escapeHtml(text) {
+                  var div = document.createElement('div');
+                  div.appendChild(document.createTextNode(text));
+                  return div.innerHTML;
+                }
+
                 // Display reviews
                 function displayReviews(reviews) {
                   const container = document.getElementById('reviewsList');
@@ -1901,7 +1908,7 @@
 
                     html += '</div>';
                     html += '<div class="review-body">';
-                    html += '<p>' + (review.comment || '') + '</p>';
+                    html += '<p>' + escapeHtml(review.comment || '') + '</p>';
 
                     // Reply button
                     html += '<button class="btn btn-sm btn-link" onclick="showReplyForm(' + review.reviewId + ')" style="padding: 5px 10px; font-size: 12px; color: #d10024;">';
@@ -1933,7 +1940,7 @@
                         html += '<strong style="color: #d10024;">' + (child.userName || 'Ẩn danh') + '</strong> ';
                         html += '<span style="font-size: 12px; color: #999;">(' + formatDate(child.createdAt) + ')</span>';
                         html += '</div>';
-                        html += '<p style="margin: 5px 0;">' + (child.comment || '') + '</p>';
+                        html += '<p style="margin: 5px 0;">' + escapeHtml(child.comment || '') + '</p>';
 
                         // Reply button for each child review
                         html += '<button class="btn btn-sm btn-link" onclick="showReplyForm(' + review.reviewId + ')" style="padding: 2px 8px; font-size: 11px; color: #d10024;">';

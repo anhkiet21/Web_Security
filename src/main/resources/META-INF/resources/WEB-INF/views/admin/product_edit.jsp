@@ -112,7 +112,8 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                       <input
                         name="name"
                         class="form-control"
-                        value="${product.name}"
+                        <%-- [FIX Stored XSS] Admin-set string in input value attr --%>
+                        value="<c:out value='${product.name}'/>"
                         required
                       />
                     </div>
@@ -133,7 +134,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                         type="hidden"
                         name="brand"
                         id="brandHidden"
-                        value="${product.brand}"
+                        value="<c:out value='${product.brand}'/>"
                       />
                     </div>
                   </div>
@@ -221,7 +222,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="screenSize"
                             class="form-control"
-                            value="${product.screenSize}"
+                            value="<c:out value='${product.screenSize}'/>"
                           />
                         </div>
                       </div>
@@ -231,7 +232,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="displayTech"
                             class="form-control"
-                            value="${product.displayTech}"
+                            value="<c:out value='${product.displayTech}'/>"
                           />
                         </div>
                       </div>
@@ -241,7 +242,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="resolution"
                             class="form-control"
-                            value="${product.resolution}"
+                            value="<c:out value='${product.resolution}'/>"
                           />
                         </div>
                       </div>
@@ -251,7 +252,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="displayFeatures"
                             class="form-control"
-                            value="${product.displayFeatures}"
+                            value="<c:out value='${product.displayFeatures}'/>"
                           />
                         </div>
                       </div>
@@ -261,7 +262,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="rearCamera"
                             class="form-control"
-                            value="${product.rearCamera}"
+                            value="<c:out value='${product.rearCamera}'/>"
                           />
                         </div>
                       </div>
@@ -271,7 +272,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="frontCamera"
                             class="form-control"
-                            value="${product.frontCamera}"
+                            value="<c:out value='${product.frontCamera}'/>"
                           />
                         </div>
                       </div>
@@ -281,7 +282,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="chipset"
                             class="form-control"
-                            value="${product.chipset}"
+                            value="<c:out value='${product.chipset}'/>"
                           />
                         </div>
                       </div>
@@ -291,7 +292,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="cpuSpecs"
                             class="form-control"
-                            value="${product.cpuSpecs}"
+                            value="<c:out value='${product.cpuSpecs}'/>"
                           />
                         </div>
                       </div>
@@ -301,7 +302,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="ram"
                             class="form-control"
-                            value="${product.ram}"
+                            value="<c:out value='${product.ram}'/>"
                           />
                         </div>
                       </div>
@@ -311,7 +312,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="storage"
                             class="form-control"
-                            value="${product.storage}"
+                            value="<c:out value='${product.storage}'/>"
                           />
                         </div>
                       </div>
@@ -321,7 +322,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="battery"
                             class="form-control"
-                            value="${product.battery}"
+                            value="<c:out value='${product.battery}'/>"
                           />
                         </div>
                       </div>
@@ -331,7 +332,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="simType"
                             class="form-control"
-                            value="${product.simType}"
+                            value="<c:out value='${product.simType}'/>"
                           />
                         </div>
                       </div>
@@ -341,7 +342,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="os"
                             class="form-control"
-                            value="${product.os}"
+                            value="<c:out value='${product.os}'/>"
                           />
                         </div>
                       </div>
@@ -351,7 +352,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                           <input
                             name="nfcSupport"
                             class="form-control"
-                            value="${product.nfcSupport}"
+                            value="<c:out value='${product.nfcSupport}'/>"
                           />
                         </div>
                       </div>

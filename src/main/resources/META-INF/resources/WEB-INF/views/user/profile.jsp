@@ -536,8 +536,8 @@
                                     </c:choose>
                                 </div>
                                 <div>
-                                    <p class="profile-name">${user.fullname}</p>
-                                    <div class="profile-email">${user.email}</div>
+                                    <p class="profile-name"><c:out value="${user.fullname}"/></p>
+                                    <div class="profile-email"><c:out value="${user.email}"/></div>
                                 </div>
                             </div>
 
@@ -615,10 +615,11 @@
                         <!-- Tab Content -->
                         <div>
                             <c:if test="${not empty success}">
-                                <div class="alert alert-success">${success}</div>
+                                <%-- [FIX Stored XSS] Flash message from redirect attr --%>
+                                <div class="alert alert-success"><c:out value="${success}"/></div>
                             </c:if>
                             <c:if test="${not empty error}">
-                                <div class="alert alert-danger">${error}</div>
+                                <div class="alert alert-danger"><c:out value="${error}"/></div>
                             </c:if>
 
                             <!-- Tab 1: Tổng quan -->
@@ -639,13 +640,13 @@
                                     </div>
                                     <div class="info-row">
                                         <div class="info-label"><i class="fa fa-user-o"></i> Họ và tên</div>
-                                        <div class="info-value">${user.fullname}</div>
+                                        <div class="info-value"><c:out value="${user.fullname}"/></div>
                                     </div>
                                     <div class="info-row">
                                         <div class="info-label"><i class="fa fa-envelope-o"></i> Email</div>
                                         <div class="info-value"
                                             style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                                            <span>${user.email}</span>
+                                            <span><c:out value="${user.email}"/></span>
                                             <c:choose>
                                                 <c:when test="${verifyEmail}">
                                                     <span
@@ -737,7 +738,7 @@
                                                                 currencySymbol="₫" maxFractionDigits="0" />
                                                         </div>
                                                         <div style="margin-top:6px;">
-                                                            <span class="order-status">${o.status}</span>
+                                                            <span class="order-status"><c:out value="${o.status}"/></span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -793,7 +794,7 @@
                                                         </div>
                                                         <div>
                                                             <span class="order-status"
-                                                                style="padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase;">${order.status}</span>
+                                                                style="padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase;"><c:out value="${order.status}"/></span>
                                                         </div>
                                                     </div>
                                                     <div
@@ -928,7 +929,7 @@
                                                     </label>
                                                     <input type="text" name="fullname"
                                                         style="width:100%; padding:10px 15px; border:1px solid #E4E7ED; border-radius:3px; font-size:14px;"
-                                                        value="${user.fullname}" required>
+                                                        value="<c:out value='${user.fullname}'/>" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -945,7 +946,7 @@
                                                     </label>
                                                     <input type="email" name="email"
                                                         style="width:100%; padding:10px 15px; border:1px solid #E4E7ED; border-radius:3px; font-size:14px; ${verifyEmail ? 'background:#F8F9FA; cursor:not-allowed;' : ''}"
-                                                        value="${user.email}" ${verifyEmail ? 'readonly' : 'required' }>
+                                                        value="<c:out value='${user.email}'/>" ${verifyEmail ? 'readonly' : 'required' }>
                                                     <c:if test="${verifyEmail}">
                                                         <small
                                                             style="color:#8D99AE; font-size:12px; display:block; margin-top:5px;">
@@ -973,7 +974,7 @@
                                                     </label>
                                                     <input type="text" name="phone"
                                                         style="width:100%; padding:10px 15px; border:1px solid #E4E7ED; border-radius:3px; font-size:14px; background:#F8F9FA; cursor:not-allowed;"
-                                                        value="${user.phone}" readonly>
+                                                        value="<c:out value='${user.phone}'/>" readonly>
                                                     <small
                                                         style="color:#8D99AE; font-size:12px; display:block; margin-top:5px;">
                                                         <i class="fa fa-info-circle"></i> Số điện thoại không thể thay
@@ -989,7 +990,7 @@
                                                     </label>
                                                     <textarea name="address"
                                                         style="width:100%; padding:10px 15px; border:1px solid #E4E7ED; border-radius:3px; font-size:14px;"
-                                                        rows="3">${user.address}</textarea>
+                                                        rows="3"><c:out value="${user.address}"/></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -1051,7 +1052,8 @@
                                         border:1px solid ${passwordChangeSuccess ? '#c3e6cb' : '#f5c6cb'};">
                                             <i
                                                 class="fa ${passwordChangeSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                                            ${passwordChangeMessage}
+                                            <%-- [FIX Stored XSS] Flash message --%>
+                                            <c:out value="${passwordChangeMessage}"/>
                                         </div>
                                     </c:if>
 
@@ -1110,7 +1112,8 @@
                                 <div id="emailVerifyStep1">
                                     <p style="color:#666; margin-bottom:20px;">Nhấn nút bên dưới để gửi mã OTP đến
                                         email:
-                                        <strong>${user.email}</strong>
+                                        <%-- [FIX Stored XSS] User email in modal readback --%>
+                                        <strong><c:out value="${user.email}"/></strong>
                                     </p>
                                     <div style="text-align:center;">
                                         <button id="sendEmailOtpBtn" onclick="sendEmailOTP()"
@@ -1153,7 +1156,8 @@
                                 </h5>
                                 <div id="phoneVerifyStep1">
                                     <p style="color:#666; margin-bottom:20px;">Nhấn nút bên dưới để gửi mã OTP đến số:
-                                        <strong>${user.phone}</strong>
+                                        <%-- [FIX Stored XSS] User phone in modal readback --%>
+                                        <strong><c:out value="${user.phone}"/></strong>
                                     </p>
                                     <div style="text-align:center;">
                                         <button id="sendPhoneOtpBtn" onclick="sendPhoneOTP()"
