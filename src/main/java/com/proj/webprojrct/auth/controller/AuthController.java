@@ -39,10 +39,14 @@ import com.proj.webprojrct.auth.dto.request.RegisterRequest;
 import com.proj.webprojrct.auth.dto.request.LoginRequest;
 import com.proj.webprojrct.auth.dto.request.RegisterRequest;
 import com.proj.webprojrct.auth.dto.response.LoginResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @AllArgsConstructor
 @Controller
 public class AuthController {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
@@ -138,7 +142,8 @@ public class AuthController {
 
             return "home";
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
+            log.error("Lỗi khi refresh token", e);
+            model.addAttribute("error", "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
             return "auth/login";
         }
     }
@@ -467,8 +472,9 @@ public class AuthController {
             response.put("success", true);
             response.put("message", msg);
         } catch (Exception e) {
+            log.error("Lỗi khi gửi OTP type={}", type, e);
             response.put("success", false);
-            response.put("message", e.getMessage());
+            response.put("message", "Lỗi hệ thống khi gửi mã xác thực. Vui lòng thử lại.");
         }
         return response;
     }
@@ -491,8 +497,9 @@ public class AuthController {
             response.put("success", true);
             response.put("message", msg);
         } catch (Exception e) {
+            log.error("Lỗi khi xác thực OTP", e);
             response.put("success", false);
-            response.put("message", e.getMessage());
+            response.put("message", "Lỗi hệ thống khi xác thực. Vui lòng thử lại.");
         }
         return response;
     }

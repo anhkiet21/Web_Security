@@ -120,7 +120,7 @@ public class Config {
                 ipAdress = request.getRemoteAddr();
             }
         } catch (Exception e) {
-            ipAdress = "Invalid IP:" + e.getMessage();
+            ipAdress = "unknown";
         }
         return ipAdress;
     }

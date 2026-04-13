@@ -18,10 +18,14 @@ import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/favorite")
 public class FavoriteController {
+
+    private static final Logger log = LoggerFactory.getLogger(FavoriteController.class);
 
     @Autowired
     private FavoriteService favoriteService;
@@ -61,7 +65,7 @@ public class FavoriteController {
                         .body(new ResponseMessage("Sản phẩm đã có trong danh sách yêu thích!"));
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
+                    .body(new ResponseMessage("Thao tác không thành công. Vui lòng thử lại."));
         }
     }
 
@@ -81,8 +85,9 @@ public class FavoriteController {
             favoriteService.removeFromFavorite(userDetails.getUser().getId(), productId);
             return ResponseEntity.ok(new ResponseMessage("Đã xóa khỏi danh sách yêu thích!"));
         } catch (RuntimeException e) {
+            log.error("Lỗi khi xóa sản phẩm yêu thích", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
+                    .body(new ResponseMessage("Lỗi khi xóa sản phẩm yêu thích. Vui lòng thử lại."));
         }
     }
 
@@ -102,8 +107,9 @@ public class FavoriteController {
             response.put("isFavorite", isFavorite);
             return ResponseEntity.ok(response);
         }catch(Exception e){
+            log.error("Lỗi khi kiểm tra yêu thích", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi kiểm tra yêu thích: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống. Vui lòng thử lại sau."));
         }
     }
 
@@ -120,8 +126,9 @@ public class FavoriteController {
             favoriteService.clearFavorites(userDetails.getUser().getId());
             return ResponseEntity.ok(new ResponseMessage("Đã xóa tất cả yêu thích!"));
         }catch(Exception e){
+            log.error("Lỗi khi xóa tất cả yêu thích", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Lỗi khi xóa tất cả yêu thích: " + e.getMessage()));
+                    .body(new ResponseMessage("Lỗi hệ thống. Vui lòng thử lại sau."));
         }
     }
 }

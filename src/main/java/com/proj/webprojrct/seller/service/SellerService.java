@@ -26,10 +26,14 @@ import com.proj.webprojrct.product.entity.ProductImage;
 import com.proj.webprojrct.product.repository.ProductImageRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @RequiredArgsConstructor
 public class SellerService {
+
+    private static final Logger log = LoggerFactory.getLogger(SellerService.class);
 
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
@@ -607,7 +611,7 @@ public class SellerService {
                 product.setStock(restoredStock);
                 productRepository.save(product);
             } else {
-                System.err.println("Product not found with ID: " + item.getProductId() + " for order #" + order.getId());
+                log.warn("Product not found with ID: {} for order #{}", item.getProductId(), order.getId());
             }
         }
     }

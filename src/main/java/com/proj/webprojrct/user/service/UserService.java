@@ -303,7 +303,7 @@ public class UserService {
             } catch (IllegalArgumentException e) {
                 throw new RuntimeException("File avatar không hợp lệ: Chỉ chấp nhận file ảnh (.jpg, .jpeg, .png, .gif, .webp)");
             } catch (IOException e) {
-                throw new RuntimeException("Lỗi khi lưu avatar: " + e.getMessage());
+                throw new RuntimeException("Lỗi khi lưu avatar. Vui lòng thử lại.");
             }
         }
 

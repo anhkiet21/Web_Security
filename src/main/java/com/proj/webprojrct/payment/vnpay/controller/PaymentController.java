@@ -43,6 +43,8 @@ import com.proj.webprojrct.user.entity.UserRole;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -52,6 +54,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/vnpay/payment")
 public class PaymentController {
+
+    private static final Logger log = LoggerFactory.getLogger(PaymentController.class);
 
     private final PaymentService paymentService;
 
@@ -130,8 +134,8 @@ public class PaymentController {
             String result = paymentService.handleQuery(orderId, userId, request);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+            log.error("Lỗi khi query giao dịch orderId={}", orderId, e);
+            return ResponseEntity.status(500).body("Lỗi hệ thống khi truy vấn giao dịch. Vui lòng thử lại sau.");
         }
     }
 

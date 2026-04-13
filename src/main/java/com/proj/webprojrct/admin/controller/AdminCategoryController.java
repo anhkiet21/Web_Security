@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -29,6 +31,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/admin/categories")
 public class AdminCategoryController {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminCategoryController.class);
 
     private final CategoryService categoryService;
 
@@ -135,7 +139,8 @@ public class AdminCategoryController {
             // Xá»­ lÃ½ lá»—i tá»« service (CONFLICT, NOT_FOUND, etc.)
             redirectAttributes.addFlashAttribute("error", e.getReason());
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "KhÃ´ng thá»ƒ xÃ³a danh má»¥c: " + e.getMessage());
+            log.error("Lỗi khi xóa danh mục id={}", id, e);
+            redirectAttributes.addFlashAttribute("error", "Không thể xóa danh mục. Vui lòng thử lại.");
         }
         return "redirect:/admin/categories";
     }

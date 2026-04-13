@@ -21,16 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import com.proj.webprojrct.payment.vnpay.service.PaymentService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
     private OrderRepository orderRepository;
@@ -65,7 +69,8 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Đơn hàng phải có ít nhất 1 sản phẩm.");
         }
 
-        // FIX V-21 + V-22: Validate quantity VÀ lock từng sản phẩm theo thứ tự ID tăng dần
+        // FIX V-21 + V-22: Validate quantity VÀ lock từng sản phẩm theo thứ tự ID tăng
+        // dần
         // (sắp xếp để tránh deadlock khi nhiều transaction cùng lock)
         List<OrderRequest.OrderItemRequest> sortedItems = request.getOrderItems().stream()
                 .sorted(java.util.Comparator.comparing(OrderRequest.OrderItemRequest::getProductId))
@@ -81,7 +86,8 @@ public class OrderServiceImpl implements OrderService {
                 throw new IllegalArgumentException("Số lượng mỗi sản phẩm không được vượt quá 100");
             }
 
-            // FIX V-22: Dùng PESSIMISTIC_WRITE lock — chặn transaction khác đọc/ghi cùng lúc
+            // FIX V-22: Dùng PESSIMISTIC_WRITE lock — chặn transaction khác đọc/ghi cùng
+            // lúc
             Product product = productRepository.findByIdWithLock(itemReq.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductId()));
 
@@ -123,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
             sendOrderConfirmationEmail(user, savedOrder, request.getOrderItems());
         } catch (Exception e) {
             // Log error but don't fail the order
-            System.err.println("Failed to send order confirmation email: " + e.getMessage());
+            log.error("Failed to send order confirmation email for order {}", savedOrder.getId(), e);
         }
 
         return getOrderById(savedOrder.getId());

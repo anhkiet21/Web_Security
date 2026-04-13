@@ -23,10 +23,14 @@ import com.proj.webprojrct.order.dto.response.OrderSellerResponse;
 import com.proj.webprojrct.seller.service.SellerService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequiredArgsConstructor
 public class SellerController {
+
+    private static final Logger log = LoggerFactory.getLogger(SellerController.class);
 
     private final SellerService sellerService;
     private final PaymentService paymentService;
@@ -214,7 +218,8 @@ public class SellerController {
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
         } catch (Exception e) {
-            model.addAttribute("error", "Lá»—i khi há»§y Ä‘Æ¡n hÃ ng: " + e.getMessage());
+            log.error("Lỗi khi hủy đơn hàng orderId={}", orderId, e);
+            model.addAttribute("error", "Lỗi hệ thống khi hủy đơn hàng. Vui lòng thử lại.");
         }
         return "redirect:/seller/orders";
     }
@@ -482,7 +487,7 @@ public class SellerController {
                 return ResponseEntity.ok("HoÃ n tiá»n thÃ nh cÃ´ng cho Ä‘Æ¡n COD!");
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Lá»—i khi xá»­ lÃ½ hoÃ n tiá»n: " + e.getMessage());
+                        .body("Lỗi khi xử lý hoàn tiền. Vui lòng thử lại.");
             }
         }
 
@@ -496,14 +501,16 @@ public class SellerController {
             String txnStatus = root.path("vnp_TransactionStatus").asText();
             if ("00".equals(responseCode) && "05".equals(txnStatus)) {
                 sellerService.acceptOrderRefund(orderId, authentication);
-                return ResponseEntity.ok("HoÃ n tiá»n thÃ nh cÃ´ng! API tráº£ vá»: " + refundResult);
+                return ResponseEntity.ok("Hoàn tiền thành công!");
             } else {
+                log.warn("Hoàn tiền VNPay thất bại cho orderId={}, responseCode={}, txnStatus={}", orderId, responseCode, txnStatus);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("HoÃ n tiá»n tháº¥t báº¡i hoáº·c chÆ°a xÃ¡c nháº­n. API tráº£ vá»: " + refundResult);
+                        .body("Hoàn tiền thất bại hoặc chưa xác nhận. Vui lòng thử lại.");
             }
         } catch (Exception e) {
+            log.error("Lỗi khi xử lý hoàn tiền orderId={}", orderId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Lá»—i khi xá»­ lÃ½ hoÃ n tiá»n: " + e.getMessage());
+                    .body("Lỗi hệ thống khi xử lý hoàn tiền. Vui lòng thử lại.");
         }
     }
 

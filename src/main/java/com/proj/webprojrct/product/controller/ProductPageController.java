@@ -12,9 +12,13 @@ import com.proj.webprojrct.category.service.CategoryService;
 import com.proj.webprojrct.product.dto.response.ProductResponse;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 public class ProductPageController {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductPageController.class);
 
     private final ProductService productService;
 
@@ -175,7 +179,8 @@ public class ProductPageController {
             model.addAttribute("startIndex", startIndex + 1);
             model.addAttribute("endIndex", endIndex);
         } catch (Exception e) {
-            model.addAttribute("error", "KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u: " + e.getMessage());
+            log.error("Lỗi khi tải dữ liệu shop", e);
+            model.addAttribute("error", "Không thể tải dữ liệu. Vui lòng thử lại sau.");
         }
         return "shop";
     }
@@ -255,7 +260,8 @@ public class ProductPageController {
             model.addAttribute("products", dealProducts);
             model.addAttribute("categories", categoryService.getAll());
         } catch (Exception e) {
-            model.addAttribute("error", "KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u khuyáº¿n mÃ£i: " + e.getMessage());
+            log.error("Lỗi khi tải dữ liệu khuyến mãi", e);
+            model.addAttribute("error", "Không thể tải dữ liệu khuyến mãi. Vui lòng thử lại sau.");
         }
         return "deals";
     }

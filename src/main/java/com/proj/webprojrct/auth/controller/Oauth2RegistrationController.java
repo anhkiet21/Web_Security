@@ -128,8 +128,8 @@ public class Oauth2RegistrationController {
             // Chuyá»ƒn Ä‘áº¿n trang xÃ¡c thá»±c phone (giá»‘ng nhÆ° Ä‘Äƒng kÃ½ thÆ°á»ng)
             return "redirect:/register-phone-verify";
         } catch (RuntimeException e) {
-            // Xá»­ lÃ½ lá»—i (email hoáº·c phone Ä‘Ã£ tá»“n táº¡i)
-            model.addAttribute("error", e.getMessage());
+            // Xử lý lỗi (email hoặc phone đã tồn tại)
+            model.addAttribute("error", "Thông tin đăng ký không hợp lệ. Vui lòng kiểm tra lại.");
             model.addAttribute("email", email);
             model.addAttribute("name", name);
             model.addAttribute("picture", picture);

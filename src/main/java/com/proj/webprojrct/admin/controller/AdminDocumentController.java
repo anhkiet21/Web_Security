@@ -38,10 +38,14 @@ import java.util.Map;
 import org.springframework.security.core.Authentication;
 
 import com.proj.webprojrct.user.entity.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/admin/document")
 public class AdminDocumentController {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminDocumentController.class);
 
     @Autowired
     private DocumentService documentService;
@@ -136,7 +140,8 @@ public class AdminDocumentController {
             model.addAttribute("success", "Tạo Document thành công!");
             return "redirect:/admin/document";
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
+            log.error("Lỗi khi tạo document", e);
+            model.addAttribute("error", "Lỗi khi tạo document. Vui lòng thử lại.");
             return "admin/document_form";
         }
     }
@@ -219,9 +224,9 @@ public class AdminDocumentController {
             return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
         } catch (IllegalArgumentException e) {
             // Lỗi validate: sai định dạng / nội dung file
-            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(400).body(Map.of("error", "File không hợp lệ. Vui lòng kiểm tra lại."));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Lỗi hệ thống khi upload ảnh", e);
             return ResponseEntity.status(500).body(Map.of("error", "Lỗi hệ thống khi upload ảnh."));
         }
     }
@@ -232,7 +237,8 @@ public class AdminDocumentController {
             documentService.deleteDocument(id);
             model.addAttribute("success", "Xóa document thành công!");
         } catch (Exception e) {
-            model.addAttribute("error", "Không thể xóa document: " + e.getMessage());
+            log.error("Lỗi khi xóa document id={}", id, e);
+            model.addAttribute("error", "Không thể xóa document. Vui lòng thử lại.");
         }
         return "redirect:/admin/document";
     }
@@ -256,7 +262,8 @@ public class AdminDocumentController {
             }
             return ResponseEntity.ok(document);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            log.error("Lỗi khi lấy document cho product id={}", productId, e);
+            return ResponseEntity.status(500).body(Map.of("error", "Lỗi hệ thống. Vui lòng thử lại sau."));
         }
     }
 }

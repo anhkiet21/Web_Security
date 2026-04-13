@@ -23,10 +23,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import com.proj.webprojrct.storage.service.FileSignatureValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @Transactional
 public class ProductServiceImpl implements ProductService {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     private final ProductRepository repo;
     private final ProductMapper mapper;
@@ -204,7 +208,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             if (img.getProduct() != null) productId = img.getProduct().getId();
         } catch (Exception ignore) {
-            
+            log.debug("Không thể lấy productId từ ảnh #{}", imageId, ignore);
         }
 
         // Xóa file nếu tồn tại

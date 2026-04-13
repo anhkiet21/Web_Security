@@ -10,9 +10,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 public class HomeController {
+
+    private static final Logger log = LoggerFactory.getLogger(HomeController.class);
 
     @Autowired
     private ProductService productService;
@@ -41,7 +45,8 @@ public class HomeController {
             model.addAttribute("brands", productService.getAllBrands());
 
         } catch (Exception e) {
-            model.addAttribute("error", "Không thể tải dữ liệu: " + e.getMessage());
+            log.error("Lỗi khi tải dữ liệu trang chủ", e);
+            model.addAttribute("error", "Không thể tải dữ liệu. Vui lòng thử lại sau.");
         }
 
         return "home";

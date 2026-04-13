@@ -24,10 +24,14 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @RequiredArgsConstructor
 public class DocumentService {
+
+    private static final Logger log = LoggerFactory.getLogger(DocumentService.class);
 
     private final DocumentRepository documentRepository;
     private final DocumentStorageService documentStorageService;
@@ -53,7 +57,8 @@ public class DocumentService {
                     img.setDocument(doc);
                     imgList.add(img);
                 } catch (IOException e) {
-                    throw new RuntimeException("Lỗi khi lưu ảnh: " + e.getMessage());
+                    log.error("Lỗi khi lưu ảnh document", e);
+                    throw new RuntimeException("Lỗi khi lưu ảnh. Vui lòng thử lại.");
                 }
             }
         }
@@ -82,7 +87,8 @@ public class DocumentService {
                         img.setDocument(existing);
                         newImages.add(img);
                     } catch (IOException e) {
-                        throw new RuntimeException("Lỗi khi lưu ảnh: " + e.getMessage());
+                        log.error("Lỗi khi lưu ảnh document khi update", e);
+                        throw new RuntimeException("Lỗi khi lưu ảnh. Vui lòng thử lại.");
                     }
                 }
             }
@@ -141,7 +147,8 @@ public class DocumentService {
                 Files.delete(filePath);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi xóa ảnh: " + e.getMessage(), e);
+            log.error("Lỗi khi xóa ảnh: {}", fileName, e);
+            throw new RuntimeException("Lỗi khi xóa ảnh. Vui lòng thử lại.", e);
         }
     }
 
@@ -169,7 +176,7 @@ public class DocumentService {
                 try {
                     deleteImage(image.getImageUrl());
                 } catch (Exception e) {
-                    System.err.println("Không thể xóa ảnh: " + image.getImageUrl());
+                    log.warn("Không thể xóa ảnh: {}", image.getImageUrl(), e);
                 }
             }
         }
