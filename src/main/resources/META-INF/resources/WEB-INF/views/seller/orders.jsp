@@ -313,8 +313,9 @@
                                             <label style="font-weight: bold; display: block; margin-bottom: 5px;">
                                                 <i class="fa fa-search"></i> Tìm kiếm theo mã đơn hàng:
                                             </label>
+                                            <%-- Reflected XSS: param.orderId query parameter in input value attribute — fix: c:out --%>
                                             <input type="text" id="searchOrderId" placeholder="Nhập mã đơn hàng..."
-                                                value="${param.orderId != null ? param.orderId : ''}"
+                                                value="<c:out value='${param.orderId}'/>"
                                                 style="width: 100%; padding: 8px 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
                                         </div>
 
@@ -372,15 +373,15 @@
                                                 &nbsp;|&nbsp;
                                                 <strong>Trạng Thái:</strong>
                                                 <span
-                                                    class="status-badge status-${order.status.toLowerCase()}">${order.status}</span>
+                                                    class="status-badge status-<c:out value='${order.status.toLowerCase()}'/>"><c:out value="${order.status}"/></span>
                                                 &nbsp;|&nbsp;
                                                 <strong>Thanh Toán:</strong>
                                                 <span
                                                     class="payment-badge ${order.paymentStatus == 'SUCCESS' ? 'payment-success' : (order.paymentMethod == 'COD' ? 'payment-cod' : 'payment-pending')}">
-                                                    ${order.paymentMethod}
+                                                    <c:out value="${order.paymentMethod}"/>
                                                     <c:if
                                                         test="${order.paymentStatus != null && order.paymentStatus != ''}">
-                                                        - ${order.paymentStatus}
+                                                        - <c:out value="${order.paymentStatus}"/>
                                                     </c:if>
                                                 </span>
                                             </div>
@@ -395,7 +396,7 @@
                                         <div class="order-info">
                                             <div>
                                                 <i class="fa fa-map-marker"></i>
-                                                <strong>Địa chỉ giao hàng:</strong> ${order.shippingAddress}
+                                                <strong>Địa chỉ giao hàng:</strong> <c:out value="${order.shippingAddress}"/>
                                             </div>
                                             <div>
                                                 <i class="fa fa-calendar"></i>
@@ -431,7 +432,7 @@
                                                                 <c:when test="${not empty item.productImageUrl}">
                                                                     <img class="product-img"
                                                                         src="${pageContext.request.contextPath}${item.productImageUrl}"
-                                                                        alt="${item.productName}"
+                                                                        <%-- Stored XSS: product name in alt attribute - fix: c:out --%> alt="<c:out value='${item.productName}'/>"
                                                                         onerror="this.src='${pageContext.request.contextPath}/images/no-image.png'" />
                                                                 </c:when>
                                                                 <c:otherwise>
@@ -442,7 +443,7 @@
                                                             </c:choose>
                                                         </td>
                                                         <td style="text-align: left; padding-left: 15px;">
-                                                            <strong>${item.productName}</strong>
+                                                            <strong><c:out value="${item.productName}"/></strong>
                                                             <c:if test="${item.productId != null}">
                                                                 <br>
                                                                 <small style="color: #999;">ID:

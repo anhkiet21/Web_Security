@@ -392,9 +392,9 @@
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <span class="order-status-badge status-${order.status}"
+                                                        <span class="order-status-badge status-<c:out value='${order.status}'/>"
                                                             id="status-${order.orderId}">
-                                                            ${order.status}
+                                                            <c:out value="${order.status}"/>
                                                         </span>
                                                     </div>
                                                 </div>
@@ -406,18 +406,19 @@
                                                         <c:forEach var="item" items="${order.items}" varStatus="status">
                                                             <c:if test="${status.index < 6}">
                                                                 <c:choose>
+                                                                    <%-- Stored XSS: productName in alt/title HTML attributes — fix: c:out --%>
                                                                     <c:when
                                                                         test="${fn:startsWith(item.productImageUrl, '/uploads/')}">
                                                                         <img src="${pageContext.request.contextPath}${item.productImageUrl}"
-                                                                            alt="${item.productName}"
+                                                                            alt="<c:out value='${item.productName}'/>"
                                                                             class="order-item-image"
-                                                                            title="${item.productName}" />
+                                                                            title="<c:out value='${item.productName}'/>" />
                                                                     </c:when>
                                                                     <c:otherwise>
                                                                         <img src="${pageContext.request.contextPath}/uploads/products/${item.productImageUrl}"
-                                                                            alt="${item.productName}"
+                                                                            alt="<c:out value='${item.productName}'/>"
                                                                             class="order-item-image"
-                                                                            title="${item.productName}" />
+                                                                            title="<c:out value='${item.productName}'/>" />
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </c:if>

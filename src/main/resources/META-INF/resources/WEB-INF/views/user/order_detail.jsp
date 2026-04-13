@@ -345,19 +345,20 @@
                                     <h3><i class="fa fa-user"></i> Thông tin người nhận</h3>
                                     <div class="info-row">
                                         <span class="info-label">Họ tên:</span>
-                                        <span class="info-value">${user.fullName}</span>
+                                        <%-- [FIX Stored XSS] User PII in order info --%>
+                                        <span class="info-value"><c:out value="${user.fullName}"/></span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Email:</span>
-                                        <span class="info-value">${user.email}</span>
+                                        <span class="info-value"><c:out value="${user.email}"/></span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Số điện thoại:</span>
-                                        <span class="info-value">${user.phone}</span>
+                                        <span class="info-value"><c:out value="${user.phone}"/></span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Địa chỉ giao hàng:</span>
-                                        <span class="info-value">${order.shippingAddress}</span>
+                                        <span class="info-value"><c:out value="${order.shippingAddress}"/></span>
                                     </div>
                                 </div>
 
@@ -382,7 +383,7 @@
                                                             <c:when test="${not empty item.productImageUrl}">
                                                                 <img class="product-img"
                                                                     src="${pageContext.request.contextPath}${item.productImageUrl}"
-                                                                    alt="${item.productName}" />
+                                                                    <%-- Stored XSS: product name in alt attribute - fix: c:out --%> alt="<c:out value='${item.productName}'/>" />
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <img class="product-img"
@@ -392,7 +393,7 @@
                                                         </c:choose>
                                                     </td>
                                                     <td>
-                                                        <div class="product-name">${item.productName}</div>
+                                                        <div class="product-name"><c:out value="${item.productName}"/></div>
                                                     </td>
                                                     <td style="text-align: center;">
                                                         <span class="product-price">
@@ -435,7 +436,7 @@
                                         <span class="info-value">
                                             <span
                                                 class="order-status-badge status-${order.status == 'SUCCESS' ? 'success' : 'pending'}">
-                                                ${order.status}
+                                                <c:out value="${order.status}"/>
                                             </span>
                                         </span>
                                     </div>
@@ -457,7 +458,7 @@
                                                 </div>
                                                 <p
                                                     style="color: #856404; margin: 0; padding-left: 26px; line-height: 1.6;">
-                                                    ${order.cancelNote}
+                                                    <c:out value="${order.cancelNote}"/>
                                                 </p>
                                             </div>
                                         </div>
@@ -579,7 +580,7 @@
                                         <c:otherwise>
                                             <div class="alert-info">
                                                 <i class="fa fa-info-circle"></i>
-                                                Trạng thái giao dịch: <strong>${statusPayment.status}</strong>
+                                                Trạng thái giao dịch: <strong><c:out value="${statusPayment.status}"/></strong>
                                             </div>
 
                                             <h3><i class="fa fa-credit-card"></i> Chọn phương thức thanh toán</h3>

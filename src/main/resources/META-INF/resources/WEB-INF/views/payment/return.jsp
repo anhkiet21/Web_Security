@@ -380,7 +380,8 @@
                                 </div>
                                 <div class="info-item">
                                     <i class="fa fa-phone"></i>
-                                    <span>Chúng tôi sẽ liên hệ qua số điện thoại <strong>${user.phone}</strong> để xác
+                                    <%-- Stored XSS: user phone number in text context — fix: c:out --%>
+                                    <span>Chúng tôi sẽ liên hệ qua số điện thoại <strong><c:out value="${user.phone}"/></strong> để xác
                                         nhận đơn hàng</span>
                                 </div>
                             </div>
@@ -432,8 +433,8 @@
                             <div class="error-info">
                                 <div class="info-item">
                                     <i class="fa fa-exclamation-circle"></i>
-                                    <span><strong>Lý do:</strong> ${not empty message ? message : 'Giao dịch không thành
-                                        công'}</span>
+                                    <%-- Reflected/Stored XSS: redirect error message in text context — fix: c:out --%>
+                                    <span><strong>Lý do:</strong> <c:out value="${not empty message ? message : 'Giao dịch không thành công'}"/></span>
                                 </div>
                                 <div class="info-item">
                                     <i class="fa fa-info-circle"></i>

@@ -318,19 +318,22 @@
         <div class="filter-container">
           <div class="filter-group">
             <label>Hãng</label>
-            <input id="brand" class="filter-input" placeholder="Tìm theo hãng" type="text" value="${filterBrand}">
+            <input id="brand" class="filter-input" placeholder="Tìm theo hãng" type="text"
+              <%-- [FIX Reflected XSS] Filter query param in input value attr --%>
+              value="<c:out value='${filterBrand}'/>">
           </div>
           <div class="filter-group">
             <label>Tên sản phẩm</label>
-            <input id="name" class="filter-input" placeholder="Tìm theo tên" type="text" value="${filterName}">
+            <input id="name" class="filter-input" placeholder="Tìm theo tên" type="text" value="<c:out value='${filterName}'/>">
           </div>
           <div class="filter-group">
             <label>Giá từ</label>
-            <input id="minPrice" class="filter-input" placeholder="Giá từ" type="number" value="${filterMinPrice}">
+            <%-- Reflected XSS: filter params in input value attributes - fix: c:out --%>
+            <input id="minPrice" class="filter-input" placeholder="Giá từ" type="number" value="<c:out value='${filterMinPrice}'/>">
           </div>
           <div class="filter-group">
             <label>Giá đến</label>
-            <input id="maxPrice" class="filter-input" placeholder="Giá đến" type="number" value="${filterMaxPrice}">
+            <input id="maxPrice" class="filter-input" placeholder="Giá đến" type="number" value="<c:out value='${filterMaxPrice}'/>">
           </div>
           <div class="filter-group">
             <label>Sắp xếp</label>
@@ -373,18 +376,19 @@
                     <td class="text-center">
                       <c:choose>
                         <c:when test="${not empty product.images}">
-                          <img src="${pageContext.request.contextPath}${product.images[0].url}" class="thumb" alt="${product.name}">
+                          <img src="${pageContext.request.contextPath}${product.images[0].url}" class="thumb" alt="<c:out value='${product.name}'/>">
                         </c:when>
                         <c:when test="${not empty product.imageUrls}">
-                          <img src="${pageContext.request.contextPath}${product.imageUrls[0]}" class="thumb" alt="${product.name}">
+                          <img src="${pageContext.request.contextPath}${product.imageUrls[0]}" class="thumb" alt="<c:out value='${product.name}'/>">
                         </c:when>
                         <c:otherwise>
-                          <img src="${pageContext.request.contextPath}${product.imageUrl}" class="thumb" alt="${product.name}">
+                          <img src="${pageContext.request.contextPath}${product.imageUrl}" class="thumb" alt="<c:out value='${product.name}'/>">
                         </c:otherwise>
                       </c:choose>
                     </td>
-                    <td>${product.name}</td>
-                    <td>${product.brand}</td>
+                    <%-- [FIX Stored XSS] Product name and brand in table cell text --%>
+                    <td><c:out value="${product.name}"/></td>
+                    <td><c:out value="${product.brand}"/></td>
                     <!-- <td class="text-end"><span class="product-price" data-price="${product.price}"></span><span class="product-price">₫</span></td> -->
 <td class="text-end price-cell" data-price="${product.price}" data-deal="${product.onDeal}" data-percent="${product.dealPercentage != null ? product.dealPercentage : 0}"></td>
                     <td class="text-center">${product.stock}</td>

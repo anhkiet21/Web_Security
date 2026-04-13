@@ -1,18 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%-- 
     Common Pagination Component
     
     Parameters:
     - page: Spring Page object
     - baseUrl: Base URL for pagination links (e.g., "/admin/users")
-    - additionalParams: Additional URL parameters (optional)
+    - additionalParams: Additional URL parameters (request attribute, optional)
     
     Usage:
     <jsp:include page="/common/pagination.jsp">
         <jsp:param name="baseUrl" value="/admin/users"/>
     </jsp:include>
 --%>
+<%-- Reflected XSS fix: use request attribute (server-controlled) and encode in HTML context --%>
+<c:set var="safeAdditionalParams"><c:out value="${additionalParams}"/></c:set>
 
 <div class="pagination-container" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px 0;">
     <!-- Left side: Total count -->
@@ -41,7 +44,7 @@
                 </c:when>
                 <c:otherwise>
                     <li>
-                        <a href="?page=0&size=${page.size}${param.additionalParams}" 
+                        <a href="?page=0&size=${page.size}${safeAdditionalParams}" 
                            class="page-link" 
                            style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;"
                            title="Trang đầu">
@@ -49,7 +52,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="?page=${page.number - 1}&size=${page.size}${param.additionalParams}" 
+                        <a href="?page=${page.number - 1}&size=${page.size}${safeAdditionalParams}" 
                            class="page-link" 
                            style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;"
                            title="Trang trước">
@@ -74,7 +77,7 @@
                     </c:when>
                     <c:otherwise>
                         <li>
-                            <a href="?page=${i}&size=${page.size}${param.additionalParams}" 
+                            <a href="?page=${i}&size=${page.size}${safeAdditionalParams}" 
                                class="page-link" 
                                style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">
                                 ${i + 1}
@@ -100,7 +103,7 @@
                 </c:when>
                 <c:otherwise>
                     <li>
-                        <a href="?page=${page.number + 1}&size=${page.size}${param.additionalParams}" 
+                        <a href="?page=${page.number + 1}&size=${page.size}${safeAdditionalParams}" 
                            class="page-link" 
                            style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;"
                            title="Trang sau">
@@ -108,7 +111,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="?page=${page.totalPages - 1}&size=${page.size}${param.additionalParams}" 
+                        <a href="?page=${page.totalPages - 1}&size=${page.size}${safeAdditionalParams}" 
                            class="page-link" 
                            style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;"
                            title="Trang cuối">
@@ -122,8 +125,10 @@
     
     <!-- Right side: Page size selector -->
     <div>
-        <select id="pageSizeSelector" 
-                onchange="window.location.href='?page=0&size=' + this.value + '${param.additionalParams}'" 
+        <%-- Reflected XSS: JS context — use data attribute + dataset pattern for safe JS string --%>
+        <select id="pageSizeSelector"
+                data-additional-params="${safeAdditionalParams}"
+                onchange="window.location.href='?page=0&size=' + this.value + this.dataset.additionalParams" 
                 style="padding: 8px 12px; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; background: white;">
             <option value="5" ${page.size == 5 ? 'selected' : ''}>5 dòng</option>
             <option value="10" ${page.size == 10 ? 'selected' : ''}>10 dòng</option>

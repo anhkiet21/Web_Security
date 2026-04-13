@@ -77,12 +77,13 @@
 												<!-- Đã chọn thương hiệu - hiển thị series -->
 												<c:forEach items="${series}" var="s">
 													<div class="input-checkbox">
-														<input type="checkbox" id="series-${s.seriesName}"
-															class="series-filter" value="${s.seriesName}"
+														<%-- Stored XSS: seriesName in id/value/for attrs and label text - fix: c:out --%>
+														<input type="checkbox" id="series-<c:out value='${s.seriesName}'/>" 
+															class="series-filter" value="<c:out value='${s.seriesName}'/>"
 															${selectedSeries.contains(s.seriesName) ? 'checked' : '' }>
-														<label for="series-${s.seriesName}">
+														<label for="series-<c:out value='${s.seriesName}'/>">
 															<span></span>
-															${s.seriesName} <small
+															<c:out value="${s.seriesName}"/> <small
 																style="color: #999;">(${s.productCount})</small>
 														</label>
 													</div>
@@ -99,12 +100,13 @@
 									<div class="checkbox-filter">
 										<c:forEach items="${brands}" var="brand" varStatus="status">
 											<div class="input-checkbox">
+												<%-- Stored XSS: brand name in checkbox value attribute and label text — fix: c:out --%>
 												<input type="checkbox" id="brand-${status.index}" class="brand-filter"
-													value="${brand}" ${selectedBrands.contains(brand) ? 'checked' : ''
+													value="<c:out value='${brand}'/>" ${selectedBrands.contains(brand) ? 'checked' : ''
 													}>
 												<label for="brand-${status.index}">
 													<span></span>
-													${brand}
+													<c:out value="${brand}"/>
 												</label>
 											</div>
 										</c:forEach>
@@ -120,7 +122,7 @@
 								<c:if test="${not empty searchName}">
 									<div class="alert alert-info" style="margin-bottom: 20px;">
 										<i class="fa fa-search"></i>
-										Kết quả tìm kiếm cho: <strong>"${searchName}"</strong>
+										Kết quả tìm kiếm cho: <strong>"<c:out value="${searchName}"/>"</strong>
 										<c:if test="${totalProducts == 0}">
 											- Không tìm thấy sản phẩm nào
 										</c:if>
@@ -186,7 +188,7 @@
 																varStatus="status">
 																<c:if test="${not empty imgUrl && !foundImage}">
 																	<img src="${pageContext.request.contextPath}${imgUrl}"
-																		alt="${product.name}"
+																		alt="<c:out value='${product.name}'/>"
 																		style="max-height: 250px; object-fit: contain;">
 																	<c:set var="foundImage" value="true" />
 																</c:if>
@@ -195,12 +197,12 @@
 																<c:choose>
 																	<c:when test="${not empty product.imageUrl}">
 																		<img src="${pageContext.request.contextPath}${product.imageUrl}"
-																			alt="${product.name}"
+																			alt="<c:out value='${product.name}'/>"
 																			style="max-height: 250px; object-fit: contain;">
 																	</c:when>
 																	<c:otherwise>
 																		<img src="${pageContext.request.contextPath}/img/product-placeholder.png"
-																			alt="${product.name}"
+																			alt="<c:out value='${product.name}'/>"
 																			style="max-height: 250px; object-fit: contain;">
 																	</c:otherwise>
 																</c:choose>
@@ -208,12 +210,12 @@
 														</c:when>
 														<c:when test="${not empty product.imageUrl}">
 															<img src="${pageContext.request.contextPath}${product.imageUrl}"
-																alt="${product.name}"
+																alt="<c:out value='${product.name}'/>"
 																style="max-height: 250px; object-fit: contain;">
 														</c:when>
 														<c:otherwise>
 															<img src="${pageContext.request.contextPath}/img/product-placeholder.png"
-																alt="${product.name}"
+																alt="<c:out value='${product.name}'/>"
 																style="max-height: 250px; object-fit: contain;">
 														</c:otherwise>
 													</c:choose>
@@ -236,10 +238,11 @@
 													</c:choose>
 												</div>
 												<div class="product-body">
-													<p class="product-category">${product.brand}</p>
-													<h3 class="product-name">
-														<a
-															href="${pageContext.request.contextPath}/product/${product.id}">${product.name}</a>
+												<%-- Stored XSS: brand and product name in text context — fix: c:out --%>
+												<p class="product-category"><c:out value="${product.brand}"/></p>
+												<h3 class="product-name">
+													<a
+														href="${pageContext.request.contextPath}/product/${product.id}"><c:out value="${product.name}"/></a>
 													</h3>
 													<h4 class="product-price">
 														<c:choose>
@@ -416,7 +419,9 @@ var IS_LOGGED_IN = <%= isAuthenticated %>;
 						var params = [];
 
 						// Thêm search name nếu có
-						var searchName = '${searchName}';
+					// [FIX: DOM-Based JS Injection] Đọc từ URL thay vì nhúng trực tiếp vào JS string
+					// ${searchName} trong dấu '' có thể bị inject: '; alert(1);// → Reflected XSS qua JS context
+					var searchName = (new URLSearchParams(window.location.search)).get('name') || '';
 						if (searchName && searchName.trim() !== '') {
 							params.push('name=' + encodeURIComponent(searchName));
 						}

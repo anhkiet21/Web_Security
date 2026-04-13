@@ -286,12 +286,13 @@
                             </div>
                             <div class="info-item">
                                 <i class="fa fa-truck"></i>
-                                <span>Đơn hàng sẽ được giao đến địa chỉ: <strong>${order.shippingAddress}</strong> trong
+                                <%-- [FIX Stored XSS] shippingAddress and user.phone --%>
+                                <span>Đơn hàng sẽ được giao đến địa chỉ: <strong><c:out value="${order.shippingAddress}"/></strong> trong
                                     2-3 ngày làm việc</span>
                             </div>
                             <div class="info-item">
                                 <i class="fa fa-phone"></i>
-                                <span>Chúng tôi sẽ liên hệ qua số điện thoại <strong>${user.phone}</strong> để xác
+                                <span>Chúng tôi sẽ liên hệ qua số điện thoại <strong><c:out value="${user.phone}"/></strong> để xác
                                     nhận đơn hàng</span>
                             </div>
                         </div>
