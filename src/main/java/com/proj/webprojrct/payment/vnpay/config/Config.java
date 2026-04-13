@@ -15,18 +15,38 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author CTT VNPAY
  */
+// [FIX A08-01] Converted from static fields to Spring-managed component;
+// secrets are now loaded from application.properties / environment variables.
+@Component
 public class Config {
 
-    public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "http://localhost:8080/payment/return";
-    public static String vnp_TmnCode = "7O4XP81S";
-    public static String secretKey = "6YE5Q2TKEDEIEONNNTQ2IDC99H93Y5OM";
-    public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
+    @Value("${vnpay.secret-key}")
+    private String secretKey;
+
+    @Value("${vnpay.tmn-code}")
+    private String vnpTmnCode;
+
+    @Value("${vnpay.pay-url}")
+    private String vnpPayUrl;
+
+    @Value("${vnpay.return-url}")
+    private String vnpReturnUrl;
+
+    @Value("${vnpay.api-url}")
+    private String vnpApiUrl;
+
+    public String getSecretKey()    { return secretKey; }
+    public String getVnpTmnCode()   { return vnpTmnCode; }
+    public String getVnpPayUrl()    { return vnpPayUrl; }
+    public String getVnpReturnUrl() { return vnpReturnUrl; }
+    public String getVnpApiUrl()    { return vnpApiUrl; }
 
     public static String vnp_Version = "2.1.0";
     public static String vnp_Command = "pay";
@@ -69,7 +89,8 @@ public class Config {
     }
 
     //Util for VNPAY
-    public static String hashAllFields(Map fields) {
+    // [FIX A08-01] secretKey passed as parameter — method stays static but depends on no instance field
+    public static String hashAllFields(Map fields, String secretKey) {
         List fieldNames = new ArrayList(fields.keySet());
         Collections.sort(fieldNames);
         StringBuilder sb = new StringBuilder();

@@ -63,6 +63,9 @@ public class PaymentService {
 
     private final OrderService orderService;
 
+    // [FIX A08-01] Inject Config bean — secrets are now in application.properties, not hardcoded
+    private final Config vnpayConfig;
+
     public PaymentResDto createPaymentUrl(Long orderId, Long userId, HttpServletRequest request)
             throws UnsupportedEncodingException {
 
@@ -89,7 +92,7 @@ public class PaymentService {
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", Config.vnp_Version);
         vnp_Params.put("vnp_Command", Config.vnp_Command);
-        vnp_Params.put("vnp_TmnCode", Config.vnp_TmnCode);
+        vnp_Params.put("vnp_TmnCode", vnpayConfig.getVnpTmnCode());
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
         // vnp_Params.put("vnp_BankCode", "NCB");
@@ -97,7 +100,7 @@ public class PaymentService {
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType); // bắt buộc
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", Config.vnp_ReturnUrl); // bắt buộc
+        vnp_Params.put("vnp_ReturnUrl", vnpayConfig.getVnpReturnUrl()); // bắt buộc
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr); // bắt buộc
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -134,9 +137,9 @@ public class PaymentService {
         }
 
         String queryUrl = query.toString();
-        String vnp_SecureHash = Config.hmacSHA512(Config.secretKey, hashData.toString());
+        String vnp_SecureHash = Config.hmacSHA512(vnpayConfig.getSecretKey(), hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        String paymentUrl = Config.vnp_PayUrl + "?" + queryUrl;
+        String paymentUrl = vnpayConfig.getVnpPayUrl() + "?" + queryUrl;
 
         if (!paymentRepository.existsByOrderId(orderId)) {
             Payment payment = Payment.builder()
@@ -197,7 +200,7 @@ public class PaymentService {
         fields.remove("vnp_SecureHashType");
         fields.remove("vnp_SecureHash");
 
-        String signValue = Config.hashAllFields(fields);
+        String signValue = Config.hashAllFields(fields, vnpayConfig.getSecretKey());
 
         Map<String, Object> result = new HashMap<>();
         if (signValue.equals(vnp_SecureHash)) {
@@ -326,7 +329,7 @@ public class PaymentService {
             String vnp_RequestId = Config.getRandomNumber(8);
             String vnp_Version = "2.1.0";
             String vnp_Command = "querydr";
-            String vnp_TmnCode = Config.vnp_TmnCode;
+            String vnp_TmnCode = vnpayConfig.getVnpTmnCode();
             String vnp_TxnRef = String.valueOf(orderId);
             String vnp_OrderInfo = "Kiểm tra kết quả GD OrderId:" + vnp_TxnRef;
             Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -349,10 +352,10 @@ public class PaymentService {
             String hash_Data = String.join("|",
                     vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode,
                     vnp_TxnRef, vnp_TransDate, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
-            String vnp_SecureHash = Config.hmacSHA512(Config.secretKey, hash_Data);
+            String vnp_SecureHash = Config.hmacSHA512(vnpayConfig.getSecretKey(), hash_Data);
             vnp_Params.addProperty("vnp_SecureHash", vnp_SecureHash);
-            // Gá»­i request POST
-            URL url = new URL(Config.vnp_ApiUrl);
+            // Gửi request POST
+            URL url = new URL(vnpayConfig.getVnpApiUrl());
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");
@@ -440,7 +443,7 @@ public class PaymentService {
         String vnp_RequestId = Config.getRandomNumber(8);
         String vnp_Version = "2.1.0";
         String vnp_Command = "refund";
-        String vnp_TmnCode = Config.vnp_TmnCode;
+        String vnp_TmnCode = vnpayConfig.getVnpTmnCode();
         String vnp_TransactionType = trantype;
         String vnp_TxnRef = String.valueOf(orderId);
         double discount = (double) percent / 100.0;
@@ -482,11 +485,11 @@ public class PaymentService {
                 vnp_TransactionType, vnp_TxnRef, vnp_Amount, vnp_TransactionNo, vnp_TransactionDate,
                 vnp_CreateBy, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
 
-        String vnp_SecureHash = Config.hmacSHA512(Config.secretKey, hash_Data.toString());
+        String vnp_SecureHash = Config.hmacSHA512(vnpayConfig.getSecretKey(), hash_Data.toString());
 
         vnp_Params.addProperty("vnp_SecureHash", vnp_SecureHash);
 
-        URL url = new URL(Config.vnp_ApiUrl);
+        URL url = new URL(vnpayConfig.getVnpApiUrl());
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
