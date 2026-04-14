@@ -26,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +79,8 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
 
         BigDecimal serverTotalAmount = BigDecimal.ZERO;
+        // [FIX A08-02] Store server-side prices (from DB) to prevent client price tampering
+        Map<Long, BigDecimal> productPriceMap = new HashMap<>();
         for (OrderRequest.OrderItemRequest itemReq : sortedItems) {
             // FIX V-21: Validate số lượng tại đây
             if (itemReq.getQuantity() <= 0) {
@@ -104,6 +108,8 @@ public class OrderServiceImpl implements OrderService {
             BigDecimal itemTotal = product.getPrice()
                     .multiply(BigDecimal.valueOf(itemReq.getQuantity()));
             serverTotalAmount = serverTotalAmount.add(itemTotal);
+            // [FIX A08-02] Cache DB price keyed by productId for use in OrderItem creation
+            productPriceMap.put(itemReq.getProductId(), product.getPrice());
         }
 
         Order order = new Order();
@@ -120,13 +126,14 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setOrder(savedOrder);
             orderItem.setProductId(itemReq.getProductId());
             orderItem.setQuantity(itemReq.getQuantity());
-            orderItem.setPrice(itemReq.getPrice());
+            // [FIX A08-02] Use server-side DB price instead of client-supplied price
+            orderItem.setPrice(productPriceMap.get(itemReq.getProductId()));
             orderItemRepository.save(orderItem);
         }
 
         // Send order confirmation email
         try {
-            sendOrderConfirmationEmail(user, savedOrder, request.getOrderItems());
+            sendOrderConfirmationEmail(user, savedOrder, request.getOrderItems(), productPriceMap);
         } catch (Exception e) {
             // Log error but don't fail the order
             log.error("Failed to send order confirmation email for order {}", savedOrder.getId(), e);
@@ -135,7 +142,8 @@ public class OrderServiceImpl implements OrderService {
         return getOrderById(savedOrder.getId());
     }
 
-    private void sendOrderConfirmationEmail(User user, Order order, List<OrderRequest.OrderItemRequest> items) {
+    // [FIX A08-02] Added productPrices map parameter to use DB prices in email content
+    private void sendOrderConfirmationEmail(User user, Order order, List<OrderRequest.OrderItemRequest> items, Map<Long, BigDecimal> productPrices) {
         StringBuilder emailBody = new StringBuilder();
         emailBody.append("Xin chào ").append(user.getFullName()).append(",\n\n");
         emailBody.append("Cảm ơn bạn đã đặt hàng tại CellPhoneStore!\n\n");
@@ -146,7 +154,8 @@ public class OrderServiceImpl implements OrderService {
         for (OrderRequest.OrderItemRequest item : items) {
             Product product = productRepository.findById(item.getProductId()).orElse(null);
             if (product != null) {
-                double itemPrice = item.getPrice().doubleValue();
+                // [FIX A08-02] Use DB price from productPrices map, not client-supplied price
+                double itemPrice = productPrices.getOrDefault(item.getProductId(), BigDecimal.ZERO).doubleValue();
                 double itemTotal = itemPrice * item.getQuantity();
                 emailBody.append(String.format("• %s\n", product.getName()));
                 emailBody.append(String.format("  Số lượng: %d x %,.0fđ = %,.0fđ\n\n",

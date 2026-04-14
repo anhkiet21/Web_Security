@@ -203,6 +203,12 @@ public class AuthService {
     }
 
     public User handleRefreshToken(String refreshToken) {
+        // [FIX A07] Validate JWT signature AND expiry BEFORE any DB lookup
+        // Prevents expired tokens from being reused even if they still exist in the DB
+        if (!jwtUtil.validateRefreshToken(refreshToken)) {
+            throw new RuntimeException("Refresh token hết hạn hoặc không hợp lệ.");
+        }
+
         // Lấy username từ refresh token
         String username = jwtUtil.extractUsername(refreshToken);
 
