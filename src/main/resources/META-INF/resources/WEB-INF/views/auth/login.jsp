@@ -44,7 +44,6 @@ contentType="text/html;charset=UTF-8" language="java" %>
         </p>
 
         <form action="<c:url value='/dologin' />" method="post">
-          <%-- ✅ CSRF Token: Ngăn Login CSRF Attack từ trang giả mạo --%>
           <input
             type="hidden"
             name="${_csrf.parameterName}"

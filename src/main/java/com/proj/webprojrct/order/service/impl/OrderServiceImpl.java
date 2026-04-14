@@ -278,7 +278,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional // FIX V-22: Transaction + lock khi hoàn stock
+    @Transactional 
     public void cancelOrder(Long orderId, long userId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
