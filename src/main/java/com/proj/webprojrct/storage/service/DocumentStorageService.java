@@ -43,16 +43,18 @@ public class DocumentStorageService implements FileStorageServiceI {
             throw new IllegalArgumentException("Invalid file content signature for document image.");
         }
 
+        // Strip any directory components before building the stored name
+        String safeName = Path.of(filename).getFileName().toString();
         //Get unique file name
-        String uniqueFileName = UUID.randomUUID() + "_" + filename;
+        String uniqueFileName = UUID.randomUUID() + "_" + safeName;
 
-        Path filePath = root.resolve(uniqueFileName);
+        Path filePath = safeResolve(uniqueFileName);
         Files.copy(data, filePath, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFileName;
     }
 
     public byte[] read(String filename) throws IOException {
-        Path path = root.resolve(filename);
+        Path path = safeResolve(filename);
         if (!Files.exists(path)) {
             throw new FileNotFoundException("Không tìm thấy file: " + path.toString());
         }
@@ -60,7 +62,24 @@ public class DocumentStorageService implements FileStorageServiceI {
     }
 
     public boolean delete(String filename) throws IOException {
-        return Files.deleteIfExists(root.resolve(filename));
+        return Files.deleteIfExists(safeResolve(filename));
+    }
+
+    /**
+     * Resolve a filename safely inside {@code root}.
+     * Strips directory separators and verifies the result stays within root
+     * to prevent path-traversal attacks (OWASP A01 / CWE-22).
+     */
+    private Path safeResolve(String filename) {
+        if (filename == null || filename.isBlank()) {
+            throw new IllegalArgumentException("Filename must not be empty");
+        }
+        String safeName = Path.of(filename).getFileName().toString();
+        Path resolved = root.resolve(safeName).normalize();
+        if (!resolved.startsWith(root)) {
+            throw new SecurityException("Path traversal attempt detected");
+        }
+        return resolved;
     }
 
     public List<String> list() throws IOException {

@@ -24,6 +24,7 @@ import com.proj.webprojrct.product.entity.Product;
 import com.proj.webprojrct.product.repository.ProductRepository;
 import com.proj.webprojrct.product.entity.ProductImage;
 import com.proj.webprojrct.product.repository.ProductImageRepository;
+import com.proj.webprojrct.common.HtmlSanitizer;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -220,7 +221,7 @@ public class SellerService {
 
         // Cáº­p nháº­t tráº¡ng thÃ¡i Ä‘Æ¡n hÃ ng thÃ nh CANCELLED
         order.setStatus("CANCELLED");
-        order.setCancelNote(cancelNote);
+        order.setCancelNote(HtmlSanitizer.sanitize(cancelNote));
         orderRepository.save(order);
 
         // HoÃ n láº¡i sá»‘ lÆ°á»£ng sáº£n pháº©m khi há»§y Ä‘Æ¡n
@@ -228,7 +229,7 @@ public class SellerService {
 
         // LÆ°u thÃ´ng tin cÃ³ hoÃ n tiá»n hay khÃ´ng vÃ o cancelNote Ä‘á»ƒ hiá»ƒn thá»‹ sau
         if (isRefunded) {
-            order.setCancelNote("[ÄÃƒ HOÃ€N TIá»€N] " + cancelNote);
+            order.setCancelNote("[ÄÃƒ HOÃ€N TIá»€N] " + HtmlSanitizer.sanitize(cancelNote));
             orderRepository.save(order);
         }
 

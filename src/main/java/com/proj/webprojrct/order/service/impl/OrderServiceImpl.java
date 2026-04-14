@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import com.proj.webprojrct.payment.vnpay.service.PaymentService;
+import com.proj.webprojrct.common.HtmlSanitizer;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -116,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(user);
         order.setStatus("PENDING");
         order.setTotalAmount(serverTotalAmount);
-        order.setShippingAddress(request.getShippingAddress());
+        order.setShippingAddress(HtmlSanitizer.sanitize(request.getShippingAddress()));
         order.setCreatedAt(LocalDateTime.now());
         order = orderRepository.save(order);
 

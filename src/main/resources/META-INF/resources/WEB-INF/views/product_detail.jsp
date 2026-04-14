@@ -1895,7 +1895,7 @@
                   reviews.forEach(review => {
                     html += '<li>';
                     html += '<div class="review-heading">';
-                    html += '<h5 class="name">' + (review.userName || 'Ẩn danh') + '</h5>';
+                    html += '<h5 class="name">' + escapeHtml(review.userName || 'Ẩn danh') + '</h5>';
                     html += '<p class="date">' + formatDate(review.createdAt) + '</p>';
 
                     if (review.rating) {
@@ -1937,7 +1937,7 @@
                       review.childReviews.forEach(child => {
                         html += '<div style="margin-bottom: 15px;">';
                         html += '<div>';
-                        html += '<strong style="color: #d10024;">' + (child.userName || 'Ẩn danh') + '</strong> ';
+                        html += '<strong style="color: #d10024;">' + escapeHtml(child.userName || 'Ẩn danh') + '</strong> ';
                         html += '<span style="font-size: 12px; color: #999;">(' + formatDate(child.createdAt) + ')</span>';
                         html += '</div>';
                         html += '<p style="margin: 5px 0;">' + escapeHtml(child.comment || '') + '</p>';
