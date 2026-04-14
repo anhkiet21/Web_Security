@@ -31,6 +31,7 @@ import com.proj.webprojrct.user.dto.request.UserCreateRequest;
 import com.proj.webprojrct.user.dto.response.UserAdminResponse;
 import com.proj.webprojrct.user.entity.UserRole;
 import com.proj.webprojrct.common.config.logging.SecurityEventLogger;
+import com.proj.webprojrct.common.HtmlSanitizer;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -220,7 +221,7 @@ public class UserService {
         // [LOGGING] Lưu role cũ trước khi cập nhật - OWASP A09
         UserRole oldRole = userToUpdate.getRole();
 
-        userToUpdate.setFullName(updateRequest.getFullname());
+        userToUpdate.setFullName(HtmlSanitizer.sanitize(updateRequest.getFullname()));
         userToUpdate.setEmail(updateRequest.getEmail());
         userToUpdate.setAddress(updateRequest.getAddress());
         userToUpdate.setRole(updateRequest.getRole());
@@ -307,9 +308,9 @@ public class UserService {
             }
         }
 
-        existingUser.setFullName(userReq.getFullname());
+        existingUser.setFullName(HtmlSanitizer.sanitize(userReq.getFullname()));
         existingUser.setEmail(userReq.getEmail());
-        existingUser.setAddress(userReq.getAddress());
+        existingUser.setAddress(HtmlSanitizer.sanitize(userReq.getAddress()));
 
         userRepository.save(existingUser);
 

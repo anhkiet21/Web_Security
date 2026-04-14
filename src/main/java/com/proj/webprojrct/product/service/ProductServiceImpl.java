@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import com.proj.webprojrct.storage.service.FileSignatureValidator;
+import com.proj.webprojrct.common.HtmlSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse create(ProductCreateRequest req) {
+        req.setName(HtmlSanitizer.sanitize(req.getName()));
+        req.setBrand(HtmlSanitizer.sanitize(req.getBrand()));
         Product p = mapper.toEntity(req);
 
         if (req.getCategoryId() != null) {
@@ -67,6 +70,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse update(Long id, ProductUpdateRequest req) {
+        req.setName(HtmlSanitizer.sanitize(req.getName()));
+        req.setBrand(HtmlSanitizer.sanitize(req.getBrand()));
         Product p = repo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm #" + id));
 

@@ -14,8 +14,7 @@ import com.proj.webprojrct.reviewandrating.entity.Review;
 import com.proj.webprojrct.reviewandrating.mapper.ReviewMapper;
 import com.proj.webprojrct.reviewandrating.repository.ReviewRepository;
 
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Safelist;
+import com.proj.webprojrct.common.HtmlSanitizer;
 
 import java.util.Optional;
 
@@ -36,10 +35,8 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponse handleCreateReview(ReviewRequest dto, Long currentUserId) {
-        // Strip all HTML tags from comment to prevent Stored XSS 
-        if (dto.getComment() != null) {
-            dto.setComment(Jsoup.clean(dto.getComment(), Safelist.none()));
-        }
+        // Strip all HTML tags from comment to prevent Stored XSS
+        dto.setComment(HtmlSanitizer.sanitize(dto.getComment()));
         Review review = reviewMapper.toEntity(dto); //chuyển dto sang entity
         //getReferenceById là hàm mặc định của JPA
         review.setUser(userRepository.getReferenceById(currentUserId));
