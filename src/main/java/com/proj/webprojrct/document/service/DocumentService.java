@@ -4,6 +4,7 @@ import com.proj.webprojrct.document.dto.request.DocumentCreateRequest;
 import com.proj.webprojrct.document.entity.Document;
 import com.proj.webprojrct.document.entity.DocumentImage;
 import com.proj.webprojrct.document.repository.DocumentRepository;
+import com.proj.webprojrct.common.util.HtmlSanitizer;
 import com.proj.webprojrct.storage.service.DocumentStorageService;
 
 import com.proj.webprojrct.storage.service.FileSignatureValidator;
@@ -39,8 +40,8 @@ public class DocumentService {
     @Transactional
     public Document createDocument(DocumentCreateRequest dto, List<MultipartFile> images) {
         Document doc = Document.builder()
-                .title(dto.getTitle())
-                .description(dto.getDescription())
+                .title(HtmlSanitizer.sanitize(dto.getTitle()))
+                .description(HtmlSanitizer.sanitize(dto.getDescription()))
                 .productId(dto.getProductId())
                 .build();
 
@@ -72,8 +73,8 @@ public class DocumentService {
         Document existing = documentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document không tồn tại với id: " + id));
 
-        existing.setTitle(dto.getTitle());
-        existing.setDescription(dto.getDescription());
+        existing.setTitle(HtmlSanitizer.sanitize(dto.getTitle()));
+        existing.setDescription(HtmlSanitizer.sanitize(dto.getDescription()));
         existing.setProductId(dto.getProductId());
 
         if (images != null && !images.isEmpty()) {

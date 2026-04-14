@@ -2,6 +2,7 @@ package com.proj.webprojrct.product.service;
 
 import com.proj.webprojrct.category.entity.Category;
 import com.proj.webprojrct.category.repository.CategoryRepository;
+import com.proj.webprojrct.common.util.HtmlSanitizer;
 import com.proj.webprojrct.product.dto.request.*;
 import com.proj.webprojrct.product.dto.response.ProductResponse;
 import com.proj.webprojrct.product.entity.*;
@@ -46,6 +47,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse create(ProductCreateRequest req) {
+        // [XSS-FIX] Sanitize all string fields before persisting
+        sanitizeCreateRequest(req);
+
         Product p = mapper.toEntity(req);
 
         if (req.getCategoryId() != null) {
@@ -57,7 +61,10 @@ public class ProductServiceImpl implements ProductService {
         if (req.getSpecs() != null) {
             List<ProductSpec> specs = new ArrayList<>();
             for (var s : req.getSpecs()) {
-                specs.add(ProductSpec.builder().key(s.getKey()).value(s.getValue()).product(p).build());
+                specs.add(ProductSpec.builder()
+                        .key(HtmlSanitizer.sanitize(s.getKey()))
+                        .value(HtmlSanitizer.sanitize(s.getValue()))
+                        .product(p).build());
             }
             p.setSpecifications(specs);
         }
@@ -70,6 +77,9 @@ public class ProductServiceImpl implements ProductService {
         Product p = repo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm #" + id));
 
+        // [XSS-FIX] Sanitize all string fields before persisting
+        sanitizeUpdateRequest(req);
+
         mapper.updateEntityFromDto(req, p);
 
         if (req.getCategoryId() != null) {
@@ -81,7 +91,10 @@ public class ProductServiceImpl implements ProductService {
         if (req.getSpecs() != null) {
             p.getSpecifications().clear();
             for (var s : req.getSpecs()) {
-                p.getSpecifications().add(ProductSpec.builder().key(s.getKey()).value(s.getValue()).product(p).build());
+                p.getSpecifications().add(ProductSpec.builder()
+                        .key(HtmlSanitizer.sanitize(s.getKey()))
+                        .value(HtmlSanitizer.sanitize(s.getValue()))
+                        .product(p).build());
             }
         }
 
@@ -264,5 +277,45 @@ public class ProductServiceImpl implements ProductService {
             p.setDealPercentage(null); // Clear percentage when deal is turned off
         }
         return mapper.toResponse(repo.save(p));
+    }
+
+    // [XSS-FIX] Sanitize tất cả trường String trong ProductCreateRequest
+    private void sanitizeCreateRequest(ProductCreateRequest req) {
+        req.setName(HtmlSanitizer.sanitize(req.getName()));
+        req.setBrand(HtmlSanitizer.sanitize(req.getBrand()));
+        req.setScreenSize(HtmlSanitizer.sanitize(req.getScreenSize()));
+        req.setDisplayTech(HtmlSanitizer.sanitize(req.getDisplayTech()));
+        req.setResolution(HtmlSanitizer.sanitize(req.getResolution()));
+        req.setDisplayFeatures(HtmlSanitizer.sanitize(req.getDisplayFeatures()));
+        req.setRearCamera(HtmlSanitizer.sanitize(req.getRearCamera()));
+        req.setFrontCamera(HtmlSanitizer.sanitize(req.getFrontCamera()));
+        req.setChipset(HtmlSanitizer.sanitize(req.getChipset()));
+        req.setCpuSpecs(HtmlSanitizer.sanitize(req.getCpuSpecs()));
+        req.setRam(HtmlSanitizer.sanitize(req.getRam()));
+        req.setStorage(HtmlSanitizer.sanitize(req.getStorage()));
+        req.setBattery(HtmlSanitizer.sanitize(req.getBattery()));
+        req.setSimType(HtmlSanitizer.sanitize(req.getSimType()));
+        req.setOs(HtmlSanitizer.sanitize(req.getOs()));
+        req.setNfcSupport(HtmlSanitizer.sanitize(req.getNfcSupport()));
+    }
+
+    // [XSS-FIX] Sanitize tất cả trường String trong ProductUpdateRequest
+    private void sanitizeUpdateRequest(ProductUpdateRequest req) {
+        req.setName(HtmlSanitizer.sanitize(req.getName()));
+        req.setBrand(HtmlSanitizer.sanitize(req.getBrand()));
+        req.setScreenSize(HtmlSanitizer.sanitize(req.getScreenSize()));
+        req.setDisplayTech(HtmlSanitizer.sanitize(req.getDisplayTech()));
+        req.setResolution(HtmlSanitizer.sanitize(req.getResolution()));
+        req.setDisplayFeatures(HtmlSanitizer.sanitize(req.getDisplayFeatures()));
+        req.setRearCamera(HtmlSanitizer.sanitize(req.getRearCamera()));
+        req.setFrontCamera(HtmlSanitizer.sanitize(req.getFrontCamera()));
+        req.setChipset(HtmlSanitizer.sanitize(req.getChipset()));
+        req.setCpuSpecs(HtmlSanitizer.sanitize(req.getCpuSpecs()));
+        req.setRam(HtmlSanitizer.sanitize(req.getRam()));
+        req.setStorage(HtmlSanitizer.sanitize(req.getStorage()));
+        req.setBattery(HtmlSanitizer.sanitize(req.getBattery()));
+        req.setSimType(HtmlSanitizer.sanitize(req.getSimType()));
+        req.setOs(HtmlSanitizer.sanitize(req.getOs()));
+        req.setNfcSupport(HtmlSanitizer.sanitize(req.getNfcSupport()));
     }
 }

@@ -627,7 +627,7 @@
                         // Create alert element
                         const alertDiv = document.createElement('div');
                         alertDiv.className = 'inline-alert inline-alert-' + type;
-                        alertDiv.innerHTML = '<i class="fa fa-' + (type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle') + '"></i> <span>' + message + '</span>';
+                        alertDiv.innerHTML = '<i class="fa fa-' + (type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle') + '"></i> <span>' + escapeHtml(message) + '</span>';
 
                         // Insert at top of payment section
                         const paymentSection = document.querySelector('.payment-section');

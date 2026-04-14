@@ -527,7 +527,7 @@
                   // Create alert element
                   const alertDiv = document.createElement('div');
                   alertDiv.className = 'inline-alert inline-alert-' + type;
-                  alertDiv.innerHTML = '<i class="fa fa-' + (type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'info' ? 'info-circle' : 'exclamation-circle') + '"></i> <span>' + message + '</span>';
+                  alertDiv.innerHTML = '<i class="fa fa-' + (type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'info' ? 'info-circle' : 'exclamation-circle') + '"></i> <span>' + escapeHtml(message) + '</span>';
 
                   // Insert at top of product section or reviews section based on context
                   const productSection = document.querySelector('.product-details') || document.querySelector('.section');
@@ -877,8 +877,8 @@
                     let html = '<table class="table table-striped">';
                     specs.forEach(spec => {
                       html += '<tr>';
-                      html += '<td style="width: 40%; font-weight: 500;">' + spec.key + '</td>';
-                      html += '<td>' + (spec.value || '') + '</td>';
+                      html += '<td style="width: 40%; font-weight: 500;">' + escapeHtml(spec.key) + '</td>';
+                      html += '<td>' + escapeHtml(spec.value || '') + '</td>';
                       html += '</tr>';
                     });
                     html += '</table>';
@@ -1037,12 +1037,12 @@
                       const productHtml = '<div class="col-md-3 col-xs-6">' +
                         '<div class="product">' +
                         '<div class="product-img">' +
-                        '<img src="' + imgSrc + '" alt="' + product.name + '">' +
+                        '<img src="' + imgSrc + '" alt="' + escapeHtml(product.name) + '">' +
                         discountLabel +
                         '</div>' +
                         '<div class="product-body">' +
-                        '<p class="product-category">' + categoryName + '</p>' +
-                        '<h3 class="product-name"><a href="' + ctx + '/product/' + product.id + '">' + product.name + '</a></h3>' +
+                        '<p class="product-category">' + escapeHtml(categoryName) + '</p>' +
+                        '<h3 class="product-name"><a href="' + ctx + '/product/' + product.id + '">' + escapeHtml(product.name) + '</a></h3>' +
                         '<h4 class="product-price">' + formatPrice(product.price) + '</h4>' +
                         '<div class="product-rating" id="rating-same-' + product.id + '">' +
                         '<i class="fa fa-star-o"></i>' +
@@ -1112,10 +1112,10 @@
                     const productHtml =
                       '<div class="product-widget" style="margin-bottom: 15px; position:relative;">' +
                       '<div class="product-img" style="width: 60px; float: left; margin-right: 15px; position:relative;">' +
-                      '<img src="' + imgSrc + '" alt="' + product.name + '" style="width:100%; border-radius:4px;">' +
+                      '<img src="' + imgSrc + '" alt="' + escapeHtml(product.name) + '" style="width:100%; border-radius:4px;">' +
                       '</div>' +
                       '<div class="product-body">' +
-                      '<h3 class="product-name" style="font-size: 14px; margin: 0 0 5px;"><a href="' + ctx + '/product/' + product.id + '">' + product.name + '</a></h3>' +
+                      '<h3 class="product-name" style="font-size: 14px; margin: 0 0 5px;"><a href="' + ctx + '/product/' + product.id + '">' + escapeHtml(product.name) + '</a></h3>' +
                       priceHtml +
                       '</div>' +
                       '<div style="clear:both;"></div>' +
@@ -1174,12 +1174,12 @@
                     const productHtml = '<div>' + // Slick carousel item wrapper
                       '<div class="product">' +
                       '<div class="product-img">' +
-                      '<img src="' + imgSrc + '" alt="' + product.name + '">' +
+                      '<img src="' + imgSrc + '" alt="' + escapeHtml(product.name) + '">' +
                       discountLabel +
                       '</div>' +
                       '<div class="product-body">' +
-                      '<p class="product-category">' + brandName + '</p>' +
-                      '<h3 class="product-name"><a href="' + ctx + '/product/' + product.id + '">' + product.name + '</a></h3>' +
+                      '<p class="product-category">' + escapeHtml(brandName) + '</p>' +
+                      '<h3 class="product-name"><a href="' + ctx + '/product/' + product.id + '">' + escapeHtml(product.name) + '</a></h3>' +
                       priceHtml +
                       '<div class="product-rating" id="rating-same-' + product.id + '">' +
                       '<i class="fa fa-star-o"></i>' +
@@ -1571,7 +1571,7 @@
 
                     // Hiển thị document description vào tab Mô tả
                     if (docData.description && docData.description.trim()) {
-                      tabDescElement.innerHTML = docData.description;
+                      tabDescElement.innerHTML = escapeHtml(docData.description);
                       console.log('=== HTML INJECTED ===');
                       console.log('Tab innerHTML length:', tabDescElement.innerHTML.length);
                       console.log('Tab visible:', tabDescElement.offsetHeight > 0);
@@ -1874,13 +1874,6 @@
                   }
                 }
 
-                // Escape HTML to prevent XSS when inserting user content into innerHTML 
-                function escapeHtml(text) {
-                  var div = document.createElement('div');
-                  div.appendChild(document.createTextNode(text));
-                  return div.innerHTML;
-                }
-
                 // Display reviews
                 function displayReviews(reviews) {
                   const container = document.getElementById('reviewsList');
@@ -1895,7 +1888,7 @@
                   reviews.forEach(review => {
                     html += '<li>';
                     html += '<div class="review-heading">';
-                    html += '<h5 class="name">' + (review.userName || 'Ẩn danh') + '</h5>';
+                    html += '<h5 class="name">' + escapeHtml(review.userName || 'Ẩn danh') + '</h5>';
                     html += '<p class="date">' + formatDate(review.createdAt) + '</p>';
 
                     if (review.rating) {

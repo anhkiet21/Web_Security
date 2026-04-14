@@ -69,6 +69,8 @@ pageEncoding="UTF-8" %> <%@ taglib prefix="c" uri="jakarta.tags.core" %>
     <script src="${pageContext.request.contextPath}/js/nouislider.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/jquery.zoom.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/main.js"></script>
+    <!-- [XSS-FIX] Global escapeHtml utility -->
+    <script src="${pageContext.request.contextPath}/js/security-utils.js"></script>
 
     <!-- Global cart count update -->
     <script nonce="${cspNonce}">

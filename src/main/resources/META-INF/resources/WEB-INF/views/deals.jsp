@@ -726,7 +726,7 @@
             // Update section title
             const title = document.getElementById('deals-section-title');
             if (title) {
-                title.innerHTML = '🎯 ' + categoryName + ' Hot Deals';
+                title.innerHTML = '🎯 ' + escapeHtml(categoryName) + ' Hot Deals';
             }
 
             // Scroll to products section

@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
+import com.proj.webprojrct.common.util.HtmlSanitizer;
 
 import com.proj.webprojrct.user.dto.request.UserUpdateRequest;
 import com.proj.webprojrct.user.entity.User;
@@ -220,9 +221,10 @@ public class UserService {
         // [LOGGING] Lưu role cũ trước khi cập nhật - OWASP A09
         UserRole oldRole = userToUpdate.getRole();
 
-        userToUpdate.setFullName(updateRequest.getFullname());
+        // [XSS-FIX] Sanitize user input trước khi lưu DB
+        userToUpdate.setFullName(HtmlSanitizer.sanitize(updateRequest.getFullname()));
         userToUpdate.setEmail(updateRequest.getEmail());
-        userToUpdate.setAddress(updateRequest.getAddress());
+        userToUpdate.setAddress(HtmlSanitizer.sanitize(updateRequest.getAddress()));
         userToUpdate.setRole(updateRequest.getRole());
 
         // Cập nhật trạng thái active nếu có
@@ -307,9 +309,10 @@ public class UserService {
             }
         }
 
-        existingUser.setFullName(userReq.getFullname());
+        // [XSS-FIX] Sanitize user input trước khi lưu DB
+        existingUser.setFullName(HtmlSanitizer.sanitize(userReq.getFullname()));
         existingUser.setEmail(userReq.getEmail());
-        existingUser.setAddress(userReq.getAddress());
+        existingUser.setAddress(HtmlSanitizer.sanitize(userReq.getAddress()));
 
         userRepository.save(existingUser);
 

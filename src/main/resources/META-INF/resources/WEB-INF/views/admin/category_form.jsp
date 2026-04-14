@@ -251,7 +251,7 @@ contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
           .catch((e) => {
             console.error(e);
             showError(
-              "Không thể tải thông tin danh mục. Vui lòng thử lại sau."
+              "Không thể tải thông tin danh mục. Vui lòng thử lại sau.",
             );
           });
       }
@@ -317,7 +317,8 @@ contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
           status.style.color = "#721c24";
           status.style.border = "1px solid #f5c6cb";
         }
-        status.innerHTML = '<i class="fas fa-info-circle"></i> ' + message;
+        status.innerHTML =
+          '<i class="fas fa-info-circle"></i> ' + escapeHtml(message);
       }
 
       function showError(message) {

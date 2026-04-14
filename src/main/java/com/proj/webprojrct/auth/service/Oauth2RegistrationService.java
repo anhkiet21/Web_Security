@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.proj.webprojrct.auth.dto.request.RegisterRequest;
+import com.proj.webprojrct.common.util.HtmlSanitizer;
 import com.proj.webprojrct.user.entity.User;
 import com.proj.webprojrct.user.entity.UserRole;
 import com.proj.webprojrct.user.repository.UserRepository;
@@ -38,10 +39,11 @@ public class Oauth2RegistrationService {
             throw new RuntimeException("Số điện thoại đã tồn tại: " + registerRequest.getPhone());
         }
         User user = new User();
-        user.setFullName(registerRequest.getFullName());
+        // [XSS-FIX] Sanitize user input trước khi lưu DB
+        user.setFullName(HtmlSanitizer.sanitize(registerRequest.getFullName()));
         user.setEmail(registerRequest.getEmail());
         user.setPhone(registerRequest.getPhone());
-        user.setAddress(registerRequest.getAddress());
+        user.setAddress(HtmlSanitizer.sanitize(registerRequest.getAddress()));
         user.setPasswordHash(passwordEncoder.encode(generationPassword));
         user.setRole(UserRole.USER);
         user.setIsActive(true);

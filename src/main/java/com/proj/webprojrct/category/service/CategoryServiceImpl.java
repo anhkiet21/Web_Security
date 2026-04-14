@@ -3,6 +3,7 @@ package com.proj.webprojrct.category.service;
 import com.proj.webprojrct.category.dto.CategoryDto;
 import com.proj.webprojrct.category.entity.Category;
 import com.proj.webprojrct.category.repository.CategoryRepository;
+import com.proj.webprojrct.common.util.HtmlSanitizer;
 import com.proj.webprojrct.product.repository.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +32,8 @@ public class CategoryServiceImpl implements CategoryService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Tên danh mục đã tồn tại");
         }
         Category c = Category.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
+                .name(HtmlSanitizer.sanitize(dto.getName()))
+                .description(HtmlSanitizer.sanitize(dto.getDescription()))
                 .parentId(dto.getParentId())
                 .build();
         return map(repo.save(c));
@@ -42,8 +43,8 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto update(Long id, CategoryDto dto) {
         Category c = repo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy danh mục #" + id));
-        c.setName(dto.getName());
-        c.setDescription(dto.getDescription());
+        c.setName(HtmlSanitizer.sanitize(dto.getName()));
+        c.setDescription(HtmlSanitizer.sanitize(dto.getDescription()));
         c.setParentId(dto.getParentId());
         return map(repo.save(c));
     }

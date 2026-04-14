@@ -399,7 +399,7 @@
                             // Dùng dấu '+' để nối chuỗi (an toàn hơn)
                             itemDiv.innerHTML =
                                 '<div class="item-details">' +
-                                '<p class="item-name">' + productName + '</p>' +
+                                '<p class="item-name">' + escapeHtml(productName) + '</p>' +
                                 '<p class="item-info">Số lượng: ' + item.quantity + '</p>' +
                                 '</div>' +
                                 priceHTML;

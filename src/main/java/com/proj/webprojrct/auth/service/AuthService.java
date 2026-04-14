@@ -47,6 +47,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import com.proj.webprojrct.common.config.logging.SecurityEventLogger;
 import com.proj.webprojrct.common.config.metrics.LoginMetrics;
+import com.proj.webprojrct.common.util.HtmlSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,6 +163,9 @@ public class AuthService {
      * Tạo user sau khi OTP đã được xác thực
      */
     public User createUserFromRegistration(RegisterRequest request) {
+        // [XSS-FIX] Sanitize user input trước khi lưu DB
+        request.setFullName(HtmlSanitizer.sanitize(request.getFullName()));
+        request.setAddress(HtmlSanitizer.sanitize(request.getAddress()));
         User user = authMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(UserRole.USER);
@@ -192,6 +196,9 @@ public class AuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email đã được đăng ký!");
         }
+        // [XSS-FIX] Sanitize user input trước khi lưu DB
+        request.setFullName(HtmlSanitizer.sanitize(request.getFullName()));
+        request.setAddress(HtmlSanitizer.sanitize(request.getAddress()));
         User user = authMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(UserRole.USER);

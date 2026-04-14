@@ -2,10 +2,10 @@
 uri="http://www.springframework.org/tags/form" prefix="form" %>
 <html>
   <head>
-    <title>Reviews for product ${productId}</title>
+    <title>Reviews for product <c:out value="${productId}"/></title>
   </head>
   <body>
-    <h1>Reviews for product ${productId}</h1>
+    <h1>Reviews for product <c:out value="${productId}"/></h1>
 
     <c:if test="${not empty error}">
       <%-- [FIX Stored XSS] Error flash message --%>

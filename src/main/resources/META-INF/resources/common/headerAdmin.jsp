@@ -436,9 +436,9 @@
                   'style="display: block; padding: 10px; border-bottom: 1px solid #eee; text-decoration: none; color: inherit; transition: background 0.2s;" ' +
                   'onmouseover="this.style.background=\'#f8f8f8\'" onmouseout="this.style.background=\'white\'">' +
                   '<div style="display: flex; align-items: center; gap: 12px;">' +
-                  '<img src="' + imgSrc + '" alt="' + product.name + '" style="width: 50px; height: 50px; object-fit: contain; border: 1px solid #eee; border-radius: 4px;">' +
+                  '<img src="' + imgSrc + '" alt="' + escapeHtml(product.name) + '" style="width: 50px; height: 50px; object-fit: contain; border: 1px solid #eee; border-radius: 4px;">' +
                   '<div style="flex: 1; min-width: 0;">' +
-                  '<div style="font-weight: 500; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + product.name + '</div>' +
+                  '<div style="font-weight: 500; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + escapeHtml(product.name) + '</div>' +
                   priceHtml +
                   '</div>' +
                   '</div>' +

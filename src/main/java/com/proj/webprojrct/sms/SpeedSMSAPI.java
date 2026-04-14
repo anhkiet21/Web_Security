@@ -7,6 +7,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import jakarta.xml.bind.DatatypeConverter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SpeedSMSAPI {
 
@@ -51,7 +54,15 @@ public class SpeedSMSAPI {
      *
      */
     public String sendSMS(String to, String content, int type, String sender) throws IOException {
-        String json = "{\"to\": [\"" + to + "\"], \"content\": \"" + EncodeNonAsciiCharacters(content) + "\", \"type\":" + type + ", \"brandname\":\"" + sender + "\"}";
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonObj = mapper.createObjectNode();
+        ArrayNode toArray = mapper.createArrayNode();
+        toArray.add(to);
+        jsonObj.set("to", toArray);
+        jsonObj.put("content", EncodeNonAsciiCharacters(content));
+        jsonObj.put("type", type);
+        jsonObj.put("brandname", sender);
+        String json = mapper.writeValueAsString(jsonObj);
         URL url = new URL(API_URL + "/sms/send");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
