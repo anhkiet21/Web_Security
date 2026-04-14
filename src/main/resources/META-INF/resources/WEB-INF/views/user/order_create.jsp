@@ -420,11 +420,27 @@
                         wards: {}
                     };
 
+                    const locationApiBase = '${pageContext.request.contextPath}/api/orders/locations';
+
+                    async function fetchLocationJson(url) {
+                        const response = await fetch(url, {
+                            headers: {
+                                'Accept': 'application/json'
+                            },
+                            credentials: 'include'
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Location API error: ' + response.status);
+                        }
+
+                        return response.json();
+                    }
+
                     // Load danh sách tỉnh/thành phố khi trang load
                     async function loadCities() {
                         try {
-                            const response = await fetch('https://provinces.open-api.vn/api/p/');
-                            const cities = await response.json();
+                            const cities = await fetchLocationJson(locationApiBase + '/provinces');
 
                             addressData.cities = cities;
 
@@ -439,14 +455,14 @@
                             });
                         } catch (error) {
                             console.error('Lỗi khi load danh sách tỉnh/thành phố:', error);
+                            showMessage('Không tải được danh sách tỉnh/thành phố. Vui lòng tải lại trang.', 'msg-error');
                         }
                     }
 
                     // Load danh sách quận/huyện khi chọn tỉnh/thành phố
                     async function loadDistricts(cityCode) {
                         try {
-                            const response = await fetch('https://provinces.open-api.vn/api/p/' + cityCode + '?depth=2');
-                            const cityData = await response.json();
+                            const cityData = await fetchLocationJson(locationApiBase + '/provinces/' + encodeURIComponent(cityCode) + '/districts');
 
                             addressData.districts[cityCode] = cityData.districts;
 
@@ -467,14 +483,14 @@
                             wardSelect.disabled = true;
                         } catch (error) {
                             console.error('Lỗi khi load danh sách quận/huyện:', error);
+                            showMessage('Không tải được danh sách quận/huyện. Vui lòng thử lại.', 'msg-error');
                         }
                     }
 
                     // Load danh sách phường/xã khi chọn quận/huyện
                     async function loadWards(districtCode) {
                         try {
-                            const response = await fetch('https://provinces.open-api.vn/api/d/' + districtCode + '?depth=2');
-                            const districtData = await response.json();
+                            const districtData = await fetchLocationJson(locationApiBase + '/districts/' + encodeURIComponent(districtCode) + '/wards');
 
                             addressData.wards[districtCode] = districtData.wards;
 
@@ -491,6 +507,7 @@
                             wardSelect.disabled = false;
                         } catch (error) {
                             console.error('Lỗi khi load danh sách phường/xã:', error);
+                            showMessage('Không tải được danh sách phường/xã. Vui lòng thử lại.', 'msg-error');
                         }
                     }
 

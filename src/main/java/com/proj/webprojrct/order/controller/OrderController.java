@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
 import java.util.List;
 
 @RestController
@@ -34,6 +35,9 @@ public class OrderController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     // Create order
     @PostMapping("/create")
@@ -189,6 +193,34 @@ public class OrderController {
             log.error("Lỗi khi gửi yêu cầu hoàn tiền cho đơn hàng id={}", orderId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseMessage("Lỗi hệ thống khi gửi yêu cầu hoàn tiền. Vui lòng thử lại sau."));
+        }
+    }
+
+    @GetMapping("/locations/provinces")
+    public ResponseEntity<?> getProvinces() {
+        return fetchLocationData("https://provinces.open-api.vn/api/p/", "Không thể tải danh sách tỉnh/thành phố.");
+    }
+
+    @GetMapping("/locations/provinces/{cityCode}/districts")
+    public ResponseEntity<?> getDistricts(@PathVariable String cityCode) {
+        String url = "https://provinces.open-api.vn/api/p/" + cityCode + "?depth=2";
+        return fetchLocationData(url, "Không thể tải danh sách quận/huyện.");
+    }
+
+    @GetMapping("/locations/districts/{districtCode}/wards")
+    public ResponseEntity<?> getWards(@PathVariable String districtCode) {
+        String url = "https://provinces.open-api.vn/api/d/" + districtCode + "?depth=2";
+        return fetchLocationData(url, "Không thể tải danh sách phường/xã.");
+    }
+
+    private ResponseEntity<?> fetchLocationData(String url, String userMessage) {
+        try {
+            JsonNode data = objectMapper.readTree(new URL(url));
+            return ResponseEntity.ok(data);
+        } catch (Exception e) {
+            log.error("Lỗi khi gọi API địa chỉ Việt Nam: {}", url, e);
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                    .body(new ResponseMessage(userMessage));
         }
     }
 
