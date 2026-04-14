@@ -70,6 +70,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    // [ZAP-FIX L1] Application Error Disclosure: Catch-all to prevent HTTP 500
+    // from leaking stack trace / exception details to the client.
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
+        SecurityEventLogger.systemError(
+                ex.getClass().getSimpleName(),
+                getClientIp(request),
+                ex.getMessage()
+        );
+
+        var body = ErrorResponse.builder()
+                .message("An unexpected error occurred")
+                .details(java.util.List.of("Please try again or contact support"))
+                .build();
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     /**
      * [LOGGING HELPER] Lấy IP thực của client, hỗ trợ reverse proxy.
      */

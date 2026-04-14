@@ -135,26 +135,30 @@ public class SecurityConfig {
                                 .requiresChannel(channel -> channel
                                                 .anyRequest().requiresSecure())
                                 // ✅ Content Security Policy (CSP) — ngăn XSS và tải tài nguyên từ nguồn không tin cậy
+                                // [ZAP-FIX M1] CSP header luôn được set (kể cả khi nonce null) để tránh ZAP alert
+                                // [ZAP-FIX L7] X-Content-Type-Options: nosniff – ngăn MIME-type sniffing
                                 .headers(headers -> headers
+                                                .contentTypeOptions(cto -> {}) // X-Content-Type-Options: nosniff
                                                 .httpStrictTransportSecurity(hsts -> hsts
                                                                 .includeSubDomains(true)
                                                                 .preload(true)
                                                                 .maxAgeInSeconds(31536000))
+                                                .frameOptions(frame -> frame.sameOrigin()) // X-Frame-Options: SAMEORIGIN
                                                 .addHeaderWriter((request, response) -> {
                                                         String nonce = (String) request.getAttribute(CspNonceFilter.CSP_NONCE_ATTR);
-                                                        if (nonce == null || nonce.isEmpty()) {
-                                                                return;
-                                                        }
+
+                                                        // [ZAP-FIX M1] Build CSP with or without nonce
+                                                        String nonceDirective = (nonce != null && !nonce.isEmpty())
+                                                                ? "'nonce-" + nonce + "' "
+                                                                : "";
 
                                                         String csp =
                                                                         "default-src 'self'; " +
-                                                                                        "script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com; " +
-                                                                                        "script-src-elem 'self' 'nonce-" + nonce
-                                                                                        + "' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com; " +
+                                                                                        "script-src 'self' " + nonceDirective + "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com; " +
+                                                                                        "script-src-elem 'self' " + nonceDirective + "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com; " +
                                                                                         "script-src-attr 'unsafe-inline'; " +
-                                                                                        "style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " +
-                                                                                        "style-src-elem 'self' 'nonce-" + nonce
-                                                                                        + "' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " +
+                                                                                        "style-src 'self' " + nonceDirective + "https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " +
+                                                                                        "style-src-elem 'self' " + nonceDirective + "https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " +
                                                                                         "style-src-attr 'unsafe-inline'; " +
                                                                                         "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
                                                                                         "img-src 'self' data: blob: https://developers.google.com https://lh3.googleusercontent.com; " +
@@ -166,6 +170,12 @@ public class SecurityConfig {
                                                                                         "base-uri 'self'";
 
                                                         response.setHeader("Content-Security-Policy", csp);
+                                                        // [ZAP-FIX L5] Ensure HSTS is explicit for our app domain
+                                                        if (!response.containsHeader("Strict-Transport-Security")) {
+                                                                response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+                                                        }
+                                                        // [ZAP-FIX L7] X-Content-Type-Options
+                                                        response.setHeader("X-Content-Type-Options", "nosniff");
                                                 })
                                 );
 
