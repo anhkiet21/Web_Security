@@ -39,6 +39,7 @@ import com.proj.webprojrct.auth.dto.response.LoginResponse;
 import com.proj.webprojrct.auth.entity.OtpCode;
 import com.proj.webprojrct.auth.entity.OtpType;
 import com.proj.webprojrct.common.config.security.CustomUserDetails;
+import com.proj.webprojrct.common.HtmlSanitizer;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
